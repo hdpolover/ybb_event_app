@@ -50,3 +50,56 @@ const TextStyle carouselWhiteTextStyle = TextStyle(
         blurRadius: 2,
       )
     ]);
+
+ButtonStyle primaryButtonStyle = ButtonStyle(
+    backgroundColor: MaterialStateProperty.all<Color>(primary),
+    overlayColor: MaterialStateProperty.resolveWith<Color>(
+      (Set<MaterialState> states) {
+        if (states.contains(MaterialState.hovered)) {
+          return buttonPrimaryDark;
+        }
+        if (states.contains(MaterialState.focused) ||
+            states.contains(MaterialState.pressed)) {
+          return buttonPrimaryDarkPressed;
+        }
+        return primary;
+      },
+    ),
+    // Shape sets the border radius from default 3 to 0.
+    shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
+      (Set<MaterialState> states) {
+        if (states.contains(MaterialState.focused) ||
+            states.contains(MaterialState.pressed)) {
+          return const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)));
+        }
+        return const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)));
+      },
+    ),
+    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+        const EdgeInsets.symmetric(vertical: 22, horizontal: 28)),
+    // Side adds pressed highlight outline.
+    side: MaterialStateProperty.resolveWith<BorderSide>(
+        (Set<MaterialState> states) {
+      if (states.contains(MaterialState.focused) ||
+          states.contains(MaterialState.pressed)) {
+        return const BorderSide(width: 3, color: buttonPrimaryPressedOutline);
+      }
+      // Transparent border placeholder as Flutter does not allow
+      // negative margins.
+      return const BorderSide(width: 3, color: Colors.white);
+    }));
+
+BoxDecoration imageBgDecorStyle = BoxDecoration(
+  color: primary,
+  image: DecorationImage(
+    image: const AssetImage("assets/images/pattern_1.png"),
+    fit: BoxFit.cover,
+    // blend image with color
+    colorFilter: ColorFilter.mode(
+      primary.withOpacity(0.5),
+      BlendMode.dstATop,
+    ),
+  ),
+);

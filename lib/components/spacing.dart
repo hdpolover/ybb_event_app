@@ -17,6 +17,15 @@ const List<Condition> blockWidthConstraints = [
   Condition.largerThan(name: TABLET, value: BoxConstraints(maxWidth: 1280)),
 ];
 
+EdgeInsets commonPadding(BuildContext context) =>
+    ResponsiveValue<EdgeInsets>(context,
+        defaultValue: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+        conditionalValues: [
+          const Condition.smallerThan(
+              name: TABLET,
+              value: EdgeInsets.symmetric(horizontal: 15, vertical: 20))
+        ]).value;
+
 EdgeInsets blockPadding(BuildContext context) =>
     ResponsiveValue<EdgeInsets>(context,
         defaultValue: const EdgeInsets.symmetric(horizontal: 55, vertical: 80),
