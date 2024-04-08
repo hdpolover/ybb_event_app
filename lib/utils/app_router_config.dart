@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ybb_event_app/pages/dashboard/dashboard.dart';
-import 'package:ybb_event_app/pages/dashboard/participants/regist_form.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/regist_form.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions.dart';
 import 'package:ybb_event_app/pages/landing_pages/about_us/about_us.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/announcements.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/ambassador_signin.dart';
@@ -36,12 +37,14 @@ String dashboardRouteName = "dashboard";
 String dashboardPathName = "/dashboard";
 String ambassadorSigninRouteName = "ambassador-signin";
 String ambassadorSigninPathName = "/ambassador-signin";
+String transactionsRouteName = "transactions";
+String transactionsPathName = "/transactions";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
-    initialLocation: "/",
+    initialLocation: homePathName,
     routes: [
       GoRoute(
         name: authRouteName,
@@ -71,6 +74,13 @@ class AppRouterConfig {
           child: Dashboard(
             role: state.extra as String?,
           ),
+        ),
+      ),
+      GoRoute(
+        name: transactionsRouteName,
+        path: transactionsPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: Transactions(),
         ),
       ),
       GoRoute(

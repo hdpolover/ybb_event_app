@@ -1,11 +1,11 @@
 {
-    "name": "ybb_event_app",
-    "short_name": "ybb_event_app",
+    "name": "YBB Program Application",
+    "short_name": "YBB Program Application",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Youth Break the Boundaries Program Application",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

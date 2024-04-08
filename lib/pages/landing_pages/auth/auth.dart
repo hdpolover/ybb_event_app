@@ -8,16 +8,19 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
+import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth_image_section.dart';
 import 'package:ybb_event_app/pages/loading_page.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
+import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/auth_service.dart';
 import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
+import 'package:ybb_event_app/utils/dialog_manager.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -75,35 +78,45 @@ class _AuthState extends State<Auth> {
     };
 
     // sign in the user
-    try {
-      AuthService().participantSignIn(data).then((participants) {
-        if (participants.isNotEmpty) {
-          // save the user data to shared preferences
-          AuthUserModel currentUser = AuthUserModel(
-            id: participants[0].userId!,
-            fullName: participants[0].fullName!,
-            email: value['email']!,
-          );
 
-          Provider.of<AuthProvider>(context, listen: false)
-              .setAuthUser(currentUser);
+    AuthService().participantSignIn(data).then((participants) {
+      if (participants.isNotEmpty) {
+        // save the user data to shared preferences
+        AuthUserModel currentUser = AuthUserModel(
+          id: participants[0].userId!,
+          fullName: participants[0].fullName!,
+          email: value['email']!,
+        );
 
-          // navigate to home page
-          context.pushNamed(dashboardRouteName, extra: "participant");
-        } else {
-          // show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                  "The email or password you entered is incorrect. Please try again."),
-              backgroundColor: Colors.red,
-            ),
-          );
+        Provider.of<AuthProvider>(context, listen: false)
+            .setAuthUser(currentUser);
+
+        Provider.of<ParticipantProvider>(context, listen: false)
+            .setParticipants(participants);
+
+        List<ParticipantModel>? tempList =
+            Provider.of<ParticipantProvider>(context, listen: false)
+                .participants;
+
+        for (var i in tempList!) {
+          if (i.programId ==
+              Provider.of<ProgramProvider>(context, listen: false)
+                  .programInfo!
+                  .id) {
+            Provider.of<ParticipantProvider>(context, listen: false)
+                .setParticipant(i);
+          }
         }
-      });
-    } catch (e) {
-      // show error message
-    }
+
+        // navigate to home page
+        context.pushNamed(dashboardRouteName, extra: "participant");
+      } else {
+        DialogManager.showAlertDialog(context,
+            "There is no participant with this email and password. Please try again.");
+      }
+    }).onError((error, stackTrace) {
+      DialogManager.showAlertDialog(context, error.toString());
+    });
   }
 
   @override

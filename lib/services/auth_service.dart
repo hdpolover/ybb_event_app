@@ -33,7 +33,6 @@ class AuthService {
     var url = Uri.parse('${AppConstants.apiUrl}/participants/signin');
 
     print(url);
-    print(data);
 
     try {
       var response = await http.post(

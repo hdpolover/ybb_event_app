@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
+import 'package:ybb_event_app/models/testimony_model.dart';
 import 'package:ybb_event_app/models/web_setting_about_model.dart';
 import 'package:ybb_event_app/models/web_setting_home_model.dart';
 import 'package:ybb_event_app/utils/app_constants.dart';
@@ -62,6 +63,30 @@ class LandingPageService {
         var data = jsonDecode(response.body)['data'][0];
 
         return WebSettingAboutModel.fromJson(data);
+      } else {
+        throw Exception('Failed');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<TestimonyModel>> getTestimonies(String id) async {
+    var url =
+        Uri.parse('${AppConstants.apiUrl}/program_testimonies/program?id=$id');
+
+    print(url);
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'] as List;
+
+        List<TestimonyModel> value =
+            data.map((photo) => TestimonyModel.fromJson(photo)).toList();
+
+        return value;
       } else {
         throw Exception('Failed');
       }

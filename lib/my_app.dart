@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:ybb_event_app/components/colors.dart';
+import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
+import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 
@@ -15,8 +18,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
         ChangeNotifierProvider<ProgramProvider>(
             create: (_) => ProgramProvider()),
+        ChangeNotifierProvider<AppProvider>(create: (_) => AppProvider()),
+        ChangeNotifierProvider<ParticipantProvider>(
+            create: (_) => ParticipantProvider()),
       ],
       child: MaterialApp.router(
+        theme: ThemeData(
+          primaryColor: primary,
+          fontFamily: 'Poppins',
+        ),
         routerConfig: AppRouterConfig().routeConfig,
         builder: (context, widget) => ResponsiveBreakpoints.builder(
           child: Builder(builder: (context) {

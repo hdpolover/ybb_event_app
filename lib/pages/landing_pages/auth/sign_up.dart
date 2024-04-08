@@ -9,12 +9,15 @@ import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
+import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/models/user_model.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth_image_section.dart';
 import 'package:ybb_event_app/pages/loading_page.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
+import 'package:ybb_event_app/providers/participant_provider.dart';
+import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/auth_service.dart';
 import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
@@ -87,16 +90,52 @@ class _SignUpState extends State<SignUp> {
       // if the sign up is successful, navigate to the home page
       // if the sign up is failed, show an error message
       AuthService().participantSignUp(user).then((value) {
-        // save the user data to shared preferences
-        AuthUserModel authUser = AuthUserModel(
-          id: value!.id,
-          fullName: value.fullName,
-          email: value.email,
-        );
+        Map<String, dynamic> data = {
+          "email": user.email!,
+          "password": user.password,
+          "program_category_id": user.programCategoryId,
+        };
 
-        Provider.of<AuthProvider>(context, listen: false).setAuthUser(authUser);
+        // sign in the user
 
-        context.pushNamed(dashboardRouteName, extra: "participant");
+        AuthService().participantSignIn(data).then((participants) {
+          if (participants.isNotEmpty) {
+            // save the user data to shared preferences
+            AuthUserModel currentUser = AuthUserModel(
+              id: participants[0].userId!,
+              fullName: participants[0].fullName!,
+              email: user.email,
+            );
+
+            Provider.of<AuthProvider>(context, listen: false)
+                .setAuthUser(currentUser);
+
+            Provider.of<ParticipantProvider>(context, listen: false)
+                .setParticipants(participants);
+
+            List<ParticipantModel>? tempList =
+                Provider.of<ParticipantProvider>(context, listen: false)
+                    .participants;
+
+            for (var i in tempList!) {
+              if (i.programId ==
+                  Provider.of<ProgramProvider>(context, listen: false)
+                      .programInfo!
+                      .id) {
+                Provider.of<ParticipantProvider>(context, listen: false)
+                    .setParticipant(i);
+              }
+            }
+
+            // navigate to home page
+            context.pushNamed(dashboardRouteName, extra: "participant");
+          } else {
+            DialogManager.showAlertDialog(context,
+                "There is no participant with this email and password. Please try again.");
+          }
+        }).onError((error, stackTrace) {
+          DialogManager.showAlertDialog(context, error.toString());
+        });
       }).catchError((e) {
         DialogManager.showAlertDialog(context, e.toString());
       });

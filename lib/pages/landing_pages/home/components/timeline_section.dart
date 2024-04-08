@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -94,6 +95,8 @@ class _TimelineSectionState extends State<TimelineSection> {
     );
   }
 
+  bool isImageError = false;
+
   @override
   Widget build(BuildContext context) {
     return programSchedules == null
@@ -101,14 +104,21 @@ class _TimelineSectionState extends State<TimelineSection> {
         : ResponsiveRowColumnItem(
             child: Container(
               // give a background image from network image and also a transparent color so that texts can be read
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(widget.programPhoto!.imgUrl!),
-                  fit: BoxFit.cover,
-                  colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.9), BlendMode.darken),
-                ),
-              ),
+              decoration: isImageError
+                  ? const BoxDecoration(color: primary)
+                  : BoxDecoration(
+                      image: DecorationImage(
+                        onError: (exception, stackTrace) {
+                          setState(() {
+                            isImageError = true;
+                          });
+                        },
+                        image: NetworkImage(widget.programPhoto!.imgUrl!),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0.9), BlendMode.darken),
+                      ),
+                    ),
               padding: commonPadding(context),
               child: Column(
                 children: [

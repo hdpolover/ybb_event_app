@@ -28,13 +28,16 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  country_picker: ^2.0.25
   cupertino_icons: ^1.0.2
   fancy_shimmer_image: ^2.0.3
+  file_picker: ^8.0.0+1
   flutter:
     sdk: flutter
   flutter_carousel_widget: ^2.2.0
   flutter_expanded_tile: ^0.3.7
   flutter_form_builder: ^9.2.1
+  flutter_quill: ^8.1.2
   flutter_timer_countdown: ^1.0.7
   flutter_widget_from_html: ^0.14.11
   font_awesome_flutter: ^10.7.0
@@ -42,12 +45,18 @@ dependencies:
   go_router: ^13.2.1
   google_fonts: ^6.0.0
   http: ^1.2.0
+  icons_launcher: ^2.1.7
+  image_picker: ^1.0.7
   intl: ^0.18.1
+  intl_phone_number_input: ^0.7.4
   loading_animation_widget: ^1.2.1
+  package_rename: ^1.5.3
+  path_provider: ^2.1.2
   provider: ^6.1.2
   responsive_framework: ^1.4.0
   tab_container: ^3.1.1
   timeline_tile: ^2.0.0
+  universal_html: ^2.2.4
   url_launcher: ^6.2.5
   web: ^0.3.0
   webview_flutter: ^4.7.0
@@ -56,6 +65,21 @@ dev_dependencies:
   flutter_lints: ^3.0.2
   flutter_test:
     sdk: flutter
+
+package_rename_config:
+  web:
+    app_name: YBB Program Application
+    description: Youth Break the Boundaries Program Application
+
+icons_launcher:
+  image_path: 'assets/images/ybb_logo.png'
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
+    web:
+      enable: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

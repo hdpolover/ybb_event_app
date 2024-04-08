@@ -3,19 +3,24 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
+import 'package:ybb_event_app/models/program_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
+import 'package:ybb_event_app/models/testimony_model.dart';
 import 'package:ybb_event_app/models/web_setting_home_model.dart';
 import 'package:ybb_event_app/pages/footer.dart';
 import 'package:ybb_event_app/pages/landing_pages/home/components/banner_section.dart';
 import 'package:ybb_event_app/pages/landing_pages/home/components/event_about_section.dart';
 import 'package:ybb_event_app/pages/landing_pages/home/components/event_detail_section.dart';
 import 'package:ybb_event_app/pages/landing_pages/home/components/gallery_section.dart';
+import 'package:ybb_event_app/pages/landing_pages/home/components/testimony_section.dart';
 import 'package:ybb_event_app/pages/landing_pages/home/components/timeline_section.dart';
 import 'package:ybb_event_app/pages/landing_pages/page_template.dart';
+import 'package:ybb_event_app/pages/landing_pages/widgets/guideline_widget.dart';
 import 'package:ybb_event_app/pages/loading_page.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
+import 'package:ybb_event_app/services/program_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -28,6 +33,8 @@ class _HomeState extends State<Home> {
   ProgramInfoByUrlModel? programInfo;
   WebSettingHomeModel? homeSetting;
   List<ProgramPhotoModel>? programPhotos = [];
+  List<TestimonyModel>? testimonies = [];
+  ProgramModel? currentProgram;
 
   @override
   void initState() {
@@ -44,15 +51,31 @@ class _HomeState extends State<Home> {
         programInfo = value;
       });
 
-      LandingPageService().getHomeSetting(programInfo!.id!).then((value) {
-        setState(() {
-          homeSetting = value;
-        });
-      });
+      ProgramService().getProgramById(programInfo!.id!).then((value) {
+        //set current program to provider
+        Provider.of<ProgramProvider>(context, listen: false)
+            .setCurrentProgram(value);
 
-      ProgramPhotoService().getProgramPhotos("").then((value) {
         setState(() {
-          programPhotos = value;
+          currentProgram = value;
+        });
+
+        LandingPageService().getHomeSetting(programInfo!.id!).then((value) {
+          setState(() {
+            homeSetting = value;
+          });
+
+          ProgramPhotoService().getProgramPhotos("").then((value) {
+            setState(() {
+              programPhotos = value;
+            });
+
+            LandingPageService().getTestimonies(programInfo!.id!).then((value) {
+              setState(() {
+                testimonies = value;
+              });
+            });
+          });
         });
       });
     });
@@ -97,7 +120,11 @@ class _HomeState extends State<Home> {
           .toList();
     }
 
-    return programInfo == null || homeSetting == null || programPhotos == null
+    return programInfo == null ||
+            homeSetting == null ||
+            programPhotos == null ||
+            testimonies == null ||
+            currentProgram == null
         ? const LoadingPage()
         : PageTemplate(
             programInfo: programInfo!,
@@ -105,20 +132,34 @@ class _HomeState extends State<Home> {
             contents: [
               BannerSection(webSettingHome: homeSetting!),
               EventDetailSection(programInfo: programInfo!),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.1,
+                    vertical: MediaQuery.of(context).size.height * 0.03),
+                child: GuidelineWidget(program: currentProgram!),
+              ),
               EventAboutSection(
                 programInfo: programInfo!,
                 webSettingHome: homeSetting!,
                 // get a random photo from programPhotos list
-                programPhoto: currentProgramPhotos
-                    .elementAt(Random().nextInt(currentProgramPhotos.length)),
+                programPhoto: currentProgramPhotos.isNotEmpty
+                    ? currentProgramPhotos.elementAt(
+                        Random().nextInt(currentProgramPhotos.length))
+                    : ProgramPhotoModel(imgUrl: ""),
               ),
               TimelineSection(
-                programPhoto: currentProgramPhotos
-                    .elementAt(Random().nextInt(currentProgramPhotos.length)),
+                programPhoto: currentProgramPhotos.isNotEmpty
+                    ? currentProgramPhotos.elementAt(
+                        Random().nextInt(currentProgramPhotos.length))
+                    : ProgramPhotoModel(imgUrl: ""),
               ),
               GallerySection(
                 programPhotos: programPhotos!,
                 programInfo: programInfo,
+              ),
+              const SizedBox(height: 50),
+              TestimonySection(
+                testimonies: testimonies,
               ),
               const SizedBox(height: 50),
               Footer(
