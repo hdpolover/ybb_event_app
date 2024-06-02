@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +26,9 @@ class WebsiteMenuBar extends StatelessWidget {
           MouseRegion(
             cursor: SystemMouseCursors.click,
             child: GestureDetector(
-              onTap: () =>
-                  Navigator.of(context).popUntil((route) => route.isFirst),
+              onTap: () {
+                context.goNamed(homeRouteName);
+              },
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: Image.network(programInfo.logoUrl!),
@@ -34,15 +36,66 @@ class WebsiteMenuBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const ResponsiveVisibility(
+          ResponsiveVisibility(
             visible: false,
-            visibleConditions: [
+            visibleConditions: const [
               Condition.smallerThan(name: MOBILE),
               Condition.equals(name: MOBILE)
             ],
-            child: Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(Icons.menu),
+            child: Row(
+              children: [
+                // add button to get started
+                // create a container button
+                InkWell(
+                  onTap: () {
+                    // context.pushNamed(authRouteName);
+                    context.pushNamed('test-page');
+                  },
+                  child: Container(
+                    height: 30,
+                    width: 100,
+                    decoration: BoxDecoration(
+                      color: primary,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        "Get started",
+                        textAlign: TextAlign.center,
+                        style: buttonTextStyle.copyWith(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                // TextButton(
+                //   onPressed: () {
+                //     // context.go(authPathName);
+                //     context.pushNamed(authRouteName);
+                //   },
+                //   style: primaryButtonStyle,
+                //   child: Text(
+                //     "Get started",
+                //     style: buttonTextStyle.copyWith(
+                //       fontSize: 12.sp,
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(Icons.menu),
+                  ),
+                ),
+              ],
             ),
           ),
           ResponsiveVisibility(

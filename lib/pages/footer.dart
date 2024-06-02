@@ -41,7 +41,7 @@ class Footer extends StatelessWidget {
       decoration: imageBgDecorStyle,
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
       child: ResponsiveRowColumn(
-        layout: ResponsiveBreakpoints.of(context).isMobile
+        layout: ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
             ? ResponsiveRowColumnType.COLUMN
             : ResponsiveRowColumnType.ROW,
         columnMainAxisSize: MainAxisSize.min,

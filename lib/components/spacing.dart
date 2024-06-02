@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 // Margin
 const EdgeInsets marginBottom12 = EdgeInsets.only(bottom: 12);
@@ -36,3 +37,20 @@ EdgeInsets blockPadding(BuildContext context) =>
         ]).value;
 
 const EdgeInsets blockMargin = EdgeInsets.fromLTRB(10, 0, 10, 32);
+
+SizedBox verticalSpace(double height) => SizedBox(height: height);
+SizedBox horizontalSpace(double width) => SizedBox(width: width);
+
+// Height
+SizedBox height05 = SizedBox(height: 5.h);
+SizedBox height1 = SizedBox(height: 10.h);
+SizedBox height2 = SizedBox(height: 20.h);
+
+// font size
+double fontSize12 = 12.sp;
+double fontSize14 = 14.sp;
+double fontSize16 = 16.sp;
+double fontSize18 = 18.sp;
+double fontSize20 = 20.sp;
+double fontSize24 = 24.sp;
+double fontSize28 = 28.sp;

@@ -1,3 +1,4 @@
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -25,75 +26,126 @@ class EventAboutSection extends StatefulWidget {
 }
 
 class _EventAboutSectionState extends State<EventAboutSection> {
+  buildForMobile() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth:
+                  ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
+                      ? MediaQuery.of(context).size.width
+                      : MediaQuery.of(context).size.width * 0.5,
+              maxHeight: MediaQuery.of(context).size.height * 0.7,
+              minHeight: MediaQuery.of(context).size.height * 0.7,
+            ),
+            child: FancyShimmerImage(
+              imageUrl: widget.programPhoto.imgUrl!,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.7,
+              boxFit: BoxFit.cover,
+            ),
+          ),
+          buildAboutItem("What is ${widget.programInfo.name!}?",
+              "${widget.webSettingHome.introduction}"),
+          const SizedBox(height: 20),
+          buildAboutItem("Why should you join ${widget.programInfo.name!}?",
+              "${widget.webSettingHome.reason}"),
+          const SizedBox(height: 20),
+          buildAboutItem(
+              "What are the objectives of the ${widget.programInfo.name!}?",
+              "${widget.webSettingHome.summary}"),
+          const SizedBox(height: 20),
+          buildAboutItem(
+              "What are the agendas of the ${widget.programInfo.name!}?",
+              "${widget.webSettingHome.agenda}"),
+        ],
+      ),
+    );
+  }
+
+  buildForDesktop() {
+    return Container(
+      color: Colors.white,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              FancyShimmerImage(
+                imageUrl: widget.programPhoto.imgUrl!,
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: MediaQuery.of(context).size.height * 0.7,
+                boxFit: BoxFit.cover,
+              ),
+              Expanded(
+                child: buildAboutItem("What is ${widget.programInfo.name!}?",
+                    "${widget.webSettingHome.introduction}"),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                  child: buildAboutSecondItem(
+                      "Why should you join ${widget.programInfo.name!}?",
+                      "${widget.webSettingHome.reason}")),
+              Expanded(
+                  child: buildAboutSecondItem(
+                      "What are the objectives of the ${widget.programInfo.name!}?",
+                      "${widget.webSettingHome.summary}")),
+              Expanded(
+                  child: buildAboutSecondItem(
+                      "What are the agendas of the ${widget.programInfo.name!}?",
+                      "${widget.webSettingHome.agenda}")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ResponsiveRowColumnItem(
-      child: Container(
-        color: Colors.white,
-        child: ResponsiveRowColumn(
-          layout: ResponsiveRowColumnType.COLUMN,
-          rowMainAxisAlignment: MainAxisAlignment.start,
-          columnCrossAxisAlignment: CrossAxisAlignment.start,
-          columnMainAxisAlignment: MainAxisAlignment.start,
-          rowCrossAxisAlignment: CrossAxisAlignment.start,
+    return ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
+        ? buildForMobile()
+        : buildForDesktop();
+  }
+
+  buildAboutSecondItem(String title, String desc) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.1,
+      child: Padding(
+        padding: blockPadding(context),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text(
-            //   "Event Details",
-            //   style: headlineSecondaryTextStyle.copyWith(
-            //     fontWeight: FontWeight.bold,
-            //     color: primary,
-            //     decoration: TextDecoration.underline,
-            //     decorationStyle: TextDecorationStyle.solid,
-            //     decorationColor: primary,
-            //   ),
-            // ),
-            ResponsiveRowColumnItem(
-              child: ResponsiveRowColumn(
-                layout:
-                    ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-                        ? ResponsiveRowColumnType.COLUMN
-                        : ResponsiveRowColumnType.ROW,
+            const FaIcon(FontAwesomeIcons.arrowRight, color: primary, size: 40),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  ResponsiveRowColumnItem(
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxWidth: ResponsiveBreakpoints.of(context)
-                                .smallerOrEqualTo(MOBILE)
-                            ? MediaQuery.of(context).size.width
-                            : MediaQuery.of(context).size.width * 0.5,
-                        maxHeight: 600,
-                      ),
-                      child: Image.network(widget.programPhoto.imgUrl!,
-                          fit: BoxFit.cover),
+                  Text(
+                    title,
+                    softWrap: true,
+                    style: headlineSecondaryTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: primary,
+                      fontSize: 25,
                     ),
                   ),
-                  buildAboutItem("What is ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.introduction}"),
-                ],
-              ),
-            ),
-            const ResponsiveRowColumnItem(child: SizedBox(height: 20)),
-            ResponsiveRowColumnItem(
-              child: ResponsiveRowColumn(
-                layout:
-                    ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-                        ? ResponsiveRowColumnType.COLUMN
-                        : ResponsiveRowColumnType.ROW,
-                rowPadding: commonPadding(context),
-                columnCrossAxisAlignment: CrossAxisAlignment.start,
-                rowCrossAxisAlignment: CrossAxisAlignment.start,
-                columnMainAxisAlignment: MainAxisAlignment.start,
-                rowMainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  buildAboutSecondItem(
-                      "Why should you join ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.reason}"),
-                  buildAboutSecondItem(
-                      "What are the objectives of the ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.summary}"),
-                  buildAboutSecondItem(
-                      "What are the agendas of the ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.agenda}"),
+                  const SizedBox(height: 20),
+                  HtmlWidget(
+                    desc,
+                    textStyle: bodyTextStyle,
+                  ),
                 ],
               ),
             ),
@@ -103,109 +155,60 @@ class _EventAboutSectionState extends State<EventAboutSection> {
     );
   }
 
-  buildAboutSecondItem(String title, String desc) {
-    return ResponsiveRowColumnItem(
-      child: Expanded(
-        child: Padding(
-          padding: blockPadding(context),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const FaIcon(FontAwesomeIcons.arrowRight,
-                  color: primary, size: 40),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      softWrap: true,
-                      style: headlineSecondaryTextStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: primary,
-                        fontSize: 25,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    HtmlWidget(
-                      desc,
-                      textStyle: bodyTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   buildAboutItem(String title, String desc) {
-    return ResponsiveRowColumnItem(
-      child: Expanded(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Text(
-                title,
-                softWrap: true,
-                style: headlineSecondaryTextStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: primary,
-                  fontSize: 30,
-                ),
-              ),
-              const SizedBox(height: 20),
-              HtmlWidget(
-                desc,
-                textStyle: bodyTextStyle,
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+            title,
+            softWrap: true,
+            style: headlineSecondaryTextStyle.copyWith(
+              fontWeight: FontWeight.bold,
+              color: primary,
+              fontSize: 30,
+            ),
           ),
-        ),
+          const SizedBox(height: 20),
+          HtmlWidget(
+            desc,
+            textStyle: bodyTextStyle,
+          ),
+        ],
       ),
     );
   }
 
   buildAboutCard(String title, String desc) {
-    return ResponsiveRowColumnItem(
-      child: Card(
-        color: Colors.white,
-        surfaceTintColor: Colors.white,
-        child: Container(
-          constraints: const BoxConstraints(
-            maxWidth: 500,
-            minWidth: 300,
-            minHeight: 400,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(
-                  title,
-                  style: smallHeadlineTextStyle.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: primary,
-                  ),
+    return Card(
+      color: Colors.white,
+      surfaceTintColor: Colors.white,
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: 500,
+          minWidth: 300,
+          minHeight: 400,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                title,
+                style: smallHeadlineTextStyle.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: primary,
                 ),
-                const SizedBox(height: 20),
-                Text(desc),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+              Text(desc),
+            ],
           ),
         ),
       ),

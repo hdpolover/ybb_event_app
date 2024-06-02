@@ -5,6 +5,7 @@ class MenuCardModel {
   final String desc;
   final IconData icon;
   final bool isActive;
+  final String? statusText;
   final String route;
 
   MenuCardModel({
@@ -13,5 +14,6 @@ class MenuCardModel {
     required this.icon,
     required this.isActive,
     required this.route,
+    this.statusText,
   });
 }

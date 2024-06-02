@@ -1,8 +1,13 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
+import 'package:ybb_event_app/models/payment_method_model.dart';
+import 'package:ybb_event_app/providers/payment_provider.dart';
 
 class CommonMethods {
   buildCustomButton(
@@ -12,12 +17,12 @@ class CommonMethods {
       required Function() onPressed}) {
     return MaterialButton(
       minWidth: width ?? double.infinity,
-      height: 60,
+      height: 7.h,
       color: color ?? primary,
       // give radius to the button
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       onPressed: onPressed,
-      child: Text(text, style: buttonTextStyle),
+      child: AutoSizeText(text, style: buttonTextStyle),
     );
   }
 
@@ -66,10 +71,116 @@ class CommonMethods {
     );
   }
 
-  buildCommonAppBar(String title) {
+  buildNothingToShow(String title, String desc) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // show an icon of no data in general
+          const Icon(
+            Icons.hourglass_empty,
+            size: 100,
+            color: Colors.grey,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            title,
+            style: headlineTextStyle.copyWith(
+              color: Colors.grey,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(desc,
+              style: bodyTextStyle.copyWith(
+                color: Colors.grey,
+                fontSize: 15,
+              )),
+          const SizedBox(height: 20),
+          // CommonMethods().buildCustomButton(
+          //   width: 200,
+          //   color: Colors.blue,
+          //   text: "Make a transaction",
+          //   onPressed: () {
+          //     // navigate to the transaction page
+          //   },
+          // ),
+        ],
+      ),
+    );
+  }
+
+  buildCommonAppBar(BuildContext context, String title) {
     return AppBar(
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          // pop the current page
+          Navigator.pop(context);
+        },
+      ),
       automaticallyImplyLeading: true,
-      title: Text(title, style: bodyTextStyle.copyWith(color: Colors.black)),
+      surfaceTintColor: Colors.white,
+      backgroundColor: Colors.white,
+      elevation: 5,
+      title: Text(
+        title,
+      ),
+    );
+  }
+
+  buildPaymentMethodCard(BuildContext context, PaymentMethodModel paymentMethod,
+      bool? isClickable) {
+    isClickable ??= false;
+
+    bool isClicked = false;
+
+    return MouseRegion(
+      cursor: isClickable ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      child: InkWell(
+        onTap: isClickable
+            ? () {
+                Provider.of<PaymentProvider>(context, listen: false)
+                    .setSelectedPaymentMethod(paymentMethod);
+
+                isClicked = !isClicked;
+              }
+            : null,
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          color: isClicked ? primary : Colors.white,
+          surfaceTintColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.network(
+                  paymentMethod.imgUrl!,
+                  height: 30,
+                  fit: BoxFit.contain,
+                ),
+                const SizedBox(height: 10),
+                AutoSizeText(
+                  paymentMethod.name!,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: isClicked
+                      ? bodyTextStyle.copyWith(color: Colors.white)
+                      : bodyTextStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/pages/footer.dart';
@@ -37,7 +38,9 @@ class _SponsorshipsState extends State<Sponsorships> {
       padding: commonPadding(context),
       child: Center(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
+              ? MediaQuery.of(context).size.width * 0.8
+              : MediaQuery.of(context).size.width * 0.5,
           height: MediaQuery.of(context).size.height * 0.5,
           child: HtmlWidget("""
        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"

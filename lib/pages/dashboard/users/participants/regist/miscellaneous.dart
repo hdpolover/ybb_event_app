@@ -130,10 +130,13 @@ class _MiscellaneousSectionState extends State<MiscellaneousSection> {
               const SizedBox(height: 10),
               Row(
                 children: [
-                  Text(
-                    "You can share a twibbon of the program to your social media account to show your support!",
-                    style: bodyTextStyle.copyWith(
-                      color: Colors.black,
+                  Expanded(
+                    child: Text(
+                      "You can share a twibbon of the program to your social media account to show your support!",
+                      softWrap: true,
+                      style: bodyTextStyle.copyWith(
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   TextButton(

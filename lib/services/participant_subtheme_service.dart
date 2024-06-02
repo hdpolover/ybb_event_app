@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:ybb_event_app/models/competition_category_model.dart';
 import 'package:ybb_event_app/models/participant_competition_category_model.dart';
 import 'package:ybb_event_app/models/participant_essay_model.dart';
 import 'package:ybb_event_app/models/participant_subtheme_model.dart';

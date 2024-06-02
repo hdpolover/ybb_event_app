@@ -70,6 +70,7 @@ class ParticipantCompetitionCategoryService {
 
         return ParticipantCompetitionCategoryModel.fromJson(data);
       } else {
+        print(response.body);
         throw jsonDecode(response.body)['message'];
       }
     } catch (e) {

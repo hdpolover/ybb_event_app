@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ybb_event_app/models/participant_competition_category_model.dart';
 import 'package:ybb_event_app/models/participant_essay_model.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
+import 'package:ybb_event_app/models/participant_status_model.dart';
 import 'package:ybb_event_app/models/participant_subtheme_model.dart';
 
 class ParticipantProvider extends ChangeNotifier {
@@ -10,6 +11,19 @@ class ParticipantProvider extends ChangeNotifier {
   ParticipantCompetitionCategoryModel? _participantCompetitionCategory;
   List<ParticipantEssayModel>? _participantEssays;
   ParticipantSubthemeModel? _participantSubtheme;
+  ParticipantStatusModel? _participantStatus;
+
+  ParticipantStatusModel? get participantStatus => _participantStatus;
+
+  void setParticipantStatus(ParticipantStatusModel participantStatus) {
+    _participantStatus = participantStatus;
+    notifyListeners();
+  }
+
+  void clearParticipantStatus() {
+    _participantStatus = null;
+    notifyListeners();
+  }
 
   ParticipantSubthemeModel? get participantSubtheme => _participantSubtheme;
 

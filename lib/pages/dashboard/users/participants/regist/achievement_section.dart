@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/services/participant_service.dart';
+import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
@@ -24,6 +27,8 @@ class _AchievementSectionState extends State<AchievementSection> {
   final GlobalKey _experiencesKey = GlobalKey<FormBuilderFieldState>();
 
   QuillController _controller = QuillController.basic();
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -116,39 +121,63 @@ class _AchievementSectionState extends State<AchievementSection> {
               // ),
               Align(
                 alignment: Alignment.centerRight,
-                child: CommonMethods().buildCustomButton(
-                  width: 200,
-                  text: "SAVE",
-                  onPressed: () {
-                    if (_formKey.currentState!.saveAndValidate()) {
-                      print(_formKey.currentState!.value);
+                child: isLoading
+                    ? LoadingAnimationWidget.fourRotatingDots(
+                        color: primary, size: 40)
+                    : CommonMethods().buildCustomButton(
+                        width: 200,
+                        text: "SAVE",
+                        onPressed: () {
+                          if (_formKey.currentState!.saveAndValidate()) {
+                            print(_formKey.currentState!.value);
 
-                      Map<String, dynamic> data = _formKey.currentState!.value;
+                            setState(() {
+                              isLoading = true;
+                            });
 
-                      ParticipantModel currentParticipant =
-                          participantProvider.participant!;
+                            Map<String, dynamic> data =
+                                _formKey.currentState!.value;
 
-                      Map<String, dynamic> saveToData = {
-                        "achievements": data['achievements'],
-                        "experiences": data['experiences'],
-                      };
+                            ParticipantModel currentParticipant =
+                                participantProvider.participant!;
 
-                      ParticipantService()
-                          .updateData(currentParticipant.id!, saveToData)
-                          .then((value) {
-                        participantProvider.setParticipant(value);
+                            Map<String, dynamic> saveToData = {
+                              "achievements": data['achievements'],
+                              "experiences": data['experiences'],
+                            };
 
-                        DialogManager.showAlertDialog(context,
-                            "Experiences and achievements have been saved successfully!",
-                            isGreen: true);
+                            ParticipantService()
+                                .updateData(currentParticipant.id!, saveToData)
+                                .then((value) {
+                              participantProvider.setParticipant(value);
 
-                        print(value);
-                      });
-                    } else {
-                      print("validation failed");
-                    }
-                  },
-                ),
+                              // update participant status
+                              Map<String, dynamic> statusData = {
+                                "form_status": "1",
+                              };
+
+                              ParticipantStatusService()
+                                  .updateStatus(
+                                      participantProvider
+                                          .participantStatus!.id!,
+                                      statusData)
+                                  .then((value) {
+                                participantProvider.setParticipantStatus(value);
+
+                                DialogManager.showAlertDialog(context,
+                                    "Achievements and experiences have been saved successfully!",
+                                    isGreen: true);
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              });
+                            });
+                          } else {
+                            print("validation failed");
+                          }
+                        },
+                      ),
               ),
             ],
           ),

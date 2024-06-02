@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
+import 'package:ybb_event_app/components/spacing.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
@@ -111,6 +113,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width * 0.7;
+    double height = MediaQuery.of(context).size.height * 0.7;
+
     List<ProgramPhotoModel> currentProgramPhotos = [];
 
     if (programPhotos!.isNotEmpty) {
@@ -137,6 +142,14 @@ class _HomeState extends State<Home> {
                     horizontal: MediaQuery.of(context).size.width * 0.1,
                     vertical: MediaQuery.of(context).size.height * 0.03),
                 child: GuidelineWidget(program: currentProgram!),
+              ),
+              Center(
+                child: Padding(
+                  padding: blockPadding(context),
+                  child: HtmlWidget("""
+               <iframe width="$width" height="$height" src="https://www.youtube.com/embed/04Go7rHXoN8?si=jsy9YBYJLxJfUz0l" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                  """),
+                ),
               ),
               EventAboutSection(
                 programInfo: programInfo!,

@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card_model.dart';
 
@@ -37,21 +39,38 @@ class MenuCard extends StatelessWidget {
                 color: menuCard.isActive ? primary : Colors.grey,
               ),
               const SizedBox(height: 10),
-              Text(
+              AutoSizeText(
                 menuCard.title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.black,
-                  fontSize: 20,
+                  fontSize: 12.sp,
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
+              AutoSizeText(
                 menuCard.desc,
                 softWrap: true,
                 textAlign: TextAlign.center,
                 style: bodyTextStyle.copyWith(
                   color: Colors.grey,
-                  fontSize: 13,
+                  fontSize: 10.sp,
+                ),
+              ),
+              Visibility(
+                visible: menuCard.statusText != null,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    AutoSizeText(menuCard.statusText ?? "",
+                        textAlign: TextAlign.center,
+                        style: bodyTextStyle.copyWith(
+                          color: primary,
+                          fontSize: 10.sp,
+                          fontStyle: FontStyle.italic,
+                        ))
+                  ],
                 ),
               ),
               Visibility(

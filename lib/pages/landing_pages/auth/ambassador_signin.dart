@@ -115,9 +115,16 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                AuthImageSection(
-                  programPhoto: programPhoto!,
-                  programInfo: programProvider.programInfo!,
+                ResponsiveVisibility(
+                  visible: false,
+                  visibleConditions: const [
+                    Condition.equals(name: DESKTOP),
+                    Condition.equals(name: TABLET),
+                  ],
+                  child: AuthImageSection(
+                    programPhoto: programPhoto!,
+                    programInfo: programProvider.programInfo!,
+                  ),
                 ),
                 Expanded(
                   child: Center(
@@ -129,12 +136,35 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          // add logo here from network
+                          ResponsiveVisibility(
+                            visible: false,
+                            visibleConditions: const [
+                              Condition.smallerThan(name: MOBILE),
+                              Condition.equals(name: MOBILE),
+                            ],
+                            child: GestureDetector(
+                              onTap: () {
+                                context.goNamed(homeRouteName);
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 30),
+                                child: Image.network(
+                                  programProvider.programInfo!.logoUrl!,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                ),
+                              ),
+                            ),
+                          ),
                           Text(
                               "Welcome back, ${programProvider.programInfo!.name!} Ambassador!",
                               textAlign: TextAlign.center,
                               style: headlineTextStyle.copyWith(
                                 color: primary,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 25,
                               )),
                           const SizedBox(height: 20),
                           Padding(
@@ -209,14 +239,18 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                             children: [
                               Text("Don't have an account? ",
                                   style: smallHeadlineTextStyle.copyWith(
-                                      fontWeight: FontWeight.normal)),
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17,
+                                  )),
                               InkWell(
                                 onTap: () {
                                   context.pushNamed(signUpRouteName);
                                 },
                                 child: Text("Sign up",
                                     style: smallHeadlineTextStyle.copyWith(
-                                        color: primary)),
+                                      color: primary,
+                                      fontSize: 17,
+                                    )),
                               ),
                             ],
                           ),
@@ -227,7 +261,9 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                               Text(
                                   "A ${programProvider.programInfo!.name!} participant? ",
                                   style: smallHeadlineTextStyle.copyWith(
-                                      fontWeight: FontWeight.normal)),
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17,
+                                  )),
                               InkWell(
                                 onTap: () {
                                   // navigate to forgot password page
@@ -236,7 +272,9 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                                 // what's the other catchy phrase for login as ambassador?
                                 child: Text("Sign in here",
                                     style: smallHeadlineTextStyle.copyWith(
-                                        color: primary)),
+                                      color: primary,
+                                      fontSize: 17,
+                                    )),
                               ),
                             ],
                           ),

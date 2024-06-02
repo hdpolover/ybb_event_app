@@ -19,12 +19,16 @@ class HeaderPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(title,
-                style: headlineTextStyle.copyWith(
-                  color: Colors.white,
-                )),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: headlineTextStyle.copyWith(
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(height: 20),
             Text(desc,
+                textAlign: TextAlign.center,
                 style: headlineSecondaryTextStyle.copyWith(
                   color: Colors.white,
                   fontSize: 15,

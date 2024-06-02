@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ybb_event_app/models/payment_model.dart';
+import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/pages/dashboard/dashboard.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/announcements/user_announcements.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/documents/documents.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/help_desk/help_desk_list.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/regist_form.dart';
-import 'package:ybb_event_app/pages/dashboard/users/participants/transactions.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/components/payment_history_detail.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/payment_detail_page.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/payment_webview.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/proceed_payment.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/transactions.dart';
 import 'package:ybb_event_app/pages/landing_pages/about_us/about_us.dart';
+import 'package:ybb_event_app/pages/landing_pages/about_us/test_page.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/announcements.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/ambassador_signin.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth.dart';
@@ -39,6 +49,20 @@ String ambassadorSigninRouteName = "ambassador-signin";
 String ambassadorSigninPathName = "/ambassador-signin";
 String transactionsRouteName = "transactions";
 String transactionsPathName = "/transactions";
+String documentsRouteName = "documents";
+String documentsPathName = "/documents";
+String userAnnouncementsRouteName = "user-announcements";
+String userAnnouncementsPathName = "/user-announcements";
+String paymentDetailRouteName = "payment-detail";
+String paymentDetailPathName = "/payment-detail";
+String proceedPaymentRouteName = "proceed-payment";
+String proceedPaymentPathName = "/proceed-payment";
+String paymentHistoryDetailRouteName = "payment-history-detail";
+String paymentHistoryDetailPathName = "/payment-history-detail";
+String paymentWebviewRouteName = "payment-webview";
+String paymentWebviewPathName = "/payment-webview";
+String helpDeskListRouteNmae = "help-desk-list";
+String helpDeskListPathName = "/help-desk-list";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
@@ -47,6 +71,15 @@ class AppRouterConfig {
     initialLocation: homePathName,
     routes: [
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: "test-page",
+        path: "/test-page",
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: TestPage(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: authRouteName,
         path: authPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -54,6 +87,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: signUpRouteName,
         path: signUpPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -61,10 +95,18 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: ambassadorSigninRouteName,
         path: ambassadorSigninPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: AmbassadorSignin(),
+        ),
+      ),
+      GoRoute(
+        name: helpDeskListRouteNmae,
+        path: helpDeskListPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: HelpDeskList(),
         ),
       ),
       GoRoute(
@@ -77,10 +119,60 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        name: paymentHistoryDetailRouteName,
+        path: paymentHistoryDetailPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PaymentHistoryDetail(
+            payment: state.extra as PaymentModel,
+          ),
+        ),
+      ),
+      GoRoute(
+        name: paymentDetailRouteName,
+        path: paymentDetailPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PaymentDetailPage(
+            payment: state.extra as ProgramPaymentModel?,
+          ),
+        ),
+      ),
+      GoRoute(
+        name: proceedPaymentRouteName,
+        path: proceedPaymentPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: ProceedPayment(
+            payment: state.extra as ProgramPaymentModel,
+          ),
+        ),
+      ),
+      GoRoute(
+        name: paymentWebviewRouteName,
+        path: paymentWebviewPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PaymentWebview(
+            url: state.extra as String,
+          ),
+        ),
+      ),
+      GoRoute(
+        name: userAnnouncementsRouteName,
+        path: userAnnouncementsPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: UserAnnouncements(),
+        ),
+      ),
+      GoRoute(
         name: transactionsRouteName,
         path: transactionsPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: Transactions(),
+        ),
+      ),
+      GoRoute(
+        name: documentsRouteName,
+        path: documentsPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: Documents(),
         ),
       ),
       GoRoute(
@@ -91,6 +183,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: homeRouteName,
         path: homePathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -98,6 +191,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: aboutUsRouteName,
         path: aboutUsPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -105,6 +199,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: faqsRouteName,
         path: faqsPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -112,6 +207,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: announcementsRouteName,
         path: announcementsPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -119,6 +215,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: sponsorshipsRouteName,
         path: sponsorshipsPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
@@ -126,6 +223,7 @@ class AppRouterConfig {
         ),
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: helpCenterRouteName,
         path: helpCenterPathName,
         pageBuilder: (context, state) => const NoTransitionPage(

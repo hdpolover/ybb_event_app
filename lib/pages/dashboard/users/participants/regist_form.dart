@@ -20,6 +20,7 @@ class RegistForm extends StatefulWidget {
 
 class _RegistFormState extends State<RegistForm> {
   TabController? _tabController;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -54,16 +55,16 @@ class _RegistFormState extends State<RegistForm> {
               ),
               tabs: const [
                 Tab(
-                  text: "Basic Information",
+                  text: "Basics",
                 ),
                 Tab(
-                  text: "Experiences and Achievements",
+                  text: "Achievements",
                 ),
                 Tab(
-                  text: "Categories and Essay",
+                  text: "Essays",
                 ),
                 Tab(
-                  text: "Miscellaneous",
+                  text: "Miscs",
                 ),
                 Tab(
                   text: "Preview",
@@ -72,13 +73,13 @@ class _RegistFormState extends State<RegistForm> {
             ),
           ),
           // tab view and content
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               BasicInformationSection(),
-              const AchievementSection(),
-              const EssaySection(),
-              const MiscellaneousSection(),
-              const PreviewSection(),
+              AchievementSection(),
+              EssaySection(),
+              MiscellaneousSection(),
+              PreviewSection(),
             ],
           ),
         ),

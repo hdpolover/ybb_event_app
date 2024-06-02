@@ -76,7 +76,7 @@ class _BannerSectionState extends State<BannerSection> {
 
   buildBannerMobile(String imgUrl) {
     return Image.network(
-      widget.webSettingHome.banner1ImgUrl!,
+      imgUrl,
       fit: BoxFit.cover,
       width: double.infinity,
     );
@@ -106,7 +106,9 @@ class _BannerSectionState extends State<BannerSection> {
     return Center(
       child: Builder(
         builder: (context) {
-          final height = MediaQuery.of(context).size.height * 0.7;
+          final height = ResponsiveBreakpoints.of(context).isMobile
+              ? MediaQuery.of(context).size.height * 0.5
+              : MediaQuery.of(context).size.height * 0.7;
 
           return FlutterCarousel(
             options: CarouselOptions(

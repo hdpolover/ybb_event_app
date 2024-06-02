@@ -117,7 +117,7 @@ class DialogManager {
   }
 
   static void showAlertDialog(BuildContext context, String message,
-      {bool? isGreen}) {
+      {bool? isGreen, Function()? pressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -149,9 +149,10 @@ class DialogManager {
           actions: <Widget>[
             // a button to close the dialog with primary color
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: pressed ??
+                  () {
+                    Navigator.of(context).pop();
+                  },
               child: const Text(
                 'OK',
                 style: TextStyle(

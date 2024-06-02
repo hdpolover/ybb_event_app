@@ -10,17 +10,19 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/services/participant_service.dart';
+import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
 
 class BasicInformationSection extends StatefulWidget {
-  BasicInformationSection({super.key});
+  const BasicInformationSection({super.key});
 
   @override
   State<BasicInformationSection> createState() =>
@@ -47,16 +49,22 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
   final _instagramAccountKey = GlobalKey<FormBuilderFieldState>();
 
   final _diseaseHistory = GlobalKey<FormBuilderFieldState>();
+  final _phoneNumberKey = GlobalKey<FormBuilderFieldState>();
+  final _emergencyContactKey = GlobalKey<FormBuilderFieldState>();
 
   final nationalityController = TextEditingController();
 
-  final phoneController = TextEditingController();
-  final emergencyPhoneController = TextEditingController();
-
   String? dialCode;
 
-  XFile? pickedFile;
-  String? base64Image;
+  bool isLoading = false;
+
+  PhoneNumber? phoneNumber;
+  PhoneNumber? emergencyPhoneNumber;
+
+  FilePickerResult? photoFile;
+  Uint8List? fileBytes;
+  String? fileName;
+  String? profileUrl;
 
   fillCurrentData(ParticipantProvider participantProvider) {
     ParticipantModel currentParticipant = participantProvider.participant!;
@@ -64,58 +72,6 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
     if (currentParticipant.fullName != null) {
       _fullNameKey.currentState!.setValue(currentParticipant.fullName);
     }
-  }
-
-  Future<void> pickImageForMobileAndWeb() async {
-    final ImagePicker picker = ImagePicker();
-    // This picks file for both mobile and web platforms
-    pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 100,
-    );
-
-    // Defining the required size for image upload
-    const int maxFileSizeInBytes = 5 * 1048; // This equals to 5MB of Size
-
-    if (pickedFile != null) {
-      final Uint8List imageByte = await pickedFile!.readAsBytes(); //
-      final int fileSize =
-          imageByte.length; //Getting the file size of the file uploaded
-      if (fileSize < maxFileSizeInBytes) {
-        //show snackbar with message 'File size should be 5mb or less'
-        return;
-      } else {
-        final String imageBase64String = base64Encode(
-            imageByte); // Encoding the list of byte i.e imageBytes to base64 String
-
-        setState(() {
-          base64Image = imageBase64String;
-        });
-
-        // Sending the trimmed base64 string to server for validation
-        // send the base64 string for validation to server.
-
-//         final bool isValidImageFile = apiResponseForFileType[
-//             'valid_file']; //Response from the server after validation
-
-//         if (isValidImageFile) {
-//           //Do your actions
-//           // To pass to another screen
-// // YourClassName(base64String : imageBase64String )
-//         } else {
-//           print('Not valid file or Image');
-//         }
-      }
-    } else {
-      // Navigate safely to required screen
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var participantProvider = Provider.of<ParticipantProvider>(context);
-
-    ParticipantModel currentParticipant = participantProvider.participant!;
 
     if (currentParticipant.nationality != null) {
       setState(() {
@@ -123,17 +79,34 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
       });
     }
 
-    if (currentParticipant.phoneNumber != null && dialCode == null) {
+    if (currentParticipant.countryCode != null) {
       setState(() {
-        phoneController.text = currentParticipant.phoneNumber!;
+        dialCode = currentParticipant.countryCode;
       });
     }
 
-    if (currentParticipant.emergencyAccount != null && dialCode == null) {
+    if (currentParticipant.pictureUrl != null) {
       setState(() {
-        emergencyPhoneController.text = currentParticipant.emergencyAccount!;
+        profileUrl = currentParticipant.pictureUrl;
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // give delayed time to fill the current data by 3 second
+    Future.delayed(const Duration(seconds: 2), () {
+      fillCurrentData(Provider.of<ParticipantProvider>(context, listen: false));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var participantProvider = Provider.of<ParticipantProvider>(context);
+
+    ParticipantModel currentParticipant = participantProvider.participant!;
 
     //fillCurrentData(participantProvider);
 
@@ -147,37 +120,69 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
           child: Column(
             children: [
               // build a container to upload profile picture
-              // Column(
-              //   children: [
-              //     Container(
-              //       width: 400,
-              //       height: 400,
-              //       decoration: BoxDecoration(
-              //         color: Colors.grey[200],
-              //         // image from net
-              //       ),
-              //       child: base64Image != null
-              //           ? Image.memory(
-              //               base64Decode(base64Image!),
-              //               fit: BoxFit.cover,
-              //             )
-              //           : Icon(
-              //               Icons.person,
-              //               size: 100,
-              //               color: Colors.grey[400],
-              //             ),
-              //     ),
-              //     const SizedBox(height: 10),
-              //     CommonMethods().buildCustomButton(
-              //         width: MediaQuery.of(context).size.width * 0.25,
-              //         text: "Edit photo",
-              //         onPressed: () async {
-              //           await pickImageForMobileAndWeb();
-              //         }),
-              //     const SizedBox(height: 20),
-              //   ],
-              // ),
-
+              Column(
+                children: [
+                  Container(
+                    height: 400,
+                    width: 400,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
+                    child: photoFile == null
+                        ? profileUrl == null
+                            ? Icon(
+                                Icons.person,
+                                size: 100,
+                                color: Colors.grey[400],
+                              )
+                            : Image.network(
+                                profileUrl!,
+                                fit: BoxFit.cover,
+                              )
+                        : Image.memory(
+                            photoFile!.files.first.bytes!,
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                  const SizedBox(height: 10),
+                  CommonMethods().buildCustomButton(
+                      width: MediaQuery.of(context).size.width * 0.25,
+                      text: "Edit photo",
+                      onPressed: () async {
+                        // upload payment proof
+                        await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['jpg', 'jpeg', 'png'],
+                        ).then((value) {
+                          // check if the file size is more than 2MB, add error message saying for file efficiency it cannot exceed 2 mb
+                          if (value!.files.single.size > 2000000) {
+                            DialogManager.showAlertDialog(context,
+                                "File size is too large. Please upload a file with size less than 2MB.",
+                                isGreen: false);
+                          } else {
+                            if (value.files.single.extension != "jpg" &&
+                                value.files.single.extension != "jpeg" &&
+                                value.files.single.extension != "png") {
+                              DialogManager.showAlertDialog(context,
+                                  "Invalid file type. Please upload a file with extension .jpg, .jpeg, or .png.",
+                                  isGreen: false);
+                            } else {
+                              setState(() {
+                                photoFile = value;
+                                fileBytes = value.files.single.bytes!;
+                                fileName = value.files.single.name;
+                              });
+                            }
+                          }
+                        });
+                      }),
+                  const SizedBox(height: 20),
+                ],
+              ),
               CommonMethods().buildTextField(
                 _fullNameKey,
                 'full_name',
@@ -284,8 +289,10 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
                             showPhoneCode:
                                 false, // optional. Shows phone code before the country name.
                             onSelect: (Country country) {
+                              print(country);
                               setState(() {
                                 nationalityController.text = country.name;
+                                dialCode = country.phoneCode;
                               });
                             },
                           );
@@ -367,60 +374,19 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
                 ],
                 initial: currentParticipant.organizations,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Phone Number (WhatsApp)",
-                      style: bodyTextStyle.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    InternationalPhoneNumberInput(
-                      initialValue: currentParticipant.phoneNumber == null
-                          ? null
-                          : PhoneNumber(
-                              dialCode: currentParticipant.countryCode,
-                              phoneNumber: currentParticipant.phoneNumber,
-                            ),
-                      onInputChanged: (PhoneNumber number) {
-                        setState(() {
-                          dialCode = number.dialCode;
-                        });
-
-                        print(number.phoneNumber);
-                        print(dialCode);
-                      },
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.DIALOG,
-                      ),
-                      ignoreBlank: false,
-                      autoValidateMode: AutovalidateMode.disabled,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
-                      // initialValue: number,
-                      textFieldController: phoneController,
-                      formatInput: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          signed: true, decimal: true),
-                      inputBorder: const OutlineInputBorder(),
-                      onSaved: (PhoneNumber number) {
-                        setState(() {
-                          phoneController.text = number.phoneNumber!;
-                        });
-                        print('On Saved: $number');
-                      },
-                    ),
-                  ],
-                ),
+              CommonMethods().buildTextField(
+                _phoneNumberKey,
+                'phone_number',
+                'Personal Phone Number (WhatsApp)',
+                [
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.minLength(10),
+                ],
+                initial: currentParticipant.phoneNumber,
+                desc:
+                    "Please provide your WhatsApp phone number with the country code. Example for an Indonesian number: +6281234567890",
               ),
+
               CommonMethods().buildTextField(
                 _instagramAccountKey,
                 'instagram_account',
@@ -442,54 +408,17 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
                   initial: currentParticipant.diseaseHistory,
                   desc:
                       "Please provide your disease history if any. Input (-) if none."),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Emergency Contact (WhatsApp)",
-                      style: bodyTextStyle.copyWith(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    InternationalPhoneNumberInput(
-                      initialValue: currentParticipant.emergencyAccount == null
-                          ? null
-                          : PhoneNumber(
-                              dialCode: currentParticipant.countryCode,
-                              phoneNumber: currentParticipant.emergencyAccount,
-                            ),
-                      onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
-                      },
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.DIALOG,
-                      ),
-                      ignoreBlank: false,
-                      autoValidateMode: AutovalidateMode.disabled,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
-                      // initialValue: number,
-                      textFieldController: emergencyPhoneController,
-                      formatInput: true,
-                      keyboardType: const TextInputType.numberWithOptions(
-                          signed: true, decimal: true),
-                      inputBorder: const OutlineInputBorder(),
-                      onSaved: (PhoneNumber number) {
-                        setState(() {
-                          emergencyPhoneController.text = number.phoneNumber!;
-                        });
-                        print('On Saved: $number');
-                      },
-                    ),
-                  ],
-                ),
+              CommonMethods().buildTextField(
+                _emergencyContactKey,
+                'emergency_contact',
+                'Emergency Contact Phone Number (WhatsApp)',
+                [
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.minLength(10),
+                ],
+                initial: currentParticipant.emergencyAccount,
+                desc:
+                    "Please provide your emergency contact phone number with the country code. Example for an Indonesian number: +6281234567890",
               ),
               CommonMethods().buildTextField(
                   _contactRelationKey,
@@ -539,7 +468,7 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
                               });
                         },
                         child: Text(
-                          "See Size Chart",
+                          "Size Chart",
                           style: buttonTextStyle.copyWith(color: primary),
                         )),
                     const SizedBox(height: 10),
@@ -571,56 +500,158 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
               // create save button
               Align(
                 alignment: Alignment.centerRight,
-                child: CommonMethods().buildCustomButton(
-                  width: 200,
-                  text: "SAVE",
-                  onPressed: () {
-                    if (_formKey.currentState!.saveAndValidate() &&
-                        nationalityController.text.isNotEmpty) {
-                      print(_formKey.currentState!.value);
+                child: isLoading
+                    ? LoadingAnimationWidget.fourRotatingDots(
+                        color: primary, size: 40)
+                    : CommonMethods().buildCustomButton(
+                        width: 200,
+                        text: "SAVE",
+                        onPressed: () {
+                          if (_formKey.currentState!.saveAndValidate() &&
+                              nationalityController.text.isNotEmpty) {
+                            if (photoFile == null) {
+                              setState(() {
+                                isLoading = true;
+                              });
 
-                      Map<String, dynamic> data = _formKey.currentState!.value;
+                              // show loading animation while saving data full screen
 
-                      ParticipantModel currentParticipant =
-                          Provider.of<ParticipantProvider>(
-                        context,
-                        listen: false,
-                      ).participant!;
+                              Map<String, dynamic> data =
+                                  _formKey.currentState!.value;
 
-                      Map<String, dynamic> dataToSave = {
-                        "full_name": currentParticipant.fullName,
-                        "birthdate": currentParticipant.birthdate.toString(),
-                        "gender": data['gender'],
-                        "country_code": dialCode,
-                        "phone_number": phoneController.text,
-                        "emergency_account": emergencyPhoneController.text,
-                        "origin_address": data['origin_address'],
-                        "current_address": data['current_address'],
-                        "nationality": nationalityController.text,
-                        "occupation": data['occupation'],
-                        "institution": data['institution'],
-                        "organizations": data['organization'],
-                        "disease_history": data['disease_history'],
-                        "tshirt_size": data['tshirt_size'],
-                        "contact_relation": data['contact_relation'],
-                        "instagram_account": data['instagram_account'],
-                      };
+                              ParticipantModel currentParticipant =
+                                  participantProvider.participant!;
 
-                      ParticipantService()
-                          .updateData(currentParticipant.id!, dataToSave)
-                          .then((value) {
-                        Provider.of<ParticipantProvider>(context, listen: false)
-                            .setParticipant(value);
+                              Map<String, dynamic> dataToSave = {
+                                "full_name": data['full_name'],
+                                "birthdate": data['date_of_birth'].toString(),
+                                "gender": data['gender'],
+                                "country_code": dialCode,
+                                "phone_number": data['phone_number'],
+                                "emergency_account": data['emergency_contact'],
+                                "origin_address": data['origin_address'],
+                                "current_address": data['current_address'],
+                                "nationality": nationalityController.text,
+                                "occupation": data['occupation'],
+                                "institution": data['institution'],
+                                "organizations": data['organization'],
+                                "disease_history": data['disease_history'],
+                                "tshirt_size": data['tshirt_size'],
+                                "contact_relation": data['contact_relation'],
+                                "instagram_account": data['instagram_account'],
+                              };
 
-                        DialogManager.showAlertDialog(context,
-                            "Basic information has been saved successfully!",
-                            isGreen: true);
+                              print(dataToSave);
 
-                        print(value);
-                      });
-                    }
-                  },
-                ),
+                              ParticipantService()
+                                  .updateBasicInformationDataWithoutPhoto(
+                                      currentParticipant.id!, dataToSave)
+                                  .then((value) {
+                                participantProvider.setParticipant(value);
+
+                                // update participant status
+                                Map<String, dynamic> statusData = {
+                                  "form_status": "1",
+                                };
+
+                                ParticipantStatusService()
+                                    .updateStatus(
+                                        participantProvider
+                                            .participantStatus!.id!,
+                                        statusData)
+                                    .then((value) {
+                                  participantProvider
+                                      .setParticipantStatus(value);
+
+                                  DialogManager.showAlertDialog(context,
+                                      "Basic information has been saved successfully!",
+                                      isGreen: true);
+
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                });
+                              }).onError((error, stackTrace) {
+                                print(error.toString() +
+                                    " " +
+                                    stackTrace.toString() +
+                                    "without photo");
+
+                                DialogManager.showAlertDialog(context,
+                                    "Failed to save data. Please try again later.",
+                                    isGreen: false);
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              });
+                            } else {
+                              setState(() {
+                                isLoading = true;
+                              });
+
+                              // show loading animation while saving data full screen
+
+                              Map<String, dynamic> data =
+                                  _formKey.currentState!.value;
+
+                              ParticipantModel currentParticipant =
+                                  participantProvider.participant!;
+
+                              Map<String, dynamic> dataToSave = {
+                                "full_name": data['full_name'],
+                                "birthdate": data['date_of_birth'].toString(),
+                                "gender": data['gender'],
+                                "country_code": dialCode,
+                                "phone_number": data['phone_number'],
+                                "emergency_account": data['emergency_contact'],
+                                "origin_address": data['origin_address'],
+                                "current_address": data['current_address'],
+                                "nationality": nationalityController.text,
+                                "occupation": data['occupation'],
+                                "institution": data['institution'],
+                                "organizations": data['organization'],
+                                "disease_history": data['disease_history'],
+                                "tshirt_size": data['tshirt_size'],
+                                "contact_relation": data['contact_relation'],
+                                "instagram_account": data['instagram_account'],
+                                "file_bytes": fileBytes,
+                                "file_name": fileName,
+                              };
+
+                              print(dataToSave);
+
+                              ParticipantService()
+                                  .updateBasicInformationDataWithPhoto(
+                                      currentParticipant.id!, dataToSave)
+                                  .then((value) {
+                                participantProvider.setParticipant(value);
+
+                                DialogManager.showAlertDialog(context,
+                                    "Basic information has been saved successfully!",
+                                    isGreen: true);
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }).onError((error, stackTrace) {
+                                print(error.toString() +
+                                    " " +
+                                    stackTrace.toString() +
+                                    "with photo");
+
+                                DialogManager.showAlertDialog(context,
+                                    "Failed to save data. Please try again later.",
+                                    isGreen: false);
+
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              });
+                            }
+                          }
+                        },
+                      ),
               ),
             ],
           ),

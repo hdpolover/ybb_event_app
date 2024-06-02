@@ -54,4 +54,80 @@ class ParticipantService {
       rethrow;
     }
   }
+
+  Future<ParticipantModel> updateBasicInformationDataWithoutPhoto(
+      String id, Map<String, dynamic> data) async {
+    var url = Uri.parse('${AppConstants.apiUrl}/participants/update/$id');
+
+    try {
+      var response = await http.post(
+        url,
+        body: data,
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        return ParticipantModel.fromJson(data);
+      } else {
+        print(response.body);
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      print("here" + e.toString());
+      rethrow;
+    }
+  }
+
+  Future<ParticipantModel> updateBasicInformationDataWithPhoto(
+      String id, Map<String, dynamic> data) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${AppConstants.apiUrl}/participants/update/$id'),
+    );
+    Map<String, String> headers = {"Content-type": "multipart/form-data"};
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'picture_url',
+        data['file_bytes'],
+        filename: data['file_name'],
+      ),
+    );
+    request.headers.addAll(headers);
+    request.fields.addAll({
+      "full_name": data['full_name'],
+      "birthdate": data['birthdate'],
+      "gender": data['gender'],
+      "country_code": data['country_code'],
+      "phone_number": data['phone_number'],
+      "emergency_account": data['emergency_account'],
+      "origin_address": data['origin_address'],
+      "current_address": data['current_address'],
+      "nationality": data['nationality'],
+      "occupation": data['occupation'],
+      "institution": data['institution'],
+      "organizations": data['organizations'],
+      "disease_history": data['disease_history'],
+      "tshirt_size": data['tshirt_size'],
+      "contact_relation": data['contact_relation'],
+      "instagram_account": data['instagram_account'],
+    });
+
+    try {
+      var streamedResponse = await request.send();
+
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        return ParticipantModel.fromJson(data);
+      } else {
+        print(response.body);
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
