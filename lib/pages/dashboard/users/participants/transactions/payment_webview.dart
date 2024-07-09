@@ -36,11 +36,11 @@ class _PaymentWebviewState extends State<PaymentWebview> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CommonMethods().buildCommonAppBar(context, "Payment Process"),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height,
+              height: MediaQuery.of(context).size.height * 0.8,
               child: InAppWebView(
                 key: webViewKey,
                 initialUrlRequest: URLRequest(url: WebUri(widget.url)),
@@ -117,7 +117,7 @@ class _PaymentWebviewState extends State<PaymentWebview> {
                 },
               ),
             ),
-            progress < 1.0 ? const LoadingPage() : Container(),
+            //progress < 1.0 ? const LoadingPage() : Container(),
           ],
         ),
       ),

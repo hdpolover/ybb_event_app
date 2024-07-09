@@ -2,13 +2,13 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/spacing.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/models/web_setting_home_model.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class EventAboutSection extends StatefulWidget {
   final ProgramInfoByUrlModel programInfo;
@@ -34,10 +34,9 @@ class _EventAboutSectionState extends State<EventAboutSection> {
         children: [
           Container(
             constraints: BoxConstraints(
-              maxWidth:
-                  ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-                      ? MediaQuery.of(context).size.width
-                      : MediaQuery.of(context).size.width * 0.5,
+              maxWidth: ScreenSizeHelper.responsiveValue(context,
+                  mobile: MediaQuery.of(context).size.width,
+                  desktop: MediaQuery.of(context).size.width * 0.5),
               maxHeight: MediaQuery.of(context).size.height * 0.7,
               minHeight: MediaQuery.of(context).size.height * 0.7,
             ),
@@ -87,20 +86,18 @@ class _EventAboutSectionState extends State<EventAboutSection> {
             ],
           ),
           const SizedBox(height: 20),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.center,
             children: [
-              Expanded(
-                  child: buildAboutSecondItem(
-                      "Why should you join ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.reason}")),
-              Expanded(
-                  child: buildAboutSecondItem(
-                      "What are the objectives of the ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.summary}")),
-              Expanded(
-                  child: buildAboutSecondItem(
-                      "What are the agendas of the ${widget.programInfo.name!}?",
-                      "${widget.webSettingHome.agenda}")),
+              buildAboutSecondItem(
+                  "Why should you join ${widget.programInfo.name!}?",
+                  "${widget.webSettingHome.reason}"),
+              buildAboutSecondItem(
+                  "What are the objectives of the ${widget.programInfo.name!}?",
+                  "${widget.webSettingHome.summary}"),
+              buildAboutSecondItem(
+                  "What are the agendas of the ${widget.programInfo.name!}?",
+                  "${widget.webSettingHome.agenda}"),
             ],
           ),
         ],
@@ -110,44 +107,38 @@ class _EventAboutSectionState extends State<EventAboutSection> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-        ? buildForMobile()
-        : buildForDesktop();
+    return ScreenSizeHelper.responsiveValue(
+      context,
+      mobile: buildForMobile(),
+      desktop: buildForDesktop(),
+    );
   }
 
   buildAboutSecondItem(String title, String desc) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.1,
+      width: ScreenSizeHelper.responsiveValue(context,
+          mobile: MediaQuery.sizeOf(context).width,
+          desktop: MediaQuery.sizeOf(context).width * 0.3),
       child: Padding(
         padding: blockPadding(context),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const FaIcon(FontAwesomeIcons.arrowRight, color: primary, size: 40),
-            const SizedBox(width: 20),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    softWrap: true,
-                    style: headlineSecondaryTextStyle.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: primary,
-                      fontSize: 25,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  HtmlWidget(
-                    desc,
-                    textStyle: bodyTextStyle,
-                  ),
-                ],
+            Text(
+              title,
+              softWrap: true,
+              style: headlineSecondaryTextStyle.copyWith(
+                fontWeight: FontWeight.bold,
+                color: primary,
+                fontSize: 25,
               ),
+            ),
+            const SizedBox(height: 20),
+            HtmlWidget(
+              desc,
+              textStyle: bodyTextStyle,
             ),
           ],
         ),

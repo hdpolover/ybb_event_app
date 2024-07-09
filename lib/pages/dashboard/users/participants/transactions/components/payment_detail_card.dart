@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
-class PaymentDetailCard extends StatefulWidget {
+class PaymentDetailCard extends StatelessWidget {
   final ProgramPaymentModel payment;
   const PaymentDetailCard({super.key, required this.payment});
 
-  @override
-  State<PaymentDetailCard> createState() => _PaymentDetailCardState();
-}
-
-class _PaymentDetailCardState extends State<PaymentDetailCard> {
   buildCategoryChip() {
     return Chip(
       label: Text(
-        widget.payment.category!,
+        payment.category!,
         style: bodyTextStyle.copyWith(
           color: Colors.white,
           fontSize: 15,
@@ -62,31 +56,29 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
     );
   }
 
-  buildPaymentPrice(double usdAmount, double idrAmount) {
+  buildPaymentPrice(BuildContext context, double usdAmount, double idrAmount) {
     String usd = NumberFormat.simpleCurrency(name: 'USD').format(usdAmount);
     String idr = NumberFormat.simpleCurrency(name: 'IDR').format(idrAmount);
 
     return Column(
-      mainAxisAlignment: ResponsiveBreakpoints.of(context).isMobile
-          ? MainAxisAlignment.start
-          : MainAxisAlignment.end,
-      crossAxisAlignment: ResponsiveBreakpoints.of(context).isMobile
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.end,
+      mainAxisAlignment: ScreenSizeHelper.responsiveValue(context,
+          mobile: MainAxisAlignment.start, desktop: MainAxisAlignment.end),
+      crossAxisAlignment: ScreenSizeHelper.responsiveValue(context,
+          mobile: CrossAxisAlignment.start, desktop: CrossAxisAlignment.end),
       children: [
         RichText(
           text: TextSpan(
             text: usd,
             style: bodyTextStyle.copyWith(
               color: primary,
-              fontSize: 40,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
             children: [
               TextSpan(
                 text: " (for international participants)",
                 style: bodyTextStyle.copyWith(
-                  fontSize: 17,
+                  fontSize: 15,
                 ),
               ),
             ],
@@ -98,14 +90,14 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
             text: idr,
             style: bodyTextStyle.copyWith(
               color: primary,
-              fontSize: 40,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
             children: [
               TextSpan(
                 text: " (for Indonesian participants)",
                 style: bodyTextStyle.copyWith(
-                  fontSize: 17,
+                  fontSize: 15,
                 ),
               ),
             ],
@@ -133,16 +125,20 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
       color: Colors.white,
       surfaceTintColor: Colors.white,
       child: SizedBox(
-        width: double.infinity,
+        width: ScreenSizeHelper.responsiveValue(context,
+            mobile: MediaQuery.sizeOf(context).width, desktop: double.infinity),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
+          padding: ScreenSizeHelper.responsiveValue(context,
+              mobile: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              desktop:
+                  const EdgeInsets.symmetric(vertical: 40, horizontal: 40)),
           child: Column(
-            mainAxisAlignment: ResponsiveBreakpoints.of(context).isMobile
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.center,
-            crossAxisAlignment: ResponsiveBreakpoints.of(context).isMobile
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.center,
+            mainAxisAlignment: ScreenSizeHelper.responsiveValue(context,
+                mobile: MainAxisAlignment.start,
+                desktop: MainAxisAlignment.center),
+            crossAxisAlignment: ScreenSizeHelper.responsiveValue(context,
+                mobile: CrossAxisAlignment.start,
+                desktop: CrossAxisAlignment.center),
             children: [
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -154,55 +150,53 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.payment.name!,
+                        payment.name!,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
                         style: headlineTextStyle.copyWith(
                           color: Colors.black,
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 20),
                       buildCategoryChip(),
                       const SizedBox(height: 30),
-                      buildPaymentDate(
-                          widget.payment.startDate!, widget.payment.endDate!),
+                      buildPaymentDate(payment.startDate!, payment.endDate!),
                     ],
                   ),
-                  ResponsiveVisibility(
-                    visible: false,
-                    visibleConditions: const [
-                      Condition.largerThan(name: MOBILE),
-                    ],
-                    child: Expanded(
+                  ScreenSizeHelper.responsiveValue(
+                    context,
+                    mobile: const SizedBox.shrink(),
+                    desktop: Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           buildPaymentPrice(
-                              double.parse(widget.payment.usdAmount!),
-                              double.parse(widget.payment.idrAmount!)),
+                              context,
+                              double.parse(payment.usdAmount!),
+                              double.parse(payment.idrAmount!)),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              ResponsiveVisibility(
-                  visible: false,
-                  visibleConditions: const [
-                    Condition.smallerThan(name: MOBILE),
-                    Condition.equals(name: MOBILE),
-                  ],
-                  child: Column(
+              ScreenSizeHelper.responsiveValue(context,
+                  mobile: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
                       //build payment price for mobile view
-                      buildPaymentPrice(double.parse(widget.payment.usdAmount!),
-                          double.parse(widget.payment.idrAmount!)),
+                      buildPaymentPrice(
+                          context,
+                          double.parse(payment.usdAmount!),
+                          double.parse(payment.idrAmount!)),
                     ],
-                  )),
+                  ),
+                  desktop: const SizedBox.shrink()),
               const SizedBox(height: 20),
               const Divider(
                 color: Colors.grey,
@@ -222,7 +216,6 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Text("Automatic Checking",
                       style: bodyTextStyle.copyWith(
                         color: Colors.black,
@@ -233,7 +226,7 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
                     "Virtual Accounts, QRIS, Credit Cards, and E-Wallets",
                     style: bodyTextStyle.copyWith(
                       color: Colors.black,
-                      fontSize: 12.sp,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -248,8 +241,8 @@ class _PaymentDetailCardState extends State<PaymentDetailCard> {
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount:
-                          ResponsiveBreakpoints.of(context).isMobile ? 3 : 8,
+                      crossAxisCount: ScreenSizeHelper.responsiveValue(context,
+                          mobile: 2, desktop: 6),
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                     ),

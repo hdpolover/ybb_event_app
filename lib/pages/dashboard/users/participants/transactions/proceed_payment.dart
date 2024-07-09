@@ -287,6 +287,8 @@ class _ProceedPaymentState extends State<ProceedPayment> {
                                   'description': payment.name,
                                 };
 
+                                print(data);
+
                                 await PaymentService()
                                     .xenditPay(data)
                                     .then((value) {
@@ -294,8 +296,23 @@ class _ProceedPaymentState extends State<ProceedPayment> {
                                     isLoading = false;
                                   });
 
-                                  context.pushNamed(paymentWebviewRouteName,
-                                      extra: value);
+                                  String xenditUrl = value!;
+
+                                  // get payments based on participant id
+                                  PaymentService()
+                                      .getAll(Provider.of<ParticipantProvider>(
+                                              context,
+                                              listen: false)
+                                          .participant!
+                                          .id)
+                                      .then((value) {
+                                    Provider.of<PaymentProvider>(context,
+                                            listen: false)
+                                        .setPayments(value);
+
+                                    context.pushNamed(paymentWebviewRouteName,
+                                        extra: xenditUrl);
+                                  });
                                 });
                               },
                             ),
@@ -476,15 +493,24 @@ class _ProceedPaymentState extends State<ProceedPayment> {
                                 isLoading = false;
                               });
 
-                              DialogManager.showAlertDialog(
-                                context,
-                                "Payment has been submitted successfully!",
-                                isGreen: true,
-                                pressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                },
-                              );
+                              // get payments based on participant id
+                              PaymentService()
+                                  .getAll(currentParticipant.id)
+                                  .then((value) {
+                                Provider.of<PaymentProvider>(context,
+                                        listen: false)
+                                    .setPayments(value);
+
+                                DialogManager.showAlertDialog(
+                                  context,
+                                  "Payment has been submitted successfully!",
+                                  isGreen: true,
+                                  pressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              });
                             }).onError((error, stackTrace) {
                               setState(() {
                                 isLoading = false;

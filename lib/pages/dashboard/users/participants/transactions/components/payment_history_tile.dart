@@ -6,6 +6,7 @@ import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class PaymentHistoryTile extends StatefulWidget {
   final PaymentModel? payment;
@@ -84,16 +85,40 @@ class _PaymentHistoryTileState extends State<PaymentHistoryTile> {
       child: ListTile(
         contentPadding:
             const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        horizontalTitleGap: 30,
+        horizontalTitleGap:
+            ScreenSizeHelper.responsiveValue(context, mobile: 0, desktop: 30),
         style: ListTileStyle.list,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        leading: buildChip(widget.payment!.status!),
-        title: Text(paymentName,
-            style: bodyTextStyle.copyWith(fontWeight: FontWeight.bold)),
-        subtitle: Text(paymentMethodName),
-        trailing: Text(paymentDate),
+        leading: ScreenSizeHelper.responsiveValue(context,
+            mobile: const SizedBox.shrink(),
+            desktop: buildChip(widget.payment!.status!)),
+        title: ScreenSizeHelper.responsiveValue(context,
+            desktop: Text(
+              paymentName,
+              style: bodyTextStyle.copyWith(fontWeight: FontWeight.bold),
+            ),
+            mobile: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildChip(widget.payment!.status!),
+                const SizedBox(height: 10),
+                Text(
+                  paymentName,
+                  style: bodyTextStyle.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5),
+                Text(paymentMethodName),
+                const SizedBox(height: 5),
+                Text(paymentDate)
+              ],
+            )),
+        subtitle: ScreenSizeHelper.responsiveValue(context,
+            mobile: const SizedBox.shrink(), desktop: Text(paymentMethodName)),
+        trailing: ScreenSizeHelper.responsiveValue(context,
+            mobile: const SizedBox.shrink(), desktop: Text(paymentDate)),
         onTap: () {
           context.pushNamed(paymentHistoryDetailRouteName,
               extra: widget.payment!);

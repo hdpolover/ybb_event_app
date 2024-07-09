@@ -2,29 +2,23 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
-class PaymentCard extends StatefulWidget {
+class PaymentCard extends StatelessWidget {
   final ProgramPaymentModel payment;
   const PaymentCard({super.key, required this.payment});
 
-  @override
-  State<PaymentCard> createState() => _PaymentCardState();
-}
-
-class _PaymentCardState extends State<PaymentCard> {
   buildCategoryChip() {
     return Chip(
       label: AutoSizeText(
-        widget.payment.category!,
+        payment.category!,
         style: bodyTextStyle.copyWith(
           color: Colors.white,
-          fontSize: 10.sp,
+          fontSize: 10,
         ),
       ),
       backgroundColor: Colors.green,
@@ -56,7 +50,7 @@ class _PaymentCardState extends State<PaymentCard> {
       shownText,
       style: bodyTextStyle.copyWith(
         color: Colors.black,
-        fontSize: 12.sp,
+        fontSize: 12,
       ),
     );
   }
@@ -68,7 +62,7 @@ class _PaymentCardState extends State<PaymentCard> {
     return Text("$usd / $idr",
         style: bodyTextStyle.copyWith(
           color: primary,
-          fontSize: 13.sp,
+          fontSize: 15,
           fontWeight: FontWeight.bold,
         ));
   }
@@ -90,31 +84,28 @@ class _PaymentCardState extends State<PaymentCard> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              widget.payment.name!,
+              payment.name!,
               textAlign: TextAlign.center,
               style: headlineTextStyle.copyWith(
                 color: Colors.black,
-                fontSize: 14.sp,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 2.h),
+            const SizedBox(height: 20),
             buildCategoryChip(),
-            SizedBox(height: 2.h),
-            buildPaymentDate(
-                widget.payment.startDate!, widget.payment.endDate!),
-            SizedBox(height: 1.h),
-            buildPaymentPrice(double.parse(widget.payment.usdAmount!),
-                double.parse(widget.payment.idrAmount!)),
-            ResponsiveBreakpoints.of(context).isMobile
-                ? const SizedBox(height: 20)
-                : const Spacer(),
+            const SizedBox(height: 20),
+            buildPaymentDate(payment.startDate!, payment.endDate!),
+            const SizedBox(height: 10),
+            buildPaymentPrice(double.parse(payment.usdAmount!),
+                double.parse(payment.idrAmount!)),
+            ScreenSizeHelper.responsiveValue(context,
+                desktop: const Spacer(), mobile: const SizedBox(height: 10)),
             CommonMethods().buildCustomButton(
               text: "View Details",
               onPressed: () {
                 // navigate to payment details
-                context.pushNamed(paymentDetailRouteName,
-                    extra: widget.payment);
+                context.pushNamed(paymentDetailRouteName, extra: payment);
               },
             ),
           ],

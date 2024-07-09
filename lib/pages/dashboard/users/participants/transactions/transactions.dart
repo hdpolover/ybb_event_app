@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
@@ -15,6 +14,7 @@ import 'package:ybb_event_app/services/payment_method_service.dart';
 import 'package:ybb_event_app/services/payment_service.dart';
 import 'package:ybb_event_app/services/progam_payment_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class Transactions extends StatefulWidget {
   const Transactions({super.key});
@@ -77,8 +77,6 @@ class _TransactionsState extends State<Transactions> {
 
   @override
   Widget build(BuildContext context) {
-    var paymentProvider = Provider.of<PaymentProvider>(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CommonMethods().buildCommonAppBar(context, "Transactions"),
@@ -101,39 +99,41 @@ class _TransactionsState extends State<Transactions> {
                   ],
                 )
               // build list of payments in a grid view
-              : ResponsiveBreakpoints.of(context).isMobile
-                  ? SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          for (int i = 0; i < payments!.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              child: PaymentCard(payment: payments![i]),
+              : ScreenSizeHelper.responsiveValue(
+                  context,
+                  mobile: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < payments!.length; i++)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
                             ),
-                        ],
-                      ),
-                    )
-                  : GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: payments!.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                            child: PaymentCard(payment: payments![i]),
                           ),
-                          child: PaymentCard(payment: payments![index]),
-                        );
-                      },
+                      ],
                     ),
+                  ),
+                  desktop: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: payments!.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        child: PaymentCard(payment: payments![index]),
+                      );
+                    },
+                  ),
+                ),
     );
   }
 }

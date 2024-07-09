@@ -87,4 +87,52 @@ class AuthService {
       rethrow;
     }
   }
+
+  Future<String> resetPassword(String id) async {
+    var url = Uri.parse('${AppConstants.apiUrl}/users/email_reset_password');
+
+    print(url);
+
+    try {
+      var response = await http.post(
+        url,
+        body: {
+          "id": id,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['message'];
+
+        return data;
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UserModel> checkEmail(String email) async {
+    var url =
+        Uri.parse('${AppConstants.apiUrl}/users/check_email?email=$email');
+
+    print(url);
+
+    try {
+      var response = await http.get(
+        url,
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        return UserModel.fromJson(data);
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

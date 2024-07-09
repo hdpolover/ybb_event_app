@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/program_category_model.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/services/program_category_service.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class GallerySection extends StatefulWidget {
   final List<ProgramPhotoModel> programPhotos;
@@ -51,12 +51,12 @@ class _GallerySectionState extends State<GallerySection> {
       }
     }
 
-    return ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-        ? Column(children: gallery)
-        : Row(
+    return ScreenSizeHelper.responsiveValue(context,
+        mobile: Column(children: gallery),
+        desktop: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: gallery);
+            children: gallery));
   }
 
   buildGalleryBasedOnProgramCategoryId(String programCategoryName, String id) {
@@ -76,9 +76,9 @@ class _GallerySectionState extends State<GallerySection> {
 
     return Center(
       child: Padding(
-        padding: ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-            ? const EdgeInsets.symmetric(horizontal: 20, vertical: 20)
-            : const EdgeInsets.symmetric(horizontal: 20),
+        padding: ScreenSizeHelper.responsiveValue(context,
+            mobile: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            desktop: const EdgeInsets.symmetric(horizontal: 20)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -95,9 +95,11 @@ class _GallerySectionState extends State<GallerySection> {
             Container(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height * 0.5,
-                maxWidth: ResponsiveBreakpoints.of(context).isMobile
-                    ? MediaQuery.of(context).size.width * 0.8
-                    : MediaQuery.of(context).size.width * 0.3,
+                maxWidth: ScreenSizeHelper.responsiveValue(
+                  context,
+                  mobile: MediaQuery.of(context).size.width * 0.8,
+                  desktop: MediaQuery.of(context).size.width * 0.3,
+                ),
               ),
               child: FlutterCarousel(
                 options: CarouselOptions(

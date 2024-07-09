@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
@@ -21,8 +20,10 @@ class PaymentDetailPage extends StatefulWidget {
 
 class _PaymentDetailPageState extends State<PaymentDetailPage> {
   buildPaymentList(List<PaymentModel> payments) {
-    // sort payments by id
-    payments.sort((a, b) => b.id!.compareTo(a.id!));
+    // sort payments by created at
+    payments.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
+    payments.removeWhere((element) => element.isDeleted == "1");
 
     bool showButton = false;
 
@@ -76,7 +77,7 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
             "If you have a pending payment, please wait for it to be processed. Until then, you can't make another payment.",
             style: bodyTextStyle.copyWith(
               color: Colors.red,
-              fontSize: 10.sp,
+              fontSize: 12,
             )),
         const SizedBox(height: 10),
         payments.isEmpty
@@ -128,7 +129,7 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               PaymentDetailCard(payment: widget.payment!),
               const SizedBox(height: 20),

@@ -20,6 +20,7 @@ import 'package:ybb_event_app/services/participant_service.dart';
 import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class BasicInformationSection extends StatefulWidget {
   const BasicInformationSection({super.key});
@@ -112,7 +113,9 @@ class _BasicInformationSectionState extends State<BasicInformationSection> {
 
     return // Personal Information
         Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+      padding: ScreenSizeHelper.responsiveValue(context,
+          mobile: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          desktop: const EdgeInsets.symmetric(vertical: 30, horizontal: 50)),
       child: FormBuilder(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,

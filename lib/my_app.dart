@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
@@ -26,35 +24,61 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<PaymentProvider>(
             create: (_) => PaymentProvider()),
       ],
-      child: ResponsiveSizer(builder: (context, orientation, screenType) {
-        return MaterialApp.router(
-          theme: ThemeData(
-            primaryColor: primary,
-            fontFamily: 'Poppins',
-          ),
-          routerConfig: AppRouterConfig().routeConfig,
-          builder: (context, widget) => ResponsiveBreakpoints.builder(
-            child: Builder(builder: (context) {
-              return ResponsiveScaledBox(
-                  width: ResponsiveValue<double?>(context,
-                      defaultValue: null,
-                      conditionalValues: [
-                        const Condition.equals(
-                            name: 'MOBILE_SMALL', value: 480),
-                      ]).value,
-                  child: ClampingScrollWrapper.builder(context, widget!));
-            }),
-            breakpoints: [
-              const Breakpoint(start: 0, end: 480, name: 'MOBILE_SMALL'),
-              const Breakpoint(start: 481, end: 850, name: MOBILE),
-              const Breakpoint(start: 850, end: 1080, name: TABLET),
-              const Breakpoint(
-                  start: 1081, end: double.infinity, name: DESKTOP),
-            ],
-          ),
-          debugShowCheckedModeBanner: false,
-        );
-      }),
+      child: MaterialApp.router(
+        title: 'YBB Event App',
+        theme: ThemeData(
+          primaryColor: primary,
+          fontFamily: 'Poppins',
+        ),
+        routerConfig: AppRouterConfig().routeConfig,
+        // builder: (context, widget) => ResponsiveBreakpoints.builder(
+        //   child: Builder(builder: (context) {
+        //     return ResponsiveScaledBox(
+        //         width: ResponsiveValue<double?>(context,
+        //             defaultValue: null,
+        //             conditionalValues: [
+        //               const Condition.equals(name: 'MOBILE_SMALL', value: 480),
+        //             ]).value,
+        //         child: ClampingScrollWrapper.builder(context, widget!));
+        //   }),
+        //   breakpoints: [
+        //     const Breakpoint(start: 0, end: 480, name: 'MOBILE_SMALL'),
+        //     const Breakpoint(start: 481, end: 850, name: MOBILE),
+        //     const Breakpoint(start: 850, end: 1080, name: TABLET),
+        //     const Breakpoint(start: 1081, end: double.infinity, name: DESKTOP),
+        //   ],
+        // ),
+        debugShowCheckedModeBanner: false,
+      ),
+      // child: ResponsiveSizer(builder: (context, orientation, screenType) {
+      //   return MaterialApp.router(
+      //     theme: ThemeData(
+      //       primaryColor: primary,
+      //       fontFamily: 'Poppins',
+      //     ),
+      //     routerConfig: AppRouterConfig().routeConfig,
+      //     builder: (context, widget) => ResponsiveBreakpoints.builder(
+      //       child: Builder(builder: (context) {
+      //         return ResponsiveScaledBox(
+      //             width: ResponsiveValue<double?>(context,
+      //                 defaultValue: null,
+      //                 conditionalValues: [
+      //                   const Condition.equals(
+      //                       name: 'MOBILE_SMALL', value: 480),
+      //                 ]).value,
+      //             child: ClampingScrollWrapper.builder(context, widget!));
+      //       }),
+      //       breakpoints: [
+      //         const Breakpoint(start: 0, end: 480, name: 'MOBILE_SMALL'),
+      //         const Breakpoint(start: 481, end: 850, name: MOBILE),
+      //         const Breakpoint(start: 850, end: 1080, name: TABLET),
+      //         const Breakpoint(
+      //             start: 1081, end: double.infinity, name: DESKTOP),
+      //       ],
+      //     ),
+      //     debugShowCheckedModeBanner: false,
+      //   );
+      // }),
     );
   }
 }

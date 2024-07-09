@@ -4,7 +4,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
@@ -17,7 +16,7 @@ class CommonMethods {
       required Function() onPressed}) {
     return MaterialButton(
       minWidth: width ?? double.infinity,
-      height: 7.h,
+      height: 50,
       color: color ?? primary,
       // give radius to the button
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -117,7 +116,7 @@ class CommonMethods {
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
           // pop the current page
-          Navigator.pop(context);
+          Navigator.of(context).pop();
         },
       ),
       automaticallyImplyLeading: true,

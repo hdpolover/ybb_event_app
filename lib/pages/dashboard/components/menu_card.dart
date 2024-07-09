@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card_model.dart';
 
@@ -41,9 +40,9 @@ class MenuCard extends StatelessWidget {
               const SizedBox(height: 10),
               AutoSizeText(
                 menuCard.title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black,
-                  fontSize: 12.sp,
+                  fontSize: 12,
                 ),
               ),
               const SizedBox(height: 10),
@@ -53,7 +52,7 @@ class MenuCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: bodyTextStyle.copyWith(
                   color: Colors.grey,
-                  fontSize: 10.sp,
+                  fontSize: 10,
                 ),
               ),
               Visibility(
@@ -67,7 +66,7 @@ class MenuCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: bodyTextStyle.copyWith(
                           color: primary,
-                          fontSize: 10.sp,
+                          fontSize: 10,
                           fontStyle: FontStyle.italic,
                         ))
                   ],

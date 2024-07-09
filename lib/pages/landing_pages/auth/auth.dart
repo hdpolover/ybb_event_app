@@ -8,7 +8,6 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
@@ -23,6 +22,7 @@ import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class Auth extends StatefulWidget {
   const Auth({super.key});
@@ -53,187 +53,12 @@ class _AuthState extends State<Auth> {
   setChildren() {
     var programProvider = Provider.of<ProgramProvider>(context, listen: false);
 
-    children = ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-        ? [
-            Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: MediaQuery.of(context).size.width * 0.07,
-                    vertical: 30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: MediaQuery.sizeOf(context).height * 0.1),
-                    // add logo here from network
-                    GestureDetector(
-                      onTap: () {
-                        context.goNamed(homeRouteName);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 30),
-                        child: Image.network(
-                          programProvider.programInfo!.logoUrl!,
-                          width: MediaQuery.of(context).size.width * 0.25,
-                        ),
-                      ),
-                    ),
-                    AutoSizeText(
-                        "Welcome to ${programProvider.programInfo!.name!}",
-                        textAlign: TextAlign.center,
-                        style: headlineTextStyle.copyWith(
-                            color: primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25)),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * 0.02,
-                          vertical: 30),
-                      child: FormBuilder(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            FormBuilderTextField(
-                              key: _emailFieldKey,
-                              name: 'email',
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                              ),
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(),
-                                FormBuilderValidators.email(),
-                              ]),
-                            ),
-                            const SizedBox(height: 20),
-                            FormBuilderTextField(
-                              name: 'password',
-                              decoration: InputDecoration(
-                                // give an eye icon to show the password
-                                suffixIcon: IconButton(
-                                  icon: isObscure
-                                      ? const FaIcon(FontAwesomeIcons.eye)
-                                      : const FaIcon(FontAwesomeIcons.eyeSlash),
-                                  onPressed: () {
-                                    // show the password
-                                    setState(() {
-                                      isObscure = !isObscure;
-                                    });
-                                  },
-                                ),
-                                labelText: 'Password',
-                                border: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                              ),
-                              obscureText: isObscure,
-                              validator: FormBuilderValidators.compose([
-                                FormBuilderValidators.required(),
-                                FormBuilderValidators.minLength(6),
-                              ]),
-                            ),
-                            const SizedBox(height: 20),
-                            // align the text to the right
-                            // Align(
-                            //   alignment: Alignment.centerRight,
-                            //   child: InkWell(
-                            //     onTap: () {
-                            //       // navigate to forgot password page
-                            //     },
-                            //     child: AutoSizeText("Forgot password?",
-                            //         style: bodyTextStyle.copyWith(
-                            //             color: primary)),
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 20),
-                            // create a button with primary color that says "Login", width is 100% of the container
-                            isLoading
-                                ? LoadingAnimationWidget.fourRotatingDots(
-                                    color: primary, size: 40)
-                                : MaterialButton(
-                                    minWidth: double.infinity,
-                                    height: 60,
-                                    color: primary,
-                                    // give radius to the button
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    onPressed: () {
-                                      // Map<String, dynamic> data = {
-                                      //   "email":
-                                      //       "subaktialdi88@gmail.com",
-                                      //   "password": "aldi2014",
-                                      // };
-
-                                      // signin(data);
-
-                                      if (_formKey.currentState
-                                              ?.saveAndValidate() ??
-                                          false) {
-                                        debugPrint(_formKey.currentState?.value
-                                            .toString());
-
-                                        setState(() {
-                                          isLoading = true;
-                                        });
-
-                                        signin(_formKey.currentState?.value);
-                                      }
-                                    },
-                                    child: const AutoSizeText('Sign in',
-                                        style: buttonTextStyle),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AutoSizeText("Don't have an account? ",
-                            style: smallHeadlineTextStyle.copyWith(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 17,
-                            )),
-                        InkWell(
-                          onTap: () {
-                            context.pushNamed(signUpRouteName);
-                          },
-                          child: AutoSizeText("Sign up",
-                              style: smallHeadlineTextStyle.copyWith(
-                                  color: primary, fontSize: 17)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AutoSizeText("Part of our ambassadors? ",
-                            style: smallHeadlineTextStyle.copyWith(
-                                fontWeight: FontWeight.normal, fontSize: 17)),
-                        InkWell(
-                          onTap: () {
-                            // navigate to forgot password page
-                            context.pushNamed(ambassadorSigninRouteName);
-                          },
-                          // what's the other catchy phrase for login as ambassador?
-                          child: AutoSizeText("Join here",
-                              style: smallHeadlineTextStyle.copyWith(
-                                  color: primary, fontSize: 17)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ]
-        : [
+    return ScreenSizeHelper.responsiveValue(
+      context,
+      desktop: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
             AuthImageSection(
               programPhoto: programPhoto!,
               programInfo: programProvider.programInfo!,
@@ -309,18 +134,19 @@ class _AuthState extends State<Auth> {
                               ),
                               const SizedBox(height: 20),
                               // align the text to the right
-                              // Align(
-                              //   alignment: Alignment.centerRight,
-                              //   child: InkWell(
-                              //     onTap: () {
-                              //       // navigate to forgot password page
-                              //     },
-                              //     child: AutoSizeText("Forgot password?",
-                              //         style: bodyTextStyle.copyWith(
-                              //             color: primary)),
-                              //   ),
-                              // ),
-                              // const SizedBox(height: 20),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: InkWell(
+                                  onTap: () {
+                                    // navigate to forgot password page
+                                    context.pushNamed(forgotPasswordRouteName);
+                                  },
+                                  child: AutoSizeText("Forgot password?",
+                                      style: bodyTextStyle.copyWith(
+                                          color: primary)),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
                               // create a button with primary color that says "Login", width is 100% of the container
                               isLoading
                                   ? LoadingAnimationWidget.fourRotatingDots(
@@ -335,9 +161,8 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email":
-                                        //       "subaktialdi88@gmail.com",
-                                        //   "password": "aldi2014",
+                                        //   "email": "jasminefangg@gmail.com",
+                                        //   "password": "12345678",
                                         // };
 
                                         // signin(data);
@@ -405,10 +230,196 @@ class _AuthState extends State<Auth> {
                   ),
                 ),
               ),
-            ),
-          ];
+            )
+          ]),
+      mobile: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * 0.07,
+                    vertical: 30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: MediaQuery.sizeOf(context).height * 0.1),
+                    // add logo here from network
+                    GestureDetector(
+                      onTap: () {
+                        context.goNamed(homeRouteName);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 30),
+                        child: Image.network(
+                          programProvider.programInfo!.logoUrl!,
+                          width: MediaQuery.of(context).size.width * 0.25,
+                        ),
+                      ),
+                    ),
+                    AutoSizeText(
+                        "Welcome to ${programProvider.programInfo!.name!}",
+                        textAlign: TextAlign.center,
+                        style: headlineTextStyle.copyWith(
+                            color: primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25)),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.02,
+                          vertical: 30),
+                      child: FormBuilder(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            FormBuilderTextField(
+                              key: _emailFieldKey,
+                              name: 'email',
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(),
+                                FormBuilderValidators.email(),
+                              ]),
+                            ),
+                            const SizedBox(height: 20),
+                            FormBuilderTextField(
+                              name: 'password',
+                              decoration: InputDecoration(
+                                // give an eye icon to show the password
+                                suffixIcon: IconButton(
+                                  icon: isObscure
+                                      ? const FaIcon(FontAwesomeIcons.eye)
+                                      : const FaIcon(FontAwesomeIcons.eyeSlash),
+                                  onPressed: () {
+                                    // show the password
+                                    setState(() {
+                                      isObscure = !isObscure;
+                                    });
 
-    setState(() {});
+                                    print(isObscure);
+                                  },
+                                ),
+                                labelText: 'Password',
+                                border: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                              ),
+                              obscureText: isObscure,
+                              validator: FormBuilderValidators.compose([
+                                FormBuilderValidators.required(),
+                                FormBuilderValidators.minLength(6),
+                              ]),
+                            ),
+                            const SizedBox(height: 20),
+                            // align the text to the right
+                            // Align(
+                            //   alignment: Alignment.centerRight,
+                            //   child: InkWell(
+                            //     onTap: () {
+                            //       // navigate to forgot password page
+                            //     },
+                            //     child: AutoSizeText("Forgot password?",
+                            //         style: bodyTextStyle.copyWith(
+                            //             color: primary)),
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 20),
+                            // create a button with primary color that says "Login", width is 100% of the container
+                            isLoading
+                                ? LoadingAnimationWidget.fourRotatingDots(
+                                    color: primary, size: 40)
+                                : MaterialButton(
+                                    minWidth: double.infinity,
+                                    height: 60,
+                                    color: primary,
+                                    // give radius to the button
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    onPressed: () {
+                                      // Map<String, dynamic> data = {
+                                      //   "email": "subaktialdi88@gmail.com",
+                                      //   "password": "aldi2014",
+                                      // };
+
+                                      // signin(data);
+
+                                      if (_formKey.currentState
+                                              ?.saveAndValidate() ??
+                                          false) {
+                                        debugPrint(_formKey.currentState?.value
+                                            .toString());
+
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+
+                                        signin(_formKey.currentState?.value);
+                                      }
+                                    },
+                                    child: const AutoSizeText('Sign in',
+                                        style: buttonTextStyle),
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AutoSizeText("Don't have an account? ",
+                            style: smallHeadlineTextStyle.copyWith(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 17,
+                            )),
+                        InkWell(
+                          onTap: () {
+                            context.pushNamed(signUpRouteName);
+                          },
+                          child: AutoSizeText("Sign up",
+                              style: smallHeadlineTextStyle.copyWith(
+                                  color: primary, fontSize: 17)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AutoSizeText("Part of our ambassadors? ",
+                            style: smallHeadlineTextStyle.copyWith(
+                                fontWeight: FontWeight.normal, fontSize: 17)),
+                        InkWell(
+                          onTap: () {
+                            // navigate to forgot password page
+                            context.pushNamed(ambassadorSigninRouteName);
+                          },
+                          // what's the other catchy phrase for login as ambassador?
+                          child: AutoSizeText("Join here",
+                              style: smallHeadlineTextStyle.copyWith(
+                                  color: primary, fontSize: 17)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   getData() {
@@ -511,35 +522,9 @@ class _AuthState extends State<Auth> {
     });
   }
 
-  buildForMobile(List<Widget> children) {
-    return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: children,
-      ),
-    );
-  }
-
-  buildForDesktop(List<Widget> children) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: children,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    setChildren();
-
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: programPhoto == null
-            ? const LoadingPage()
-            : ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-                ? buildForMobile(children)
-                : buildForDesktop(children));
+        body: programPhoto == null ? const LoadingPage() : setChildren());
   }
 }

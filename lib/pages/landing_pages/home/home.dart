@@ -23,6 +23,7 @@ import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
 import 'package:ybb_event_app/services/program_service.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -135,7 +136,9 @@ class _HomeState extends State<Home> {
             programInfo: programInfo!,
             pageName: "Home",
             contents: [
-              BannerSection(webSettingHome: homeSetting!),
+              BannerSection(
+                webSettingHome: homeSetting!,
+              ),
               EventDetailSection(programInfo: programInfo!),
               Padding(
                 padding: EdgeInsets.symmetric(

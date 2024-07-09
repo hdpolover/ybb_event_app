@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:universal_html/html.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
@@ -16,13 +15,10 @@ import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
-import 'package:ybb_event_app/services/participant_service.dart';
-import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/services/progam_payment_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class Dashboard extends StatefulWidget {
   final String? role;
@@ -117,10 +113,13 @@ class _DashboardState extends State<Dashboard>
             color: primary,
           ),
           SizedBox(width: MediaQuery.of(context).size.height * 0.05),
-          Text(
-            data,
-            style: bodyTextStyle.copyWith(
-              color: Colors.grey,
+          Expanded(
+            child: Text(
+              data,
+              softWrap: true,
+              style: bodyTextStyle.copyWith(
+                color: Colors.grey,
+              ),
             ),
           ),
         ],
@@ -165,7 +164,9 @@ class _DashboardState extends State<Dashboard>
                 const SizedBox(height: 30),
                 // make the image a circle
                 SizedBox(
-                  height: MediaQuery.of(context).size.width * 0.1,
+                  height: ScreenSizeHelper.responsiveValue(context,
+                      mobile: MediaQuery.of(context).size.width * 0.5,
+                      desktop: MediaQuery.of(context).size.width * 0.1),
                   width: MediaQuery.of(context).size.width * 0.1,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
@@ -263,8 +264,8 @@ class _DashboardState extends State<Dashboard>
             const SizedBox(height: 30),
             // make the image a circle
             SizedBox(
-              height: MediaQuery.of(context).size.width * 0.1,
-              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.width * 0.3,
+              width: MediaQuery.of(context).size.width * 0.3,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
                 child: FancyShimmerImage(
@@ -403,29 +404,24 @@ class _DashboardState extends State<Dashboard>
       width: MediaQuery.of(context).size.width * 0.7,
       height: MediaQuery.of(context).size.height,
       child: SingleChildScrollView(
-        child: ResponsiveRowColumn(
-          layout: ResponsiveRowColumnType.COLUMN,
+        child: Column(
           children: [
-            ResponsiveRowColumnItem(
-                child:
-                    GuidelineWidget(program: programProvider.currentProgram!)),
-            ResponsiveRowColumnItem(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
-                    childAspectRatio: 0.85,
-                  ),
-                  itemCount: menuCards.length,
-                  itemBuilder: (context, index) {
-                    return menuCards[index];
-                  },
+            GuidelineWidget(program: programProvider.currentProgram!),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 0.85,
                 ),
+                itemCount: menuCards.length,
+                itemBuilder: (context, index) {
+                  return menuCards[index];
+                },
               ),
             ),
           ],
@@ -620,11 +616,11 @@ class _DashboardState extends State<Dashboard>
                 ],
               ),
             )
-          : ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-              ? buildForMobile(
-                  participantProvider, programProvider, authProvider)
-              : buildForDesktop(
+          : ScreenSizeHelper.responsiveValue(context,
+              desktop: buildForDesktop(
                   participantProvider, programProvider, authProvider),
+              mobile: buildForMobile(
+                  participantProvider, programProvider, authProvider)),
     );
   }
 

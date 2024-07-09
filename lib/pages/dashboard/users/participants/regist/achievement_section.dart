@@ -13,6 +13,7 @@ import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class AchievementSection extends StatefulWidget {
   const AchievementSection({super.key});
@@ -35,7 +36,9 @@ class _AchievementSectionState extends State<AchievementSection> {
     var participantProvider = Provider.of<ParticipantProvider>(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+      padding: ScreenSizeHelper.responsiveValue(context,
+          mobile: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          desktop: const EdgeInsets.symmetric(vertical: 30, horizontal: 50)),
       child: FormBuilder(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,

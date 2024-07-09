@@ -22,6 +22,7 @@ import 'package:ybb_event_app/services/program_essay_service.dart';
 import 'package:ybb_event_app/services/program_subtheme_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class EssaySection extends StatefulWidget {
   const EssaySection({super.key});
@@ -168,7 +169,7 @@ class _EssaySectionState extends State<EssaySection> {
             });
           }));
     }
-    
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -188,7 +189,11 @@ class _EssaySectionState extends State<EssaySection> {
     return essays == null || subthemes == null || categories == null
         ? LoadingAnimationWidget.fourRotatingDots(color: primary, size: 20)
         : Padding(
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+            padding: ScreenSizeHelper.responsiveValue(context,
+                mobile:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                desktop:
+                    const EdgeInsets.symmetric(vertical: 30, horizontal: 50)),
             child: FormBuilder(
               key: _formKey,
               autovalidateMode: AutovalidateMode.disabled,

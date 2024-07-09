@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/program_model.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 import 'package:ybb_event_app/utils/utils.dart';
 
 class GuidelineWidget extends StatelessWidget {
@@ -158,9 +158,8 @@ class GuidelineWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-            ? buildForMobile()
-            : buildForDesktop(),
+        child: ScreenSizeHelper.responsiveValue(context,
+            desktop: buildForDesktop(), mobile: buildForMobile()),
       ),
     );
   }

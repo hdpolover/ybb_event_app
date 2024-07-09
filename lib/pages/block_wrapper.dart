@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/spacing.dart';
 
 /// A convenience widget to wrap main blocks with:
@@ -13,11 +12,7 @@ class BlockWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ResponsiveConstraints(
-        conditionalConstraints:
-            blockWidthConstraints as List<Condition<BoxConstraints>>,
-        child: widget,
-      ),
+      child: widget,
     );
   }
 }

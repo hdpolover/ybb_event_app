@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 import '../components/components.dart';
 
@@ -21,87 +20,24 @@ class WebsiteMenuBar extends StatelessWidget {
         BoxShadow(color: Color(0x1A000000), offset: Offset(0, 2), blurRadius: 4)
       ]),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: () {
-                context.goNamed(homeRouteName);
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Image.network(programInfo.logoUrl!),
+      child: ScreenSizeHelper.responsiveValue(
+        context,
+        desktop: Row(
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  context.goNamed(homeRouteName);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Image.network(programInfo.logoUrl!),
+                ),
               ),
             ),
-          ),
-          const Spacer(),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [
-              Condition.smallerThan(name: MOBILE),
-              Condition.equals(name: MOBILE)
-            ],
-            child: Row(
-              children: [
-                // add button to get started
-                // create a container button
-                InkWell(
-                  onTap: () {
-                    // context.pushNamed(authRouteName);
-                    context.pushNamed('test-page');
-                  },
-                  child: Container(
-                    height: 30,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      color: primary,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Text(
-                        "Get started",
-                        textAlign: TextAlign.center,
-                        style: buttonTextStyle.copyWith(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // TextButton(
-                //   onPressed: () {
-                //     // context.go(authPathName);
-                //     context.pushNamed(authRouteName);
-                //   },
-                //   style: primaryButtonStyle,
-                //   child: Text(
-                //     "Get started",
-                //     style: buttonTextStyle.copyWith(
-                //       fontSize: 12.sp,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
-                const SizedBox(width: 10),
-                GestureDetector(
-                  onTap: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Icon(Icons.menu),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [Condition.largerThan(name: MOBILE)],
-            child: MouseRegion(
+            const Spacer(),
+            MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
@@ -117,11 +53,7 @@ class WebsiteMenuBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [Condition.largerThan(name: MOBILE)],
-            child: MouseRegion(
+            MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
@@ -137,11 +69,7 @@ class WebsiteMenuBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [Condition.largerThan(name: MOBILE)],
-            child: MouseRegion(
+            MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
@@ -157,31 +85,7 @@ class WebsiteMenuBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          // ResponsiveVisibility(
-          //   visible: false,
-          //   visibleConditions: const [Condition.largerThan(name: MOBILE)],
-          //   child: MouseRegion(
-          //     cursor: SystemMouseCursors.click,
-          //     child: GestureDetector(
-          //       onTap: () {
-          //         context.goNamed(announcementsRouteName);
-          //       },
-          //       child: const Padding(
-          //         padding: EdgeInsets.symmetric(horizontal: 16),
-          //         child: Text("Announcements",
-          //             style: TextStyle(
-          //                 fontSize: 16,
-          //                 color: navLinkColor,
-          //                 fontFamily: fontFamily)),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [Condition.largerThan(name: MOBILE)],
-            child: MouseRegion(
+            MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
@@ -197,102 +101,7 @@ class WebsiteMenuBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          // ResponsiveVisibility(
-          //   visible: false,
-          //   visibleConditions: const [Condition.largerThan(name: MOBILE)],
-          //   child: MouseRegion(
-          //     cursor: SystemMouseCursors.click,
-          //     child: GestureDetector(
-          //       onTap: () {
-          //         context.goNamed(helpCenterRouteName);
-          //       },
-          //       child: const Padding(
-          //         padding: EdgeInsets.symmetric(horizontal: 16),
-          //         child: Text("Help Center",
-          //             style: TextStyle(
-          //                 fontSize: 16,
-          //                 color: navLinkColor,
-          //                 fontFamily: fontFamily)),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // ResponsiveVisibility(
-          //   visible: false,
-          //   visibleConditions: const [Condition.largerThan(name: MOBILE)],
-          //   child: MouseRegion(
-          //     cursor: SystemMouseCursors.click,
-          //     child: GestureDetector(
-          //       onTap: () => openUrl("https://flutter.dev/community"),
-          //       child: const Padding(
-          //           padding: EdgeInsets.symmetric(horizontal: 16),
-          //           child: Text("Community",
-          //               style: TextStyle(
-          //                   fontSize: 16,
-          //                   color: navLinkColor,
-          //                   fontFamily: fontFamily))),
-          //     ),
-          //   ),
-          // ),
-          // const ResponsiveVisibility(
-          //   visible: false,
-          //   visibleConditions: [Condition.largerThan(name: MOBILE)],
-          //   child: MouseRegion(
-          //     cursor: SystemMouseCursors.click,
-          //     child: Padding(
-          //       padding: EdgeInsets.symmetric(horizontal: 18),
-          //       child: ImageIcon(
-          //           AssetImage("assets/images/icon_search_64x.png"),
-          //           color: navLinkColor,
-          //           size: 24),
-          //     ),
-          //   ),
-          // ),
-          // MouseRegion(
-          //   cursor: SystemMouseCursors.click,
-          //   child: GestureDetector(
-          //     onTap: () => openUrl('https://twitter.com/flutterdev'),
-          //     child: const Padding(
-          //       padding: EdgeInsets.symmetric(horizontal: 8),
-          //       child: ImageIcon(
-          //           AssetImage("assets/images/icon_twitter_64x.png"),
-          //           color: navLinkColor,
-          //           size: 24),
-          //     ),
-          //   ),
-          // ),
-          // MouseRegion(
-          //   cursor: SystemMouseCursors.click,
-          //   child: GestureDetector(
-          //     onTap: () => openUrl('https://www.youtube.com/flutterdev'),
-          //     child: const Padding(
-          //       padding: EdgeInsets.symmetric(horizontal: 8),
-          //       child: ImageIcon(
-          //           AssetImage("assets/images/icon_youtube_64x.png"),
-          //           color: navLinkColor,
-          //           size: 24),
-          //     ),
-          //   ),
-          // ),
-          // MouseRegion(
-          //   cursor: SystemMouseCursors.click,
-          //   child: GestureDetector(
-          //     onTap: () => openUrl('https://github.com/flutter'),
-          //     child: const Padding(
-          //       padding: EdgeInsets.symmetric(horizontal: 8),
-          //       child: ImageIcon(
-          //           AssetImage("assets/images/icon_github_64x.png"),
-          //           color: navLinkColor,
-          //           size: 24),
-          //     ),
-          //   ),
-          // ),
-          ResponsiveVisibility(
-            visible: false,
-            visibleConditions: const [Condition.largerThan(name: MOBILE)],
-            child: Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 8, right: 0),
               child: TextButton(
                 onPressed: () {
@@ -306,8 +115,60 @@ class WebsiteMenuBar extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        mobile: Row(
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
+                  context.goNamed(homeRouteName);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Image.network(programInfo.logoUrl!),
+                ),
+              ),
+            ),
+            const Spacer(),
+            // create a container button
+            InkWell(
+              onTap: () {
+                context.pushNamed(authRouteName);
+              },
+              child: Container(
+                height: 30,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: primary,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    "Get started",
+                    textAlign: TextAlign.center,
+                    style: buttonTextStyle.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: () {
+                Scaffold.of(context).openDrawer();
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(right: 16),
+                child: Icon(Icons.menu),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

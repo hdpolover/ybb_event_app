@@ -2,9 +2,9 @@ import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/testimony_model.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class TestimonySection extends StatefulWidget {
   final List<TestimonyModel>? testimonies;
@@ -188,9 +188,8 @@ class _TestimonySectionState extends State<TestimonySection> {
   }
 
   buildTestimonyItem(TestimonyModel test) {
-    return ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-        ? buildForMobile(test)
-        : buildForDesktop(test);
+    return ScreenSizeHelper.responsiveValue(context,
+        mobile: buildForMobile(test), desktop: buildForDesktop(test));
   }
 
   @override
@@ -204,10 +203,9 @@ class _TestimonySectionState extends State<TestimonySection> {
     return Center(
       child: Builder(
         builder: (context) {
-          final height =
-              ResponsiveBreakpoints.of(context).smallerOrEqualTo(MOBILE)
-                  ? MediaQuery.of(context).size.height * 0.7
-                  : MediaQuery.of(context).size.height * 0.5;
+          final height = ScreenSizeHelper.responsiveValue(context,
+              desktop: MediaQuery.of(context).size.height * 0.5,
+              mobile: MediaQuery.of(context).size.height * 0.7);
 
           return Padding(
             padding: blockPadding(context),

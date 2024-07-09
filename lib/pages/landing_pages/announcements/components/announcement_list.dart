@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:ybb_event_app/components/colors.dart';
-import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/components/announcement_widget.dart';
 import 'package:ybb_event_app/pages/landing_pages/widgets/header_page.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class AnnouncementList extends StatefulWidget {
   const AnnouncementList({super.key});
@@ -17,15 +15,16 @@ class _AnnouncementListState extends State<AnnouncementList> {
     List<AnnouncementWidget> anns =
         List.generate(5, (index) => const AnnouncementWidget());
 
-    return ResponsiveGridView.builder(
+    return GridView.builder(
       itemCount: anns.length,
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       primary: false,
-      gridDelegate: const ResponsiveGridDelegate(
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        maxCrossAxisExtent: 200,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount:
+            ScreenSizeHelper.responsiveValue(context, mobile: 1, desktop: 3),
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
       ),
       itemBuilder: (context, index) {
         return anns[index];
@@ -41,14 +40,11 @@ class _AnnouncementListState extends State<AnnouncementList> {
 
   @override
   Widget build(BuildContext context) {
-    return ResponsiveRowColumnItem(
-      child: Column(
-        children: [
-          const HeaderPage(
-              title: "Announcements", desc: "Stay updated with us!"),
-          buildAnnouncementList(),
-        ],
-      ),
+    return Column(
+      children: [
+        const HeaderPage(title: "Announcements", desc: "Stay updated with us!"),
+        buildAnnouncementList(),
+      ],
     );
   }
 }

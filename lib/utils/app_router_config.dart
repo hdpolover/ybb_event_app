@@ -1,9 +1,15 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ybb_event_app/models/agreement_letter_model.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/pages/dashboard/dashboard.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/announcements/user_announcements.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agreement_letter_upload.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agreement_letter_view.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/documents/document_pdf_viewer.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/documents.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/help_desk/help_desk_list.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/regist_form.dart';
@@ -17,6 +23,7 @@ import 'package:ybb_event_app/pages/landing_pages/about_us/test_page.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/announcements.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/ambassador_signin.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth.dart';
+import 'package:ybb_event_app/pages/landing_pages/auth/forgot_password.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/sign_up.dart';
 import 'package:ybb_event_app/pages/landing_pages/faq/faqs.dart';
 import 'package:ybb_event_app/pages/landing_pages/help_center/help_center.dart';
@@ -63,6 +70,14 @@ String paymentWebviewRouteName = "payment-webview";
 String paymentWebviewPathName = "/payment-webview";
 String helpDeskListRouteNmae = "help-desk-list";
 String helpDeskListPathName = "/help-desk-list";
+String documentPdfViewerRouteName = "document-pdf-viewer";
+String documentPdfViewerPathName = "/document-pdf-viewer";
+String agreementLetterUploadRouteName = "agreement-letter-upload";
+String agreementLetterUploadPathName = "/agreement-letter-upload";
+String agreementLetterViewRouteName = "agreement-letter-view";
+String agreementLetterViewPathName = "/agreement-letter-view";
+String forgotPasswordRouteName = "forgot-password";
+String forgotPasswordPathName = "/forgot-password";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
@@ -74,8 +89,16 @@ class AppRouterConfig {
         parentNavigatorKey: _rootNavigatorKey,
         name: "test-page",
         path: "/test-page",
-        pageBuilder: (context, state) => const NoTransitionPage(
+        pageBuilder: (context, state) => NoTransitionPage(
           child: TestPage(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: forgotPasswordRouteName,
+        path: forgotPasswordPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: ForgotPassword(),
         ),
       ),
       GoRoute(
@@ -100,6 +123,34 @@ class AppRouterConfig {
         path: ambassadorSigninPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: AmbassadorSignin(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: documentPdfViewerRouteName,
+        path: documentPdfViewerPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: DocumentPdfViewer(
+            pdfData: state.extra as Uint8List,
+          ),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: agreementLetterUploadRouteName,
+        path: agreementLetterUploadPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: AgreementLetterUpload(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: agreementLetterViewRouteName,
+        path: agreementLetterViewPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: AgreementLetterView(
+            agreementLetter: state.extra as AgreementLetterModel,
+          ),
         ),
       ),
       GoRoute(

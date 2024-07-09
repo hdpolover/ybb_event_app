@@ -1,9 +1,5 @@
-import 'dart:developer';
-
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
@@ -101,46 +97,44 @@ class _TimelineSectionState extends State<TimelineSection> {
   Widget build(BuildContext context) {
     return programSchedules == null
         ? LoadingAnimationWidget.fourRotatingDots(color: primary, size: 20)
-        : ResponsiveRowColumnItem(
-            child: Container(
-              // give a background image from network image and also a transparent color so that texts can be read
-              decoration: isImageError
-                  ? const BoxDecoration(color: primary)
-                  : BoxDecoration(
-                      image: DecorationImage(
-                        onError: (exception, stackTrace) {
-                          setState(() {
-                            isImageError = true;
-                          });
-                        },
-                        image: NetworkImage(widget.programPhoto!.imgUrl!),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                            Colors.black.withOpacity(0.9), BlendMode.darken),
-                      ),
-                    ),
-              padding: commonPadding(context),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 50),
-                    child: Text(
-                      "Program Timeline",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                      ),
+        : Container(
+            // give a background image from network image and also a transparent color so that texts can be read
+            decoration: isImageError
+                ? const BoxDecoration(color: primary)
+                : BoxDecoration(
+                    image: DecorationImage(
+                      onError: (exception, stackTrace) {
+                        setState(() {
+                          isImageError = true;
+                        });
+                      },
+                      image: NetworkImage(widget.programPhoto!.imgUrl!),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.9), BlendMode.darken),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50),
-                    child: Column(
-                      children: buildTimeline(),
+            padding: commonPadding(context),
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
+                  child: Text(
+                    "Program Timeline",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: Column(
+                    children: buildTimeline(),
+                  ),
+                ),
+              ],
             ),
           );
   }

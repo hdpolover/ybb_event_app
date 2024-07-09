@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
-
-  @override
-  State<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends State<TestPage> {
-  TextEditingController nameController = TextEditingController();
+class TestPage extends GetResponsiveView {
+  final TextEditingController nameController = TextEditingController();
 
   String? resu;
 
@@ -34,9 +28,9 @@ class _TestPageState extends State<TestPage> {
               ElevatedButton(
                 onPressed: () {
                   // add function here
-                  setState(() {
-                    resu = nameController.text;
-                  });
+
+                  resu = nameController.text;
+
                   print(nameController.text);
                 },
                 child: const Text("Submit"),

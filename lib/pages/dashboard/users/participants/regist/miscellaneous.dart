@@ -14,6 +14,7 @@ import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/ambassador_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 import 'package:ybb_event_app/utils/utils.dart';
 
 import '../../../../../services/participant_service.dart';
@@ -70,7 +71,9 @@ class _MiscellaneousSectionState extends State<MiscellaneousSection> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+      padding: ScreenSizeHelper.responsiveValue(context,
+          mobile: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+          desktop: const EdgeInsets.symmetric(vertical: 30, horizontal: 50)),
       child: FormBuilder(
         key: _formKey,
         autovalidateMode: AutovalidateMode.disabled,

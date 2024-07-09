@@ -17,6 +17,7 @@ import 'package:ybb_event_app/services/payment_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
+import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class PreviewSection extends StatefulWidget {
   const PreviewSection({super.key});
@@ -67,6 +68,8 @@ class _PreviewSectionState extends State<PreviewSection> {
       }
     }
 
+    print(registPayment!.id);
+
     String? id = Provider.of<ParticipantProvider>(context, listen: false)
         .participant!
         .id;
@@ -77,6 +80,8 @@ class _PreviewSectionState extends State<PreviewSection> {
           setState(() {
             participantRegistPayment = item;
           });
+
+          print(participantRegistPayment!.status);
         }
       }
     });
@@ -109,6 +114,7 @@ class _PreviewSectionState extends State<PreviewSection> {
                   // update participant status
                   Map<String, dynamic> statusData = {
                     "form_status": "2",
+                    "general_status": "1",
                   };
 
                   ParticipantStatusService()
@@ -196,7 +202,9 @@ class _PreviewSectionState extends State<PreviewSection> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 50),
+        padding: ScreenSizeHelper.responsiveValue(context,
+            mobile: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            desktop: const EdgeInsets.symmetric(vertical: 30, horizontal: 50)),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -260,24 +268,26 @@ class _PreviewSectionState extends State<PreviewSection> {
                           border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.check,
-                              color: Colors.green,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                  "Registration form has been submitted successfully!",
-                                  softWrap: true,
-                                  style: bodyTextStyle.copyWith(
-                                      color: Colors.green)),
-                            ),
-                          ],
+                        child: Center(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.check,
+                                color: Colors.green,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                    "Registration form has been submitted successfully!",
+                                    softWrap: true,
+                                    style: bodyTextStyle.copyWith(
+                                        color: Colors.green)),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : buildSubmitStatusSection(isAgree),

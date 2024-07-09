@@ -6,7 +6,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
@@ -115,16 +114,9 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ResponsiveVisibility(
-                  visible: false,
-                  visibleConditions: const [
-                    Condition.equals(name: DESKTOP),
-                    Condition.equals(name: TABLET),
-                  ],
-                  child: AuthImageSection(
-                    programPhoto: programPhoto!,
-                    programInfo: programProvider.programInfo!,
-                  ),
+                AuthImageSection(
+                  programPhoto: programPhoto!,
+                  programInfo: programProvider.programInfo!,
                 ),
                 Expanded(
                   child: Center(
@@ -137,27 +129,19 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           // add logo here from network
-                          ResponsiveVisibility(
-                            visible: false,
-                            visibleConditions: const [
-                              Condition.smallerThan(name: MOBILE),
-                              Condition.equals(name: MOBILE),
-                            ],
-                            child: GestureDetector(
-                              onTap: () {
-                                context.goNamed(homeRouteName);
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 30),
-                                child: Image.network(
-                                  programProvider.programInfo!.logoUrl!,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.25,
-                                ),
+                          GestureDetector(
+                            onTap: () {
+                              context.goNamed(homeRouteName);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 30),
+                              child: Image.network(
+                                programProvider.programInfo!.logoUrl!,
+                                width: MediaQuery.of(context).size.width * 0.25,
                               ),
                             ),
                           ),
+
                           Text(
                               "Welcome back, ${programProvider.programInfo!.name!} Ambassador!",
                               textAlign: TextAlign.center,

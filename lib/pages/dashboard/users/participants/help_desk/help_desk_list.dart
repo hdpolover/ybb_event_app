@@ -32,7 +32,7 @@ class _HelpDeskListState extends State<HelpDeskList> {
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -43,14 +43,14 @@ class _HelpDeskListState extends State<HelpDeskList> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Text(
                     "Description",
                     style: TextStyle(
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
