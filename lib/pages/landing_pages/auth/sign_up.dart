@@ -9,6 +9,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
+import 'package:ybb_event_app/main.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
@@ -54,15 +55,15 @@ class _SignUpState extends State<SignUp> {
   }
 
   getData() {
-    LandingPageService()
-        .getProgramInfo("https://worldyouthfest.com")
-        .then((value) {
+    LandingPageService().getProgramInfo(mainUrl).then((value) {
       setState(() {
         programInfo = value;
       });
 
       // get the program photos
-      ProgramPhotoService().getProgramPhotos("").then((value) {
+      ProgramPhotoService()
+          .getProgramPhotos(programInfo!.programCategoryId!)
+          .then((value) {
         List<ProgramPhotoModel> tempPhotos = [];
 
         /// only get the first photo which has the same program category id

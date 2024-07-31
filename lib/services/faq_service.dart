@@ -5,7 +5,8 @@ import 'package:ybb_event_app/utils/app_constants.dart';
 
 class FaqService {
   Future<List<FaqModel>> getProgramFaqs(String? id) async {
-    var url = Uri.parse('${AppConstants.apiUrl}/program_faqs/');
+    var url = Uri.parse(
+        '${AppConstants.apiUrl}/program_faqs/list_program?program_id=$id');
 
     print(url);
 

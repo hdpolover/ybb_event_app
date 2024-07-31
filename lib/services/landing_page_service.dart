@@ -39,9 +39,17 @@ class LandingPageService {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body)['data'][0];
+        var data = jsonDecode(response.body)['data'] as List;
 
-        return WebSettingHomeModel.fromJson(data);
+        List<WebSettingHomeModel> item = [];
+
+        for (var part in data) {
+          item.add(WebSettingHomeModel.fromJson(part));
+        }
+
+        item.removeWhere((element) => element.programId != id);
+
+        return item.first;
       } else {
         throw Exception('Failed');
       }
@@ -60,9 +68,17 @@ class LandingPageService {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body)['data'][0];
+        var data = jsonDecode(response.body)['data'];
 
-        return WebSettingAboutModel.fromJson(data);
+        List<WebSettingAboutModel> item = [];
+
+        for (var part in data) {
+          item.add(WebSettingAboutModel.fromJson(part));
+        }
+
+        item.removeWhere((element) => element.programId != id);
+
+        return item.first;
       } else {
         throw Exception('Failed');
       }

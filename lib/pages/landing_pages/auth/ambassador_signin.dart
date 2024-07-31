@@ -124,145 +124,151 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
                       padding: EdgeInsets.symmetric(
                           horizontal: MediaQuery.of(context).size.width * 0.07,
                           vertical: 30),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // add logo here from network
-                          GestureDetector(
-                            onTap: () {
-                              context.goNamed(homeRouteName);
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 30),
-                              child: Image.network(
-                                programProvider.programInfo!.logoUrl!,
-                                width: MediaQuery.of(context).size.width * 0.25,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // add logo here from network
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed(homeRouteName);
+                              },
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 30),
+                                child: Image.network(
+                                  programProvider.programInfo!.logoUrl!,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.25,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.3,
+                                ),
                               ),
                             ),
-                          ),
-
-                          Text(
-                              "Welcome back, ${programProvider.programInfo!.name!} Ambassador!",
-                              textAlign: TextAlign.center,
-                              style: headlineTextStyle.copyWith(
-                                color: primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                              )),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal:
-                                    MediaQuery.of(context).size.width * 0.02,
-                                vertical: 30),
-                            child: FormBuilder(
-                              key: _formKey,
-                              child: Column(
-                                children: [
-                                  FormBuilderTextField(
-                                    key: _emailFieldKey,
-                                    name: 'email',
-                                    decoration: const InputDecoration(
-                                      labelText: 'Email',
-                                      border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
+                            Text(
+                                "Welcome back, ${programProvider.programInfo!.name!} Ambassador!",
+                                textAlign: TextAlign.center,
+                                style: headlineTextStyle.copyWith(
+                                  color: primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25,
+                                )),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      MediaQuery.of(context).size.width * 0.02,
+                                  vertical: 30),
+                              child: FormBuilder(
+                                key: _formKey,
+                                child: Column(
+                                  children: [
+                                    FormBuilderTextField(
+                                      key: _emailFieldKey,
+                                      name: 'email',
+                                      decoration: const InputDecoration(
+                                        labelText: 'Email',
+                                        border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                      ),
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(),
+                                        FormBuilderValidators.email(),
+                                      ]),
                                     ),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                      FormBuilderValidators.email(),
-                                    ]),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  FormBuilderTextField(
-                                    key: _refCodeFieldKey,
-                                    name: 'ref_code',
-                                    textCapitalization:
-                                        TextCapitalization.characters,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Referral Code',
-                                      border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10))),
+                                    const SizedBox(height: 20),
+                                    FormBuilderTextField(
+                                      key: _refCodeFieldKey,
+                                      name: 'ref_code',
+                                      textCapitalization:
+                                          TextCapitalization.characters,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Referral Code',
+                                        border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                      ),
+                                      validator: FormBuilderValidators.compose([
+                                        FormBuilderValidators.required(),
+                                      ]),
                                     ),
-                                    validator: FormBuilderValidators.compose([
-                                      FormBuilderValidators.required(),
-                                    ]),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  // create a button with primary color that says "Login", width is 100% of the container
-                                  MaterialButton(
-                                    minWidth: double.infinity,
-                                    height: 60,
-                                    color: primary,
-                                    // give radius to the button
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    onPressed: () {
-                                      if (_formKey.currentState
-                                              ?.saveAndValidate() ??
-                                          false) {
-                                        debugPrint(_formKey.currentState?.value
-                                            .toString());
+                                    const SizedBox(height: 20),
+                                    // create a button with primary color that says "Login", width is 100% of the container
+                                    MaterialButton(
+                                      minWidth: double.infinity,
+                                      height: 60,
+                                      color: primary,
+                                      // give radius to the button
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      onPressed: () {
+                                        if (_formKey.currentState
+                                                ?.saveAndValidate() ??
+                                            false) {
+                                          debugPrint(_formKey
+                                              .currentState?.value
+                                              .toString());
 
-                                        signin(_formKey.currentState?.value);
-                                      }
-                                    },
-                                    child: const Text('Sign in',
-                                        style: buttonTextStyle),
-                                  ),
-                                ],
+                                          signin(_formKey.currentState?.value);
+                                        }
+                                      },
+                                      child: const Text('Sign in',
+                                          style: buttonTextStyle),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("Don't have an account? ",
-                                  style: smallHeadlineTextStyle.copyWith(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 17,
-                                  )),
-                              InkWell(
-                                onTap: () {
-                                  context.pushNamed(signUpRouteName);
-                                },
-                                child: Text("Sign up",
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Don't have an account? ",
                                     style: smallHeadlineTextStyle.copyWith(
-                                      color: primary,
+                                      fontWeight: FontWeight.normal,
                                       fontSize: 17,
                                     )),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  "A ${programProvider.programInfo!.name!} participant? ",
-                                  style: smallHeadlineTextStyle.copyWith(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 17,
-                                  )),
-                              InkWell(
-                                onTap: () {
-                                  // navigate to forgot password page
-                                  context.pushNamed(authRouteName);
-                                },
-                                // what's the other catchy phrase for login as ambassador?
-                                child: Text("Sign in here",
+                                InkWell(
+                                  onTap: () {
+                                    context.pushNamed(signUpRouteName);
+                                  },
+                                  child: Text("Sign up",
+                                      style: smallHeadlineTextStyle.copyWith(
+                                        color: primary,
+                                        fontSize: 17,
+                                      )),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    "A ${programProvider.programInfo!.name!} participant? ",
                                     style: smallHeadlineTextStyle.copyWith(
-                                      color: primary,
+                                      fontWeight: FontWeight.normal,
                                       fontSize: 17,
                                     )),
-                              ),
-                            ],
-                          ),
-                        ],
+                                InkWell(
+                                  onTap: () {
+                                    // navigate to forgot password page
+                                    context.pushNamed(authRouteName);
+                                  },
+                                  // what's the other catchy phrase for login as ambassador?
+                                  child: Text("Sign in here",
+                                      style: smallHeadlineTextStyle.copyWith(
+                                        color: primary,
+                                        fontSize: 17,
+                                      )),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

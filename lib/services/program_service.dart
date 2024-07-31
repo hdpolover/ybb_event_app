@@ -18,6 +18,34 @@ class ProgramService {
 
         return ProgramModel.fromJson(data);
       } else {
+        print(response.body);
+        throw Exception('Failed');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ProgramModel>> getPrograms() async {
+    var url = Uri.parse('${AppConstants.apiUrl}/programs');
+
+    print(url);
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        List<ProgramModel> programs = [];
+
+        for (var i = 0; i < data.length; i++) {
+          programs.add(ProgramModel.fromJson(data[i]));
+        }
+
+        return programs;
+      } else {
+        print(response.body);
         throw Exception('Failed');
       }
     } catch (e) {

@@ -27,6 +27,7 @@ class _TransactionsState extends State<Transactions> {
   List<ProgramPaymentModel>? payments;
   List<PaymentMethodModel>? paymentMethods;
   List<PaymentModel>? participantPayments;
+  List<ProgramPaymentModel>? shownPayments;
 
   @override
   void initState() {
@@ -36,6 +37,8 @@ class _TransactionsState extends State<Transactions> {
   }
 
   getData() {
+    var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+
     String id = Provider.of<ProgramProvider>(context, listen: false)
         .currentProgram!
         .id!;
@@ -51,27 +54,108 @@ class _TransactionsState extends State<Transactions> {
         payments = value;
       });
 
-      Provider.of<PaymentProvider>(context, listen: false)
-          .setProgramPayments(value);
-    });
+      paymentProvider.setProgramPayments(value);
 
-    // get payment methods
-    PaymentMethodService().getAll(id).then((value) {
-      setState(() {
-        paymentMethods = value;
+      // get payment methods
+      PaymentMethodService().getAll(id).then((value) {
+        setState(() {
+          paymentMethods = value;
+        });
+
+        paymentProvider.setPaymentMethods(value);
+
+        // get payments based on participant id
+        PaymentService().getAll(participantId).then((value) {
+          setState(() {
+            participantPayments = value;
+          });
+
+          paymentProvider.setPayments(value);
+
+          showWhichCards();
+        });
       });
-
-      Provider.of<PaymentProvider>(context, listen: false)
-          .setPaymentMethods(value);
     });
+  }
 
-    // get payments based on participant id
-    PaymentService().getAll(participantId).then((value) {
-      setState(() {
-        participantPayments = value;
-      });
+  showWhichCards() {
+    List<ProgramPaymentModel> registration = [];
+    List<ProgramPaymentModel> batch1 = [];
+    List<ProgramPaymentModel> batch2 = [];
 
-      Provider.of<PaymentProvider>(context, listen: false).setPayments(value);
+    List<ProgramPaymentModel> tempShownPayments = [];
+
+    for (var a in payments!) {
+      switch (a.category) {
+        case "registration":
+          registration.add(a);
+          break;
+        case "program_fee_1":
+          batch1.add(a);
+          break;
+        case "program_fee_2":
+          batch2.add(a);
+          break;
+      }
+    }
+
+    bool showRegist = false;
+
+    // get regist card
+    for (var a in registration) {
+      if (participantPayments!
+          .any((element) => element.programPaymentId == a.id)) {
+        tempShownPayments.add(a);
+        showRegist = true;
+        break;
+      } else {
+        // get available registration card
+        if (a.endDate!.isAfter(DateTime.now())) {
+          tempShownPayments.add(a);
+          showRegist = false;
+          break;
+        }
+      }
+    }
+
+    bool isBatch1Paid = false;
+
+    // get batch 1 card
+    if (showRegist) {
+      for (var a in batch1) {
+        if (participantPayments!
+            .any((element) => element.programPaymentId == a.id)) {
+          tempShownPayments.add(a);
+          isBatch1Paid = true;
+          break;
+        } else if (a.startDate!.isBefore(DateTime.now())) {
+          tempShownPayments.add(a);
+          isBatch1Paid = false;
+          break;
+        }
+      }
+    }
+
+    bool isBatch2Paid = false;
+
+    // get batch 2 card
+    if (isBatch1Paid) {
+      for (var a in batch2) {
+        if (participantPayments!
+            .any((element) => element.programPaymentId == a.id)) {
+          tempShownPayments.add(a);
+          isBatch2Paid = true;
+          break;
+        } else if (a.startDate!.isBefore(DateTime.now())) {
+          tempShownPayments.add(a);
+          isBatch2Paid = false;
+          break;
+        }
+      }
+    }
+
+    setState(() {
+      shownPayments = tempShownPayments;
     });
   }
 
@@ -80,14 +164,14 @@ class _TransactionsState extends State<Transactions> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: CommonMethods().buildCommonAppBar(context, "Transactions"),
-      body: payments == null ||
+      body: shownPayments == null ||
               paymentMethods == null ||
               participantPayments == null
           ? Center(
               child: LoadingAnimationWidget.fourRotatingDots(
                   color: primary, size: 40),
             )
-          : payments!.isEmpty
+          : shownPayments!.isEmpty
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,13 +188,13 @@ class _TransactionsState extends State<Transactions> {
                   mobile: SingleChildScrollView(
                     child: Column(
                       children: [
-                        for (int i = 0; i < payments!.length; i++)
+                        for (int i = 0; i < shownPayments!.length; i++)
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                               vertical: 10,
                             ),
-                            child: PaymentCard(payment: payments![i]),
+                            child: PaymentCard(payment: shownPayments![i]),
                           ),
                       ],
                     ),
@@ -122,14 +206,14 @@ class _TransactionsState extends State<Transactions> {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                     ),
-                    itemCount: payments!.length,
+                    itemCount: shownPayments!.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
                         ),
-                        child: PaymentCard(payment: payments![index]),
+                        child: PaymentCard(payment: shownPayments![index]),
                       );
                     },
                   ),

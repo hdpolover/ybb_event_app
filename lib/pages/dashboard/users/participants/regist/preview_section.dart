@@ -35,6 +35,7 @@ class _PreviewSectionState extends State<PreviewSection> {
   @override
   void initState() {
     super.initState();
+
     getParticipantRegistPayment();
   }
 
@@ -43,6 +44,8 @@ class _PreviewSectionState extends State<PreviewSection> {
         Provider.of<ParticipantProvider>(context, listen: false)
             .participantStatus!
             .formStatus;
+
+    print(submitStatus.toString().toLowerCase() + "status");
 
     if (submitStatus == "2") {
       setState(() {
@@ -57,31 +60,34 @@ class _PreviewSectionState extends State<PreviewSection> {
     List<ProgramPaymentModel> payments =
         Provider.of<PaymentProvider>(context, listen: false).programPayments!;
 
-    ProgramPaymentModel? registPayment;
+    List<ProgramPaymentModel> registPayment = [];
 
     // gett program payment that has category of registration
     for (int i = 0; i < payments.length; i++) {
       if (payments[i].category == "registration") {
         setState(() {
-          registPayment = payments[i];
+          registPayment.add(payments[i]);
         });
       }
     }
-
-    print(registPayment!.id);
 
     String? id = Provider.of<ParticipantProvider>(context, listen: false)
         .participant!
         .id;
 
+    print(id);
+
     PaymentService().getAll(id).then((value) {
       for (var item in value) {
-        if (registPayment!.id! == item.programPaymentId) {
-          setState(() {
-            participantRegistPayment = item;
-          });
+        for (var registPayment in registPayment) {
+          if (registPayment.id == item.programPaymentId &&
+              item.participantId == id) {
+            setState(() {
+              participantRegistPayment = item;
+            });
 
-          print(participantRegistPayment!.status);
+            print(participantRegistPayment!.status);
+          }
         }
       }
     });

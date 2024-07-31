@@ -9,6 +9,7 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/co
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
+import 'package:ybb_event_app/utils/dialog_manager.dart';
 
 class PaymentDetailPage extends StatefulWidget {
   final ProgramPaymentModel? payment;
@@ -19,6 +20,11 @@ class PaymentDetailPage extends StatefulWidget {
 }
 
 class _PaymentDetailPageState extends State<PaymentDetailPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   buildPaymentList(List<PaymentModel> payments) {
     // sort payments by created at
     payments.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
@@ -51,6 +57,14 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
             : Container(),
       ],
     );
+  }
+
+  checkIfExpired() {
+    if (widget.payment!.endDate!.isBefore(DateTime.now())) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   buildPaymentHistorySection(List<PaymentModel> payments) {
@@ -96,15 +110,21 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                     ),
                     const SizedBox(height: 30),
                     // button to add payment
-                    CommonMethods().buildCustomButton(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      color: primary,
-                      text: "Make Payment",
-                      onPressed: () {
-                        context.pushNamed(proceedPaymentRouteName,
-                            extra: widget.payment!);
-                      },
-                    ),
+                    checkIfExpired()
+                        ? Text(
+                            "This payment is already due. You cannot make payment for this.",
+                            style: headlineTextStyle.copyWith(
+                                fontSize: 20, color: Colors.red),
+                          )
+                        : CommonMethods().buildCustomButton(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            color: primary,
+                            text: "Make Payment",
+                            onPressed: () {
+                              context.pushNamed(proceedPaymentRouteName,
+                                  extra: widget.payment!);
+                            },
+                          ),
                   ],
                 ),
               )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ybb_event_app/main.dart';
 import 'package:ybb_event_app/models/faq_model.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/pages/footer.dart';
@@ -24,14 +25,13 @@ class _FaqsState extends State<Faqs> {
   void initState() {
     super.initState();
 
-    LandingPageService()
-        .getProgramInfo("https://worldyouthfest.com")
-        .then((value) {
+    print(mainUrl);
+    LandingPageService().getProgramInfo(mainUrl).then((value) {
       setState(() {
         programInfo = value;
       });
 
-      FaqService().getProgramFaqs("1").then((value) {
+      FaqService().getProgramFaqs(programInfo!.id!).then((value) {
         setState(() {
           faqs = value;
         });

@@ -446,8 +446,7 @@ class _DashboardState extends State<Dashboard>
       paymentStatusText =
           "No payment made yet. Make registration payment first.";
     } else if (participantStatus.paymentStatus == "1") {
-      paymentStatusText =
-          "Registratioon payment successfull. Do the next step.";
+      paymentStatusText = "Registration payment successfull. Do the next step.";
     } else {
       paymentStatusText = "";
     }

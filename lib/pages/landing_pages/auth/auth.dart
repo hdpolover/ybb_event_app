@@ -161,10 +161,12 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email": "jasminefangg@gmail.com",
+                                        //   "email": "aikoyuki72@gmail.com",
                                         //   "password": "12345678",
                                         // };
 
+                                        // // humayra.himika1999@gmail.com
+                                        // //  "email": "vehmedova727@gmail.com",
                                         // signin(data);
 
                                         if (_formKey.currentState
@@ -428,7 +430,7 @@ class _AuthState extends State<Auth> {
         .programCategoryId!;
 
     // get the program photos
-    ProgramPhotoService().getProgramPhotos("").then((value) {
+    ProgramPhotoService().getProgramPhotos(id).then((value) {
       List<ProgramPhotoModel> tempPhotos = [];
 
       /// only get the first photo which has the same program category id
@@ -461,7 +463,7 @@ class _AuthState extends State<Auth> {
       if (participants.isNotEmpty) {
         // save the user data to shared preferences
         AuthUserModel currentUser = AuthUserModel(
-          id: participants[0].userId!,
+          id: participants[0].id!,
           fullName: participants[0].fullName!,
           email: value['email']!,
         );
@@ -483,6 +485,9 @@ class _AuthState extends State<Auth> {
                   .id) {
             Provider.of<ParticipantProvider>(context, listen: false)
                 .setParticipant(i);
+
+            print(i.userId);
+            print(i.id);
 
             await ParticipantStatusService()
                 .getByParticipantId(i.id)

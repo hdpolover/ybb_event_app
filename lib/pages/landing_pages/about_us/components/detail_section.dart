@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:ybb_event_app/components/components.dart';
+import 'package:ybb_event_app/main.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/models/web_setting_about_model.dart';
+import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
 import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
@@ -27,15 +29,17 @@ class _DetailSectionState extends State<DetailSection> {
   }
 
   getPhotos() {
-    ProgramPhotoService().getProgramPhotos("").then((value) {
-      value
-          .where((element) =>
-              element.programCategoryId ==
-              widget.programInfo!.programCategoryId!)
-          .toList();
+    LandingPageService().getProgramInfo(mainUrl).then((value) {
+      ProgramPhotoService()
+          .getProgramPhotos(value.programCategoryId)
+          .then((value) {
+        value.removeWhere((element) =>
+            element.programCategoryId !=
+            widget.programInfo!.programCategoryId!);
 
-      setState(() {
-        programPhotos = value;
+        setState(() {
+          programPhotos = value;
+        });
       });
     });
   }
@@ -214,7 +218,10 @@ class _DetailSectionState extends State<DetailSection> {
             children: [
               Container(
                 width: MediaQuery.of(context).size.width * 0.6,
-                height: MediaQuery.of(context).size.height * 0.6,
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.6,
+                  minHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
                 // give the container an image background that blends with the color
                 decoration: BoxDecoration(
                   color: primary,
@@ -261,7 +268,7 @@ class _DetailSectionState extends State<DetailSection> {
                   : Container(
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.4,
-                        maxHeight: MediaQuery.of(context).size.height * 0.6,
+                        minHeight: MediaQuery.of(context).size.height * 0.6,
                       ),
                       child: Column(
                         children: [
@@ -270,7 +277,7 @@ class _DetailSectionState extends State<DetailSection> {
                             constraints: BoxConstraints(
                               maxWidth: MediaQuery.of(context).size.width * 0.4,
                               maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3,
+                                  MediaQuery.of(context).size.height * 0.5,
                             ),
                             child: Image.network(
                               programPhotos![2].imgUrl!,
@@ -282,7 +289,7 @@ class _DetailSectionState extends State<DetailSection> {
                             constraints: BoxConstraints(
                               maxWidth: MediaQuery.of(context).size.width * 0.4,
                               maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3,
+                                  MediaQuery.of(context).size.height * 0.5,
                             ),
                             child: Image.network(
                               programPhotos![3].imgUrl!,

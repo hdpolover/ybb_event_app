@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/spacing.dart';
+import 'package:ybb_event_app/main.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
@@ -43,9 +44,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
 
-    LandingPageService()
-        .getProgramInfo("https://worldyouthfest.com")
-        .then((value) {
+    LandingPageService().getProgramInfo(mainUrl).then((value) {
       //set program info to provider
       Provider.of<ProgramProvider>(context, listen: false)
           .setProgramInfo(value);
@@ -68,7 +67,9 @@ class _HomeState extends State<Home> {
             homeSetting = value;
           });
 
-          ProgramPhotoService().getProgramPhotos("").then((value) {
+          ProgramPhotoService()
+              .getProgramPhotos(programInfo!.programCategoryId)
+              .then((value) {
             setState(() {
               programPhotos = value;
             });
@@ -164,6 +165,7 @@ class _HomeState extends State<Home> {
                     : ProgramPhotoModel(imgUrl: ""),
               ),
               TimelineSection(
+                programId: programInfo!.id!,
                 programPhoto: currentProgramPhotos.isNotEmpty
                     ? currentProgramPhotos.elementAt(
                         Random().nextInt(currentProgramPhotos.length))

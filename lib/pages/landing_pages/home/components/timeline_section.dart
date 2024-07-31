@@ -8,8 +8,10 @@ import 'package:ybb_event_app/services/schedule_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 
 class TimelineSection extends StatefulWidget {
+  final String programId;
   final ProgramPhotoModel? programPhoto;
-  const TimelineSection({super.key, this.programPhoto});
+  const TimelineSection(
+      {super.key, this.programPhoto, required this.programId});
 
   @override
   State<TimelineSection> createState() => _TimelineSectionState();
@@ -27,6 +29,8 @@ class _TimelineSectionState extends State<TimelineSection> {
 
   getSchedules() {
     ScheduleService().getProgramSchedules().then((schedules) {
+      schedules.removeWhere((element) =>
+          element.programId != widget.programId); // remove other programs
       // sort the schedules based on the order number
       schedules.sort((a, b) => a.orderNumber!.compareTo(b.orderNumber!));
 

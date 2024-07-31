@@ -25,6 +25,23 @@ class CommonMethods {
     );
   }
 
+  buildCustomUnderlineButton(
+      {double? width,
+      Color? color,
+      required String text,
+      required Function() onPressed}) {
+    return MaterialButton(
+      minWidth: width ?? double.infinity,
+      height: 50,
+      // give radius to the button
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      onPressed: onPressed,
+      child: AutoSizeText(text,
+          style: buttonTextStyle.copyWith(
+              color: Colors.black, decoration: TextDecoration.underline)),
+    );
+  }
+
   buildTextField(Key key, String name, String hintText,
       List<FormFieldValidator> validators,
       {String? desc, dynamic initial, int? lines}) {
