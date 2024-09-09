@@ -47,7 +47,7 @@ class ParticipantSubthemeService {
 
         return value;
       } else {
-        throw jsonDecode(response.body)['message'];
+        return ParticipantSubthemeModel();
       }
     } catch (e) {
       rethrow;

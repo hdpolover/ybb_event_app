@@ -74,50 +74,53 @@ class _GallerySectionState extends State<GallerySection> {
       }
     }
 
-    return Center(
-      child: Padding(
-        padding: ScreenSizeHelper.responsiveValue(context,
-            mobile: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            desktop: const EdgeInsets.symmetric(horizontal: 20)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              programCategoryName,
-              softWrap: true,
-              style: headlineSecondaryTextStyle.copyWith(
-                color: primary,
-                fontWeight: FontWeight.bold,
+    return gallery.isEmpty
+        ? const SizedBox.shrink()
+        : Center(
+            child: Padding(
+              padding: ScreenSizeHelper.responsiveValue(context,
+                  mobile:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  desktop: const EdgeInsets.symmetric(horizontal: 20)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    programCategoryName,
+                    softWrap: true,
+                    style: headlineSecondaryTextStyle.copyWith(
+                      color: primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      maxWidth: ScreenSizeHelper.responsiveValue(
+                        context,
+                        mobile: MediaQuery.of(context).size.width * 0.8,
+                        desktop: MediaQuery.of(context).size.width * 0.3,
+                      ),
+                    ),
+                    child: FlutterCarousel(
+                      options: CarouselOptions(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        viewportFraction: 1.0,
+                        enlargeCenterPage: false,
+                        autoPlay: true,
+                        enableInfiniteScroll: true,
+                        autoPlayInterval: const Duration(seconds: 10),
+                        slideIndicator: CircularWaveSlideIndicator(),
+                      ),
+                      items: gallery,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.5,
-                maxWidth: ScreenSizeHelper.responsiveValue(
-                  context,
-                  mobile: MediaQuery.of(context).size.width * 0.8,
-                  desktop: MediaQuery.of(context).size.width * 0.3,
-                ),
-              ),
-              child: FlutterCarousel(
-                options: CarouselOptions(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  viewportFraction: 1.0,
-                  enlargeCenterPage: false,
-                  autoPlay: true,
-                  enableInfiniteScroll: true,
-                  autoPlayInterval: const Duration(seconds: 10),
-                  slideIndicator: CircularWaveSlideIndicator(),
-                ),
-                items: gallery,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   @override

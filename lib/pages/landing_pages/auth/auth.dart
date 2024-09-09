@@ -161,12 +161,12 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email": "aikoyuki72@gmail.com",
-                                        //   "password": "12345678",
+                                        //   "email": "hendrapolover@gmail.com",
+                                        //   "password": "12344321",
                                         // };
 
-                                        // // humayra.himika1999@gmail.com
-                                        // //  "email": "vehmedova727@gmail.com",
+                                        // // // humayra.himika1999@gmail.com
+                                        // // //  "email": "vehmedova727@gmail.com",
                                         // signin(data);
 
                                         if (_formKey.currentState
@@ -324,6 +324,20 @@ class _AuthState extends State<Auth> {
                             ),
                             const SizedBox(height: 20),
                             // align the text to the right
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: InkWell(
+                                onTap: () {
+                                  // navigate to forgot password page
+                                  context.pushNamed(forgotPasswordRouteName);
+                                },
+                                child: AutoSizeText("Forgot password?",
+                                    style:
+                                        bodyTextStyle.copyWith(color: primary)),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // align the text to the right
                             // Align(
                             //   alignment: Alignment.centerRight,
                             //   child: InkWell(
@@ -458,13 +472,27 @@ class _AuthState extends State<Auth> {
     };
 
     // sign in the user
+    AuthService().participantSignIn(data).then((p) async {
+      // check if verified
+      if (p.isVerified == "0") {
+        DialogManager.showVerifyAlert(context,
+            "Your account is not verified yet. Please check your email inbox to continue.",
+            () {
+          AuthService().sendVerifEmail(p.userId!).then((value) {
+            Navigator.of(context).pop();
+          });
+        }, () {
+          Navigator.of(context).pop();
+        });
 
-    AuthService().participantSignIn(data).then((participants) async {
-      if (participants.isNotEmpty) {
+        setState(() {
+          isLoading = false;
+        });
+      } else {
         // save the user data to shared preferences
         AuthUserModel currentUser = AuthUserModel(
-          id: participants[0].id!,
-          fullName: participants[0].fullName!,
+          id: p.id!,
+          fullName: p.fullName!,
           email: value['email']!,
         );
 
@@ -472,51 +500,25 @@ class _AuthState extends State<Auth> {
             .setAuthUser(currentUser);
 
         Provider.of<ParticipantProvider>(context, listen: false)
-            .setParticipants(participants);
+            .setParticipant(p);
 
-        List<ParticipantModel>? tempList =
-            Provider.of<ParticipantProvider>(context, listen: false)
-                .participants;
+        await ParticipantStatusService().getByParticipantId(p.id).then((value) {
+          setState(() {
+            isLoading = false;
+          });
 
-        for (var i in tempList!) {
-          if (i.programId ==
-              Provider.of<ProgramProvider>(context, listen: false)
-                  .programInfo!
-                  .id) {
-            Provider.of<ParticipantProvider>(context, listen: false)
-                .setParticipant(i);
+          Provider.of<ParticipantProvider>(context, listen: false)
+              .setParticipantStatus(value);
 
-            print(i.userId);
-            print(i.id);
+          // navigate to home page
+          context.pushNamed(dashboardRouteName, extra: "participant");
+        }).onError((error, stackTrace) {
+          DialogManager.showAlertDialog(context, error.toString());
 
-            await ParticipantStatusService()
-                .getByParticipantId(i.id)
-                .then((value) {
-              setState(() {
-                isLoading = false;
-              });
-
-              Provider.of<ParticipantProvider>(context, listen: false)
-                  .setParticipantStatus(value);
-
-              // navigate to home page
-              context.pushNamed(dashboardRouteName, extra: "participant");
-            }).onError((error, stackTrace) {
-              DialogManager.showAlertDialog(context, error.toString());
-
-              setState(() {
-                isLoading = false;
-              });
-            });
-          }
-        }
-      } else {
-        setState(() {
-          isLoading = false;
+          setState(() {
+            isLoading = false;
+          });
         });
-
-        DialogManager.showAlertDialog(context,
-            "There is no participant with this email and password. Please try again.");
       }
     }).onError((error, stackTrace) {
       setState(() {

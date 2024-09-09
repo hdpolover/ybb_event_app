@@ -28,8 +28,32 @@ class AuthService {
     }
   }
 
-  Future<List<ParticipantModel>> participantSignIn(
-      Map<String, dynamic> data) async {
+  Future<String> sendVerifEmail(String userId) async {
+    var url = Uri.parse('${AppConstants.apiUrl}/users/email_verif');
+
+    print(url);
+
+    try {
+      var response = await http.post(
+        url,
+        body: {
+          "id": userId,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['message'];
+        return data;
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<ParticipantModel> participantSignIn(Map<String, dynamic> data) async {
     var url = Uri.parse('${AppConstants.apiUrl}/participants/signin');
 
     print(url);
@@ -47,17 +71,12 @@ class AuthService {
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)['data'];
 
-        List<ParticipantModel> participants = [];
-
-        for (var part in data) {
-          participants.add(ParticipantModel.fromJson(part));
-        }
-
-        return participants;
+        return ParticipantModel.fromJson(data);
       } else {
         throw jsonDecode(response.body)['message'];
       }
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -72,7 +91,7 @@ class AuthService {
         url,
         body: {
           "email": data["email"],
-          "ref_code": data["ref_code"],
+          "ref_code": data["ref_code"].toString().toUpperCase(),
         },
       );
 

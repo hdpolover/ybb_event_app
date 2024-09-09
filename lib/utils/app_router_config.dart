@@ -3,9 +3,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ybb_event_app/models/agreement_letter_model.dart';
+import 'package:ybb_event_app/models/ambassador_model.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/pages/dashboard/dashboard.dart';
+import 'package:ybb_event_app/pages/dashboard/users/ambassadors/ambassador_dashboard.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/announcements/user_announcements.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agreement_letter_upload.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agreement_letter_view.dart';
@@ -78,6 +80,8 @@ String agreementLetterViewRouteName = "agreement-letter-view";
 String agreementLetterViewPathName = "/agreement-letter-view";
 String forgotPasswordRouteName = "forgot-password";
 String forgotPasswordPathName = "/forgot-password";
+String ambassadorDashboardRouteName = "ambassador-dashboard";
+String ambassadorDashboardPathName = "/ambassador-dashboard";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
@@ -123,6 +127,16 @@ class AppRouterConfig {
         path: ambassadorSigninPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: AmbassadorSignin(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: ambassadorDashboardRouteName,
+        path: ambassadorDashboardPathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: AmbassadorDashboard(
+            ambassador: state.extra as AmbassadorModel,
+          ),
         ),
       ),
       GoRoute(

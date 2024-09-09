@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:internet_file/internet_file.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:pdfx/pdfx.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
@@ -28,6 +32,11 @@ class _AchievementSectionState extends State<AchievementSection> {
   final GlobalKey _experiencesKey = GlobalKey<FormBuilderFieldState>();
 
   QuillController _controller = QuillController.basic();
+
+  FilePickerResult? cvFile;
+  Uint8List? fileBytes;
+  String? fileName;
+  String? cvUrl;
 
   bool isLoading = false;
 
@@ -97,31 +106,105 @@ class _AchievementSectionState extends State<AchievementSection> {
                     "Please list any experiences you have had in the past. This can include internships, jobs, or any other relevant experiences. Input (-) if none.",
                 lines: 5,
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 10),
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.start,
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       Text(
-              //         "Resume / Curriculum Vitae",
-              //         style: bodyTextStyle.copyWith(
-              //           color: Colors.black,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //       const SizedBox(height: 10),
-              //       Text(
-              //         "You could upload your resume / CV as additional information",
-              //         style: bodyTextStyle.copyWith(
-              //           color: Colors.red,
-              //           fontWeight: FontWeight.bold,
-              //         ),
-              //       ),
-              //       const SizedBox(height: 10),
-              //     ],
-              //   ),
-              // ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Resume / CV",
+                      style: bodyTextStyle.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "You could upload your resume / CV as additional information",
+                      style: bodyTextStyle.copyWith(
+                        color: Colors.red,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        fileBytes != null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    fileName!,
+                                    style: bodyTextStyle.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  CommonMethods().buildCustomButton(
+                                    color: Colors.red,
+                                    width: 200,
+                                    text: "REMOVE",
+                                    onPressed: () {
+                                      setState(() {
+                                        fileBytes = null;
+                                        fileName = null;
+                                      });
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              )
+                            : participantProvider.participant!.resumeUrl == null
+                                ? const SizedBox.shrink()
+                                : Column(
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.sizeOf(context).height *
+                                                0.5,
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                                0.5,
+                                        child: PdfViewPinch(
+                                          controller: PdfControllerPinch(
+                                              document: PdfDocument.openData(
+                                                  InternetFile.get(
+                                                      participantProvider
+                                                          .participant!
+                                                          .resumeUrl!))),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
+                        CommonMethods().buildCustomButton(
+                          width: 200,
+                          text:
+                              fileBytes == null ? "SELECT FILE" : "CHANGE FILE",
+                          onPressed: () async {
+                            cvFile = await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['pdf'],
+                            );
+
+                            if (cvFile != null) {
+                              fileBytes = cvFile!.files.first.bytes;
+                              fileName = cvFile!.files.first.name;
+
+                              setState(() {});
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               Align(
                 alignment: Alignment.centerRight,
                 child: isLoading
@@ -144,40 +227,79 @@ class _AchievementSectionState extends State<AchievementSection> {
                             ParticipantModel currentParticipant =
                                 participantProvider.participant!;
 
-                            Map<String, dynamic> saveToData = {
-                              "achievements": data['achievements'],
-                              "experiences": data['experiences'],
-                            };
-
-                            ParticipantService()
-                                .updateData(currentParticipant.id!, saveToData)
-                                .then((value) {
-                              participantProvider.setParticipant(value);
-
-                              // update participant status
-                              Map<String, dynamic> statusData = {
-                                "form_status": "1",
+                            if (fileBytes == null) {
+                              Map<String, dynamic> saveToData = {
+                                "achievements": data['achievements'],
+                                "experiences": data['experiences'],
                               };
 
-                              ParticipantStatusService()
-                                  .updateStatus(
-                                      participantProvider
-                                          .participantStatus!.id!,
-                                      statusData)
+                              ParticipantService()
+                                  .updateData(
+                                      currentParticipant.id!, saveToData)
                                   .then((value) {
-                                participantProvider.setParticipantStatus(value);
+                                participantProvider.setParticipant(value);
 
-                                DialogManager.showAlertDialog(context,
-                                    "Achievements and experiences have been saved successfully!",
-                                    isGreen: true);
+                                // update participant status
+                                Map<String, dynamic> statusData = {
+                                  "form_status": "1",
+                                };
 
-                                setState(() {
-                                  isLoading = false;
+                                ParticipantStatusService()
+                                    .updateStatus(
+                                        participantProvider
+                                            .participantStatus!.id!,
+                                        statusData)
+                                    .then((value) {
+                                  participantProvider
+                                      .setParticipantStatus(value);
+
+                                  DialogManager.showAlertDialog(context,
+                                      "Achievements and experiences have been saved successfully!",
+                                      isGreen: true);
+
+                                  setState(() {
+                                    isLoading = false;
+                                  });
                                 });
                               });
-                            });
-                          } else {
-                            print("validation failed");
+                            } else {
+                              Map<String, dynamic> saveToData = {
+                                "achievements": data['achievements'],
+                                "experiences": data['experiences'],
+                                "file_bytes": fileBytes,
+                                "file_name": fileName,
+                              };
+
+                              ParticipantService()
+                                  .updateAchievementDataWithCv(
+                                      currentParticipant.id!, saveToData)
+                                  .then((value) {
+                                participantProvider.setParticipant(value);
+
+                                // update participant status
+                                Map<String, dynamic> statusData = {
+                                  "form_status": "1",
+                                };
+
+                                ParticipantStatusService()
+                                    .updateStatus(
+                                        participantProvider
+                                            .participantStatus!.id!,
+                                        statusData)
+                                    .then((value) {
+                                  participantProvider
+                                      .setParticipantStatus(value);
+
+                                  DialogManager.showAlertDialog(context,
+                                      "Achievements, experiences and CV have been saved successfully!",
+                                      isGreen: true);
+
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                });
+                              });
+                            }
                           }
                         },
                       ),

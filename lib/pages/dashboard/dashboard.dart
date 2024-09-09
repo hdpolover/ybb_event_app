@@ -37,18 +37,11 @@ class _DashboardState extends State<Dashboard>
 
   getData() async {
     // get data from database
-    if (widget.role == "ambassador") {
-      setState(() {
-        name = Provider.of<AuthProvider>(context, listen: false)
-            .authUser!
-            .fullName;
-      });
-    } else if (widget.role == "participant") {
-      setState(() {
-        participants = Provider.of<ParticipantProvider>(context, listen: false)
-            .participants;
-      });
-    }
+
+    setState(() {
+      participants =
+          Provider.of<ParticipantProvider>(context, listen: false).participants;
+    });
 
     getPaymentData();
   }
@@ -586,40 +579,11 @@ class _DashboardState extends State<Dashboard>
         shadowColor: Colors.grey[100],
       ),
       backgroundColor: Colors.grey[100],
-      body: widget.role == "ambassador"
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.network(
-                    programProvider.programInfo!.logoUrl!,
-                    width: MediaQuery.of(context).size.width * 0.3,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Welcome, $name!",
-                    style: headlineTextStyle.copyWith(
-                      color: primary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "You are now an ambassador for the ${programProvider.programInfo!.name} program. You can now start inviting participants to join the program. \n More features will be available soon!",
-                    style: bodyTextStyle.copyWith(
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            )
-          : ScreenSizeHelper.responsiveValue(context,
-              desktop: buildForDesktop(
-                  participantProvider, programProvider, authProvider),
-              mobile: buildForMobile(
-                  participantProvider, programProvider, authProvider)),
+      body: ScreenSizeHelper.responsiveValue(context,
+          desktop: buildForDesktop(
+              participantProvider, programProvider, authProvider),
+          mobile: buildForMobile(
+              participantProvider, programProvider, authProvider)),
     );
   }
 

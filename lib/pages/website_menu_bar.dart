@@ -89,6 +89,22 @@ class WebsiteMenuBar extends StatelessWidget {
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: () {
+                  context.pushNamed(announcementsRouteName);
+                },
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text("Announcements",
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: navLinkColor,
+                          fontFamily: fontFamily)),
+                ),
+              ),
+            ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: () {
                   context.pushNamed(faqsRouteName);
                 },
                 child: const Padding(

@@ -144,6 +144,23 @@ class _MiscellaneousSectionState extends State<MiscellaneousSection> {
                   ),
                   TextButton(
                     onPressed: () {
+                      String tutorLink =
+                          Provider.of<ProgramProvider>(context, listen: false)
+                              .currentProgram!
+                              .theme!;
+
+                      openUrl(tutorLink);
+                    },
+                    child: const Text(
+                      "Twibbon Tutorial",
+                      style: TextStyle(
+                        color: primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
                       String twibbonLink =
                           Provider.of<ProgramProvider>(context, listen: false)
                               .currentProgram!

@@ -111,7 +111,7 @@ class _BannerSectionState extends State<BannerSection> {
       child: Builder(
         builder: (context) {
           return FlutterCarousel(
-            options: CarouselOptions(
+            options: FlutterCarouselOptions(
               height: ScreenSizeHelper.responsiveValue(context,
                   desktop: MediaQuery.sizeOf(context).height * 0.5,
                   mobile: MediaQuery.sizeOf(context).height * 0.7),

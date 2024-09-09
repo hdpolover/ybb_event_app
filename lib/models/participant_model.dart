@@ -4,8 +4,6 @@
 
 import 'dart:convert';
 
-import 'package:intl/intl.dart';
-
 ParticipantModel participantModelFromJson(String str) =>
     ParticipantModel.fromJson(json.decode(str));
 
@@ -35,9 +33,10 @@ class ParticipantModel {
   dynamic contactRelation;
   dynamic diseaseHistory;
   dynamic tshirtSize;
+  String? category;
   dynamic experiences;
   dynamic achievements;
-  dynamic resumeUrl;
+  String? resumeUrl;
   dynamic knowledgeSource;
   dynamic sourceAccountName;
   dynamic twibbonLink;
@@ -46,6 +45,9 @@ class ParticipantModel {
   String? isDeleted;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? email;
+  String? isVerified;
+  String? programCategoryId;
 
   ParticipantModel({
     this.id,
@@ -70,6 +72,7 @@ class ParticipantModel {
     this.contactRelation,
     this.diseaseHistory,
     this.tshirtSize,
+    this.category,
     this.experiences,
     this.achievements,
     this.resumeUrl,
@@ -81,6 +84,9 @@ class ParticipantModel {
     this.isDeleted,
     this.createdAt,
     this.updatedAt,
+    this.email,
+    this.isVerified,
+    this.programCategoryId,
   });
 
   factory ParticipantModel.fromJson(Map<String, dynamic> json) =>
@@ -89,7 +95,7 @@ class ParticipantModel {
         userId: json["user_id"],
         accountId: json["account_id"],
         fullName: json["full_name"],
-        birthdate: json["birthdate"] == null
+        birthdate: json["birthdate"] == null || json["birthdate"] == ""
             ? null
             : DateTime.parse(json["birthdate"]),
         refCodeAmbassador: json["ref_code_ambassador"],
@@ -109,6 +115,7 @@ class ParticipantModel {
         contactRelation: json["contact_relation"],
         diseaseHistory: json["disease_history"],
         tshirtSize: json["tshirt_size"],
+        category: json["category"],
         experiences: json["experiences"],
         achievements: json["achievements"],
         resumeUrl: json["resume_url"],
@@ -124,14 +131,19 @@ class ParticipantModel {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
+        email: json["email"],
+        isVerified: json["is_verified"],
+        programCategoryId: json["program_category_id"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id.toString(),
+        "id": id,
+        "user_id": userId,
+        "account_id": accountId,
         "full_name": fullName,
         "birthdate": birthdate,
         "ref_code_ambassador": refCodeAmbassador,
-        "program_id": programId.toString(),
+        "program_id": programId,
         "gender": gender,
         "origin_address": originAddress,
         "current_address": currentAddress,
@@ -147,6 +159,7 @@ class ParticipantModel {
         "contact_relation": contactRelation,
         "disease_history": diseaseHistory,
         "tshirt_size": tshirtSize,
+        "category": category,
         "experiences": experiences,
         "achievements": achievements,
         "resume_url": resumeUrl,
@@ -154,5 +167,12 @@ class ParticipantModel {
         "source_account_name": sourceAccountName,
         "twibbon_link": twibbonLink,
         "requirement_link": requirementLink,
+        "is_active": isActive,
+        "is_deleted": isDeleted,
+        "created_at": createdAt?.toIso8601String(),
+        "updated_at": updatedAt?.toIso8601String(),
+        "email": email,
+        "is_verified": isVerified,
+        "program_category_id": programCategoryId,
       };
 }

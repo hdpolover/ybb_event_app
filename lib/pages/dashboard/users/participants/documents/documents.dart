@@ -33,6 +33,12 @@ class _DocumentsState extends State<Documents> {
             .participant!
             .id!)
         .then((value) async {
+      value.removeWhere((element) =>
+          element.programId !=
+          Provider.of<ParticipantProvider>(context, listen: false)
+              .participant!
+              .programId);
+
       // sort by name
       value.sort((a, b) => a.name!.compareTo(b.name!));
 

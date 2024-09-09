@@ -1,7 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:intl/intl.dart';
 import 'package:ybb_event_app/components/components.dart';
+import 'package:ybb_event_app/models/program_announcement_model.dart';
 
 class DialogManager {
+  static void showAnnouncementDialog(
+      BuildContext context, ProgramAnnouncementModel announcement) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+          iconPadding: const EdgeInsets.only(top: 30),
+          icon: Image.network(
+            announcement.imgUrl!,
+            width: MediaQuery.sizeOf(context).width * 0.5,
+            height: MediaQuery.sizeOf(context).height * 0.3,
+            fit: BoxFit.cover,
+          ),
+          content: SizedBox(
+            height: MediaQuery.sizeOf(context).height * 0.6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  announcement.title!,
+                  style: bodyTextStyle.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Divider(
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Published on ${DateFormat('dd MMMM yyyy').format(announcement.createdAt!)}",
+                  style: bodyTextStyle.copyWith(
+                    color: Colors.black,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.35,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        HtmlWidget(
+                          announcement.description!,
+                          textStyle: bodyTextStyle.copyWith(
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            // a button to close the dialog with primary color
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'CLOSE',
+                style: TextStyle(
+                  color: primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   static void showFullScreenDialog(BuildContext context, Function onConfirm) {
     showDialog(
       barrierDismissible: false,
@@ -106,6 +194,62 @@ class DialogManager {
                 'CONFIRM',
                 style: TextStyle(
                   color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showVerifyAlert(
+      BuildContext context, String message, Function onResend, Function onOk) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+          iconPadding: const EdgeInsets.only(top: 30),
+          icon: const Icon(
+            Icons.warning,
+            color: Colors.red,
+            size: 60,
+          ),
+          content: Text(
+            message,
+            textAlign: TextAlign.center,
+            style: bodyTextStyle.copyWith(
+              color: Colors.black,
+            ),
+          ),
+          actions: <Widget>[
+            // a button to close the dialog with primary color
+            TextButton(
+              onPressed: () {
+                onOk();
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // a button to close the dialog with primary color
+            TextButton(
+              onPressed: () {
+                onResend();
+              },
+              child: const Text(
+                'RESEND EMAIL',
+                style: TextStyle(
+                  color: Colors.green,
                   fontWeight: FontWeight.bold,
                 ),
               ),

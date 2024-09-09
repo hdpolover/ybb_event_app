@@ -79,6 +79,44 @@ class ParticipantService {
     }
   }
 
+  Future<ParticipantModel> updateAchievementDataWithCv(
+      String id, Map<String, dynamic> data) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${AppConstants.apiUrl}/participants/update/$id'),
+    );
+    Map<String, String> headers = {"Content-type": "multipart/form-data"};
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'resume_url',
+        data['file_bytes'],
+        filename: data['file_name'],
+      ),
+    );
+    request.headers.addAll(headers);
+    request.fields.addAll({
+      "achievements": data['achievements'],
+      "experiences": data['experiences'],
+    });
+
+    try {
+      var streamedResponse = await request.send();
+
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        return ParticipantModel.fromJson(data);
+      } else {
+        print(response.body);
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<ParticipantModel> updateBasicInformationDataWithPhoto(
       String id, Map<String, dynamic> data) async {
     var request = http.MultipartRequest(
@@ -129,5 +167,28 @@ class ParticipantService {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<List<ParticipantModel>> getReferredParticipants(String refCode) {
+    var url = Uri.parse(
+        '${AppConstants.apiUrl}/participants/list_ambassador?ref_code=$refCode');
+
+    print(url);
+
+    return http.get(url).then((response) {
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        List<ParticipantModel> participants = [];
+
+        for (var part in data) {
+          participants.add(ParticipantModel.fromJson(part));
+        }
+
+        return participants;
+      } else {
+        throw Exception('Failed');
+      }
+    });
   }
 }

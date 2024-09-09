@@ -151,7 +151,7 @@ class _HomeState extends State<Home> {
                 child: Padding(
                   padding: blockPadding(context),
                   child: HtmlWidget("""
-               <iframe width="$width" height="$height" src="https://www.youtube.com/embed/04Go7rHXoN8?si=jsy9YBYJLxJfUz0l" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+               <iframe width="$width" height="$height" src="${programInfo!.registrationVideoUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                   """),
                 ),
               ),

@@ -47,7 +47,7 @@ class ParticipantEssayService {
 
         return value;
       } else {
-        throw jsonDecode(response.body)['message'];
+        return [];
       }
     } catch (e) {
       rethrow;

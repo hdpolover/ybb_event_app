@@ -75,6 +75,16 @@ class _PageTemplateState extends State<PageTemplate> {
             ),
             ListTile(
               // add icon
+              leading: const Icon(Icons.event),
+              title: const Text("Announcements"),
+              onTap: () {
+                Navigator.pop(context);
+
+                context.pushNamed(announcementsRouteName);
+              },
+            ),
+            ListTile(
+              // add icon
               leading: const FaIcon(FontAwesomeIcons.envelope),
               title: const Text("FAQs"),
               onTap: () {

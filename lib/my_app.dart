@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
+import 'package:ybb_event_app/models/program_announcement_model.dart';
+import 'package:ybb_event_app/providers/announcement_provider.dart';
 import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
             create: (_) => ParticipantProvider()),
         ChangeNotifierProvider<PaymentProvider>(
             create: (_) => PaymentProvider()),
+        ChangeNotifierProvider<AnnouncementProvider>(
+            create: (_) => AnnouncementProvider()),
       ],
       child: MaterialApp.router(
         title: 'YBB Event App',

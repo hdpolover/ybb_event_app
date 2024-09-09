@@ -41,7 +41,7 @@ class Footer extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
         child: ScreenSizeHelper.responsiveValue(
           context,
-          mobile: Row(
+          desktop: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -75,7 +75,7 @@ class Footer extends StatelessWidget {
               ),
             ],
           ),
-          desktop: Column(
+          mobile: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
