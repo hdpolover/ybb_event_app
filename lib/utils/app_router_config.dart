@@ -21,7 +21,6 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/pa
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/proceed_payment.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/transactions.dart';
 import 'package:ybb_event_app/pages/landing_pages/about_us/about_us.dart';
-import 'package:ybb_event_app/pages/landing_pages/about_us/test_page.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/announcements.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/ambassador_signin.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth.dart';
@@ -89,14 +88,6 @@ class AppRouterConfig {
     debugLogDiagnostics: true,
     initialLocation: homePathName,
     routes: [
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        name: "test-page",
-        path: "/test-page",
-        pageBuilder: (context, state) => NoTransitionPage(
-          child: TestPage(),
-        ),
-      ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         name: forgotPasswordRouteName,

@@ -210,7 +210,7 @@ class _TestimonySectionState extends State<TestimonySection> {
           return Padding(
             padding: blockPadding(context),
             child: FlutterCarousel(
-              options: CarouselOptions(
+              options: FlutterCarouselOptions(
                 height: height,
                 viewportFraction: 1.0,
                 enlargeCenterPage: false,

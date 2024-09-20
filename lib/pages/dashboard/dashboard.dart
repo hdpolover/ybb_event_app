@@ -417,6 +417,7 @@ class _DashboardState extends State<Dashboard>
                 },
               ),
             ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -514,6 +515,7 @@ class _DashboardState extends State<Dashboard>
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
       itemCount: menuCards.length,
       itemBuilder: (context, index) {
         return Padding(

@@ -165,8 +165,6 @@ class _AuthState extends State<Auth> {
                                         //   "password": "12344321",
                                         // };
 
-                                        // // // humayra.himika1999@gmail.com
-                                        // // //  "email": "vehmedova727@gmail.com",
                                         // signin(data);
 
                                         if (_formKey.currentState
@@ -473,21 +471,60 @@ class _AuthState extends State<Auth> {
 
     // sign in the user
     AuthService().participantSignIn(data).then((p) async {
-      // check if verified
-      if (p.isVerified == "0") {
-        DialogManager.showVerifyAlert(context,
-            "Your account is not verified yet. Please check your email inbox to continue.",
-            () {
-          AuthService().sendVerifEmail(p.userId!).then((value) {
+      // check if the program needs verification
+      if (Provider.of<ProgramProvider>(context, listen: false)
+              .programInfo!
+              .verificationRequired! ==
+          "1") {
+// check if verified
+        if (p.isVerified == "0") {
+          DialogManager.showVerifyAlert(context,
+              "Your account is not verified yet. Please check your email inbox to continue.",
+              () {
+            AuthService().sendVerifEmail(p.userId!).then((value) {
+              Navigator.of(context).pop();
+            });
+          }, () {
             Navigator.of(context).pop();
           });
-        }, () {
-          Navigator.of(context).pop();
-        });
 
-        setState(() {
-          isLoading = false;
-        });
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          // save the user data to shared preferences
+          AuthUserModel currentUser = AuthUserModel(
+            id: p.id!,
+            fullName: p.fullName!,
+            email: value['email']!,
+          );
+
+          Provider.of<AuthProvider>(context, listen: false)
+              .setAuthUser(currentUser);
+
+          Provider.of<ParticipantProvider>(context, listen: false)
+              .setParticipant(p);
+
+          await ParticipantStatusService()
+              .getByParticipantId(p.id)
+              .then((value) {
+            setState(() {
+              isLoading = false;
+            });
+
+            Provider.of<ParticipantProvider>(context, listen: false)
+                .setParticipantStatus(value);
+
+            // navigate to home page
+            context.pushNamed(dashboardRouteName, extra: "participant");
+          }).onError((error, stackTrace) {
+            DialogManager.showAlertDialog(context, error.toString());
+
+            setState(() {
+              isLoading = false;
+            });
+          });
+        }
       } else {
         // save the user data to shared preferences
         AuthUserModel currentUser = AuthUserModel(

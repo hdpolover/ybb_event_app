@@ -27,6 +27,7 @@ class ProgramCategoryModel {
   String? isDeleted;
   DateTime? createdAt;
   DateTime? updatedAt;
+  String? verificationRequired;
 
   ProgramCategoryModel({
     this.id,
@@ -45,6 +46,7 @@ class ProgramCategoryModel {
     this.isDeleted,
     this.createdAt,
     this.updatedAt,
+    this.verificationRequired,
   });
 
   factory ProgramCategoryModel.fromJson(Map<String, dynamic> json) =>
@@ -69,6 +71,7 @@ class ProgramCategoryModel {
         updatedAt: json["updated_at"] == null
             ? null
             : DateTime.parse(json["updated_at"]),
+        verificationRequired: json["verification_required"],
       );
 
   Map<String, dynamic> toJson() => {

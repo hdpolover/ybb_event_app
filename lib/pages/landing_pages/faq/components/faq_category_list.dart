@@ -31,7 +31,6 @@ class _FaqCategoryListState extends State<FaqCategoryList> {
         headerPadding: EdgeInsets.all(24.0),
         contentBackgroundColor: Colors.white,
         contentPadding: EdgeInsets.all(24.0),
-        contentRadius: 12.0,
       ),
       controller:
           index == 2 ? controller.copyWith(isExpanded: true) : controller,

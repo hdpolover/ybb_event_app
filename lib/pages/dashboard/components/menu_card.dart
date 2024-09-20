@@ -26,6 +26,20 @@ class MenuCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: menuCard.isActive ? Colors.white : Colors.grey[200],
             borderRadius: BorderRadius.circular(20),
+            // give a shadow effect to the card
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+            // add a border to the card
+            border: Border.all(
+              color: menuCard.isActive ? primary : Colors.grey,
+              width: 1,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -105,7 +105,7 @@ class _GallerySectionState extends State<GallerySection> {
                       ),
                     ),
                     child: FlutterCarousel(
-                      options: CarouselOptions(
+                      options: FlutterCarouselOptions(
                         height: MediaQuery.of(context).size.height * 0.5,
                         viewportFraction: 1.0,
                         enlargeCenterPage: false,

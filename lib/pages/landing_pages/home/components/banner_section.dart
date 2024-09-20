@@ -107,16 +107,21 @@ class _BannerSectionState extends State<BannerSection> {
       ],
     );
 
-    return Center(
+    return SizedBox(
+      width: double.infinity,
+      height: ScreenSizeHelper.responsiveValue(context,
+          desktop: MediaQuery.sizeOf(context).height * 0.8,
+          mobile: MediaQuery.sizeOf(context).height * 0.7),
       child: Builder(
         builder: (context) {
           return FlutterCarousel(
             options: FlutterCarouselOptions(
-              height: ScreenSizeHelper.responsiveValue(context,
-                  desktop: MediaQuery.sizeOf(context).height * 0.5,
-                  mobile: MediaQuery.sizeOf(context).height * 0.7),
-              viewportFraction: 1.0,
+              // height: ScreenSizeHelper.responsiveValue(context,
+              //     desktop: MediaQuery.sizeOf(context).height * 0.7,
+              //     mobile: MediaQuery.sizeOf(context).height * 0.7),
               enlargeCenterPage: false,
+              // fullScreen: true,
+              viewportFraction: 1.0,
               autoPlay: true,
               enableInfiniteScroll: true,
               autoPlayInterval: const Duration(seconds: 10),

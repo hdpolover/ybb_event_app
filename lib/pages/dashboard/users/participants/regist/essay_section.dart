@@ -90,12 +90,10 @@ class _EssaySectionState extends State<EssaySection> {
             TextPosition(offset: _essay2Controller.text.length),
           );
 
-          if (catId != "2") {
-            _essay3Controller.text = value.isEmpty ? "" : value[2].answer ?? "";
-            _essay3Controller.selection = TextSelection.fromPosition(
-              TextPosition(offset: _essay3Controller.text.length),
-            );
-          }
+          _essay3Controller.text = value.isEmpty ? "" : value[2].answer ?? "";
+          _essay3Controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: _essay3Controller.text.length),
+          );
         });
       });
     });
@@ -462,6 +460,8 @@ class _EssaySectionState extends State<EssaySection> {
                                                   "Category, subtheme, and essays have been saved successfully!",
                                                   isGreen: true);
 
+                                              getEssays();
+
                                               setState(() {
                                                 isLoading = false;
                                               });
@@ -531,7 +531,7 @@ class _EssaySectionState extends State<EssaySection> {
                                               "participant_id":
                                                   currentParticipant.id,
                                               "program_essay_id": essays![1].id,
-                                              "answer": _essay1Controller.text,
+                                              "answer": _essay2Controller.text,
                                             },
                                           ).then((value) {
                                             ParticipantEssayModel essay2 =
@@ -544,7 +544,7 @@ class _EssaySectionState extends State<EssaySection> {
                                                 "program_essay_id":
                                                     essays![2].id,
                                                 "answer":
-                                                    _essay2Controller.text,
+                                                    _essay3Controller.text,
                                               },
                                             ).then((value) {
                                               ParticipantEssayModel essay3 =
@@ -578,6 +578,8 @@ class _EssaySectionState extends State<EssaySection> {
                                                     context,
                                                     "Category, subtheme, and essay have been saved successfully!",
                                                     isGreen: true);
+
+                                                getEssays();
 
                                                 setState(() {
                                                   isLoading = false;
