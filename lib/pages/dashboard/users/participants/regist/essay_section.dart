@@ -48,6 +48,8 @@ class _EssaySectionState extends State<EssaySection> {
   final TextEditingController _essay2Controller = TextEditingController();
   final TextEditingController _essay3Controller = TextEditingController();
 
+  List<TextEditingController> essayControllers = [];
+
   @override
   void initState() {
     super.initState();
@@ -64,39 +66,53 @@ class _EssaySectionState extends State<EssaySection> {
         .currentProgram!
         .programCategoryId!;
 
+    String programTypeId = Provider.of<ProgramProvider>(context, listen: false)
+        .programInfo!
+        .programTypeId!;
+
     String participantId =
         Provider.of<ParticipantProvider>(context, listen: false)
             .participant!
             .id!;
 
-    // get essays from database
-    ProgramEssayService().getProgramEssays(id).then((value) {
-      setState(() {
-        essays = value;
-      });
+    if (programTypeId != "3") {
+      essayControllers = [
+        _essay1Controller,
+        _essay2Controller,
+        _essay3Controller,
+      ];
 
-      ParticipantEssayService().getById(participantId).then((value) {
-        Provider.of<ParticipantProvider>(context, listen: false)
-            .setParticipantEssays(value);
-
+      // get essays from database
+      ProgramEssayService().getProgramEssays(id).then((value) {
         setState(() {
-          _essay1Controller.text = value.isEmpty ? "" : value[0].answer ?? "";
-          _essay1Controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: _essay1Controller.text.length),
-          );
+          essays = value;
+        });
 
-          _essay2Controller.text = value.isEmpty ? "" : value[1].answer ?? "";
-          _essay2Controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: _essay2Controller.text.length),
-          );
+        ParticipantEssayService().getById(participantId).then((value) {
+          Provider.of<ParticipantProvider>(context, listen: false)
+              .setParticipantEssays(value);
 
-          _essay3Controller.text = value.isEmpty ? "" : value[2].answer ?? "";
-          _essay3Controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: _essay3Controller.text.length),
-          );
+          setState(() {
+            _essay1Controller.text = value.isEmpty ? "" : value[0].answer ?? "";
+            _essay1Controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: _essay1Controller.text.length),
+            );
+
+            _essay2Controller.text = value.isEmpty ? "" : value[1].answer ?? "";
+            _essay2Controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: _essay2Controller.text.length),
+            );
+
+            _essay3Controller.text = value.isEmpty ? "" : value[2].answer ?? "";
+            _essay3Controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: _essay3Controller.text.length),
+            );
+          });
         });
       });
-    });
+    } else {
+      essays = [];
+    }
 
     // get subthemes from database
     ProgramSubthemeService().getProgramSubthemes(id).then((value) {
@@ -130,6 +146,8 @@ class _EssaySectionState extends State<EssaySection> {
         });
       });
     });
+
+    setState(() {});
   }
 
   buildCompetitionRadioSection() {
@@ -191,13 +209,140 @@ class _EssaySectionState extends State<EssaySection> {
     );
   }
 
+  saveData(ParticipantProvider participantProvider, String programTypeId) {
+    // saveData();
+
+    Map<String, dynamic> data = _formKey.currentState!.value;
+
+    ParticipantModel currentParticipant = participantProvider.participant!;
+
+    ParticipantCompetitionCategoryService().save(
+      {
+        "participant_id": currentParticipant.id,
+        "competition_category_id": _categoryResult,
+      },
+    ).then((value) {
+      participantProvider.setParticipantCompetitionCategory(value);
+
+      ParticipantSubthemeService().save(
+        {
+          "participant_id": currentParticipant.id,
+          "program_subtheme_id": _subthemeResult,
+        },
+      ).then((value) {
+        participantProvider.setParticipantSubtheme(value);
+
+        String message = "";
+
+        if (programTypeId != "3") {
+          List<ParticipantEssayModel> tempParticipantEssays = [];
+
+          for (var i = 0; i < essays!.length; i++) {
+            ParticipantEssayService().save(
+              {
+                "participant_id": currentParticipant.id,
+                "program_essay_id": essays![i].id,
+                "answer": essayControllers[i].text,
+              },
+            ).then((value) {
+              tempParticipantEssays.add(value);
+            });
+          }
+
+          participantProvider.setParticipantEssays(tempParticipantEssays);
+
+          message =
+              "Category, subtheme, and essays have been saved successfully!";
+        } else {
+          message = "Category and subtheme have been saved successfully!";
+        }
+
+        // update participant status
+        Map<String, dynamic> statusData = {
+          "form_status": "1",
+        };
+
+        ParticipantStatusService()
+            .updateStatus(
+                participantProvider.participantStatus!.id!, statusData)
+            .then((value) {
+          participantProvider.setParticipantStatus(value);
+
+          DialogManager.showAlertDialog(context, message, isGreen: true);
+
+          getEssays();
+
+          setState(() {
+            isLoading = false;
+          });
+        });
+      });
+    });
+  }
+
+  _buildEssayItem(String question, TextEditingController controller) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          question,
+          style: bodyTextStyle.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          style: bodyTextStyle.copyWith(color: Colors.black),
+          decoration: InputDecoration(
+            hintText: "Write your essay here",
+            hintStyle: bodyTextStyle.copyWith(color: Colors.grey),
+            border: const OutlineInputBorder(),
+          ),
+          maxLines: 5,
+        ),
+      ],
+    );
+  }
+
+  _buildEssaySection() {
+    List<Widget> essayList = [];
+    for (var i = 0; i < essays!.length; i++) {
+      essayList
+          .add(_buildEssayItem(essays![i].questions!, essayControllers[i]));
+    }
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Text(
+          "Based on the subtheme that you have selected, complete the fields below",
+          style: bodyTextStyle.copyWith(
+            color: Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: essayList,
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var participantProvider = Provider.of<ParticipantProvider>(context);
 
-    String catId = Provider.of<ProgramProvider>(context)
-        .currentProgram!
-        .programCategoryId!;
+    String programTypeId =
+        Provider.of<ProgramProvider>(context).programInfo!.programTypeId!;
 
     return essays == null || subthemes == null || categories == null
         ? LoadingAnimationWidget.fourRotatingDots(color: primary, size: 20)
@@ -267,99 +412,7 @@ class _EssaySectionState extends State<EssaySection> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Based on the subtheme that you have selected, complete the fields below",
-                      style: bodyTextStyle.copyWith(
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          essays![0].questions!,
-                          style: bodyTextStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: _essay1Controller,
-                          style: bodyTextStyle.copyWith(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: "Write your essay here",
-                            hintStyle:
-                                bodyTextStyle.copyWith(color: Colors.grey),
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 5,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          essays![1].questions!,
-                          style: bodyTextStyle.copyWith(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: _essay2Controller,
-                          style: bodyTextStyle.copyWith(color: Colors.black),
-                          decoration: InputDecoration(
-                            hintText: "Write your essay here",
-                            hintStyle:
-                                bodyTextStyle.copyWith(color: Colors.grey),
-                            border: const OutlineInputBorder(),
-                          ),
-                          maxLines: 5,
-                        ),
-                      ],
-                    ),
-                    catId == "2"
-                        ? const SizedBox.shrink()
-                        : Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    essays![2].questions!,
-                                    style: bodyTextStyle.copyWith(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  TextFormField(
-                                    controller: _essay3Controller,
-                                    style: bodyTextStyle.copyWith(
-                                        color: Colors.black),
-                                    decoration: InputDecoration(
-                                      hintText: "Write your essay here",
-                                      hintStyle: bodyTextStyle.copyWith(
-                                          color: Colors.grey),
-                                      border: const OutlineInputBorder(),
-                                    ),
-                                    maxLines: 5,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                    if (programTypeId != "3") _buildEssaySection(),
                     const SizedBox(height: 20),
                     Align(
                       alignment: Alignment.centerRight,
@@ -370,227 +423,19 @@ class _EssaySectionState extends State<EssaySection> {
                               width: 200,
                               text: "SAVE",
                               onPressed: () {
-                                if (catId == "2") {
-                                  if (_formKey.currentState!
-                                          .saveAndValidate() &&
-                                      _categoryResult != null &&
-                                      _subthemeResult != null &&
-                                      _essay1Controller.text.isNotEmpty &&
-                                      _essay2Controller.text.isNotEmpty) {
-                                    print(_formKey.currentState!.value);
+                                if (_formKey.currentState!.saveAndValidate() &&
+                                    _subthemeResult != null &&
+                                    _categoryResult != null) {
+                                  print(_formKey.currentState!.value);
 
-                                    setState(() {
-                                      isLoading = true;
-                                    });
+                                  // _essay1Controller.text.isNotEmpty &&
+                                  // _essay2Controller.text.isNotEmpty
 
-                                    // saveData();
+                                  setState(() {
+                                    isLoading = true;
+                                  });
 
-                                    Map<String, dynamic> data =
-                                        _formKey.currentState!.value;
-
-                                    ParticipantModel currentParticipant =
-                                        participantProvider.participant!;
-
-                                    ParticipantCompetitionCategoryService()
-                                        .save(
-                                      {
-                                        "participant_id": currentParticipant.id,
-                                        "competition_category_id":
-                                            _categoryResult,
-                                      },
-                                    ).then((value) {
-                                      participantProvider
-                                          .setParticipantCompetitionCategory(
-                                              value);
-
-                                      ParticipantSubthemeService().save(
-                                        {
-                                          "participant_id":
-                                              currentParticipant.id,
-                                          "program_subtheme_id":
-                                              _subthemeResult,
-                                        },
-                                      ).then((value) {
-                                        participantProvider
-                                            .setParticipantSubtheme(value);
-
-                                        ParticipantEssayService().save(
-                                          {
-                                            "participant_id":
-                                                currentParticipant.id,
-                                            "program_essay_id": essays![0].id,
-                                            "answer": _essay1Controller.text,
-                                          },
-                                        ).then((value) {
-                                          ParticipantEssayModel essay1 = value;
-
-                                          ParticipantEssayService().save(
-                                            {
-                                              "participant_id":
-                                                  currentParticipant.id,
-                                              "program_essay_id": essays![1].id,
-                                              "answer": _essay2Controller.text,
-                                            },
-                                          ).then((value) {
-                                            ParticipantEssayModel essay2 =
-                                                value;
-
-                                            participantProvider
-                                                .setParticipantEssays([
-                                              essay1,
-                                              essay2,
-                                            ]);
-
-                                            // update participant status
-                                            Map<String, dynamic> statusData = {
-                                              "form_status": "1",
-                                            };
-
-                                            ParticipantStatusService()
-                                                .updateStatus(
-                                                    participantProvider
-                                                        .participantStatus!.id!,
-                                                    statusData)
-                                                .then((value) {
-                                              participantProvider
-                                                  .setParticipantStatus(value);
-
-                                              DialogManager.showAlertDialog(
-                                                  context,
-                                                  "Category, subtheme, and essays have been saved successfully!",
-                                                  isGreen: true);
-
-                                              getEssays();
-
-                                              setState(() {
-                                                isLoading = false;
-                                              });
-                                            });
-                                          });
-                                        });
-                                      });
-                                    });
-                                  }
-                                } else {
-                                  if (_formKey.currentState!
-                                          .saveAndValidate() &&
-                                      _subthemeResult != null &&
-                                      _categoryResult != null &&
-                                      _essay1Controller.text.isNotEmpty &&
-                                      _essay2Controller.text.isNotEmpty &&
-                                      _essay3Controller.text.isNotEmpty) {
-                                    print(_formKey.currentState!.value);
-
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-
-                                    // saveData();
-
-                                    Map<String, dynamic> data =
-                                        _formKey.currentState!.value;
-
-                                    ParticipantModel currentParticipant =
-                                        participantProvider.participant!;
-
-                                    ParticipantCompetitionCategoryService()
-                                        .save(
-                                      {
-                                        "participant_id": currentParticipant.id,
-                                        "competition_category_id":
-                                            _categoryResult,
-                                      },
-                                    ).then((value) {
-                                      participantProvider
-                                          .setParticipantCompetitionCategory(
-                                              value);
-
-                                      ParticipantSubthemeService().save(
-                                        {
-                                          "participant_id":
-                                              currentParticipant.id,
-                                          "program_subtheme_id":
-                                              _subthemeResult,
-                                        },
-                                      ).then((value) {
-                                        participantProvider
-                                            .setParticipantSubtheme(value);
-
-                                        ParticipantEssayService().save(
-                                          {
-                                            "participant_id":
-                                                currentParticipant.id,
-                                            "program_essay_id": essays![0].id,
-                                            "answer": _essay1Controller.text,
-                                          },
-                                        ).then((value) {
-                                          ParticipantEssayModel essay1 = value;
-
-                                          ParticipantEssayService().save(
-                                            {
-                                              "participant_id":
-                                                  currentParticipant.id,
-                                              "program_essay_id": essays![1].id,
-                                              "answer": _essay2Controller.text,
-                                            },
-                                          ).then((value) {
-                                            ParticipantEssayModel essay2 =
-                                                value;
-
-                                            ParticipantEssayService().save(
-                                              {
-                                                "participant_id":
-                                                    currentParticipant.id,
-                                                "program_essay_id":
-                                                    essays![2].id,
-                                                "answer":
-                                                    _essay3Controller.text,
-                                              },
-                                            ).then((value) {
-                                              ParticipantEssayModel essay3 =
-                                                  value;
-
-                                              participantProvider
-                                                  .setParticipantEssays([
-                                                essay1,
-                                                essay2,
-                                                essay3,
-                                              ]);
-
-                                              // update participant status
-                                              Map<String, dynamic> statusData =
-                                                  {
-                                                "form_status": "1",
-                                              };
-
-                                              ParticipantStatusService()
-                                                  .updateStatus(
-                                                      participantProvider
-                                                          .participantStatus!
-                                                          .id!,
-                                                      statusData)
-                                                  .then((value) {
-                                                participantProvider
-                                                    .setParticipantStatus(
-                                                        value);
-
-                                                DialogManager.showAlertDialog(
-                                                    context,
-                                                    "Category, subtheme, and essay have been saved successfully!",
-                                                    isGreen: true);
-
-                                                getEssays();
-
-                                                setState(() {
-                                                  isLoading = false;
-                                                });
-                                              });
-                                            });
-                                          });
-                                        });
-                                      });
-                                    });
-                                  }
+                                  saveData(participantProvider, programTypeId);
                                 }
                               },
                             ),

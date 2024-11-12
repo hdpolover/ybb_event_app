@@ -36,7 +36,7 @@ class _TransactionsState extends State<Transactions> {
     getData();
   }
 
-  getData() {
+  getData() async {
     var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
 
     String id = Provider.of<ProgramProvider>(context, listen: false)
@@ -49,7 +49,7 @@ class _TransactionsState extends State<Transactions> {
             .id!;
 
     // get payments
-    ProgramPaymentService().getAll(id).then((value) {
+    await ProgramPaymentService().getAll(id).then((value) async {
       setState(() {
         payments = value;
       });
@@ -57,7 +57,7 @@ class _TransactionsState extends State<Transactions> {
       paymentProvider.setProgramPayments(value);
 
       // get payment methods
-      PaymentMethodService().getAll(id).then((value) {
+      await PaymentMethodService().getAll(id).then((value) async {
         setState(() {
           paymentMethods = value;
         });
@@ -65,7 +65,7 @@ class _TransactionsState extends State<Transactions> {
         paymentProvider.setPaymentMethods(value);
 
         // get payments based on participant id
-        PaymentService().getAll(participantId).then((value) {
+        await PaymentService().getAll(participantId).then((value) {
           setState(() {
             participantPayments = value;
           });
@@ -100,6 +100,7 @@ class _TransactionsState extends State<Transactions> {
     }
 
     bool showRegist = false;
+    bool isRegistPaid = false;
 
     // get regist card
     for (var a in registration) {
@@ -107,6 +108,14 @@ class _TransactionsState extends State<Transactions> {
           .any((element) => element.programPaymentId == a.id)) {
         tempShownPayments.add(a);
         showRegist = true;
+
+        if (participantPayments!.any((element) =>
+            element.programPaymentId == a.id && element.status == "2")) {
+          isRegistPaid = true;
+        } else {
+          isRegistPaid = false;
+        }
+
         break;
       } else {
         // get available registration card
@@ -118,38 +127,46 @@ class _TransactionsState extends State<Transactions> {
       }
     }
 
-    bool isBatch1Paid = false;
+    if (isRegistPaid) {
+      bool isBatch1Paid = false;
 
-    // get batch 1 card
-    if (showRegist) {
-      for (var a in batch1) {
-        if (participantPayments!
-            .any((element) => element.programPaymentId == a.id)) {
-          tempShownPayments.add(a);
-          isBatch1Paid = true;
-          break;
-        } else if (a.startDate!.isBefore(DateTime.now())) {
-          tempShownPayments.add(a);
-          isBatch1Paid = false;
-          break;
+      // get batch 1 card
+      if (showRegist) {
+        for (var a in batch1) {
+          if (participantPayments!
+              .any((element) => element.programPaymentId == a.id)) {
+            tempShownPayments.add(a);
+
+            if (participantPayments!.any((element) =>
+                element.programPaymentId == a.id && element.status == "2")) {
+              isBatch1Paid = true;
+            } else {
+              isBatch1Paid = false;
+            }
+            break;
+          } else if (a.startDate!.isBefore(DateTime.now())) {
+            tempShownPayments.add(a);
+            isBatch1Paid = false;
+            break;
+          }
         }
       }
-    }
 
-    bool isBatch2Paid = false;
+      bool isBatch2Paid = false;
 
-    // get batch 2 card
-    if (isBatch1Paid) {
-      for (var a in batch2) {
-        if (participantPayments!
-            .any((element) => element.programPaymentId == a.id)) {
-          tempShownPayments.add(a);
-          isBatch2Paid = true;
-          break;
-        } else if (a.startDate!.isBefore(DateTime.now())) {
-          tempShownPayments.add(a);
-          isBatch2Paid = false;
-          break;
+      // get batch 2 card
+      if (isBatch1Paid) {
+        for (var a in batch2) {
+          if (participantPayments!
+              .any((element) => element.programPaymentId == a.id)) {
+            tempShownPayments.add(a);
+            isBatch2Paid = true;
+            break;
+          } else if (a.startDate!.isBefore(DateTime.now())) {
+            tempShownPayments.add(a);
+            isBatch2Paid = false;
+            break;
+          }
         }
       }
     }

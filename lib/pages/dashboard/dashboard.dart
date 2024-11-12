@@ -5,16 +5,20 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_html/html.dart';
 import 'package:ybb_event_app/components/components.dart';
+import 'package:ybb_event_app/models/paper_program_detail_model.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/participant_status_model.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card_model.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/submission_page.dart';
 import 'package:ybb_event_app/pages/landing_pages/widgets/guideline_widget.dart';
 import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
+import 'package:ybb_event_app/services/paper_program_detail_service.dart';
 import 'package:ybb_event_app/services/progam_payment_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
@@ -34,6 +38,231 @@ class _DashboardState extends State<Dashboard>
 
   late final TabController _controller;
   String? name;
+
+  List<MenuCard> menuCards = [];
+
+  setMenu() async {
+    String programTypeId = Provider.of<ProgramProvider>(context, listen: false)
+        .programInfo!
+        .programTypeId!;
+
+    List<MenuCard> baseMenu = [
+      MenuCard(
+        menuCard: MenuCardModel(
+          orderNumber: 1,
+          title: "Registration Form",
+          icon: FontAwesomeIcons.userPen,
+          desc: "Fill out and submit your registration form",
+          isActive: true,
+          route: registFormRouteName,
+        ),
+      ),
+      MenuCard(
+        menuCard: MenuCardModel(
+          orderNumber: 3,
+          title: "Transactions",
+          icon: FontAwesomeIcons.moneyBill,
+          desc: "Manage your program payments",
+          isActive: true,
+          route: transactionsRouteName,
+        ),
+      ),
+      MenuCard(
+        menuCard: MenuCardModel(
+          orderNumber: 5,
+          title: "Documents",
+          icon: FontAwesomeIcons.fileLines,
+          desc: "View and download important documents",
+          isActive: true,
+          route: documentsRouteName,
+        ),
+      ),
+      MenuCard(
+        menuCard: MenuCardModel(
+          orderNumber: 6,
+          title: "Announcements",
+          icon: FontAwesomeIcons.bullhorn,
+          desc: "Get the latest program announcements",
+          isActive: true,
+          route: userAnnouncementsRouteName,
+        ),
+      ),
+      // MenuCard(
+      //   menuCard: MenuCardModel(
+      //     title: "Help Desk",
+      //     icon: FontAwesomeIcons.ticketSimple,
+      //     desc: "Ask questions and get help from the help desk",
+      //     isActive: false,
+      //     route: helpDeskListRouteNmae,
+      //   ),
+      // ),
+      // MenuCard(
+      //   menuCard: MenuCardModel(
+      //     title: "Certificates",
+      //     icon: FontAwesomeIcons.certificate,
+      //     desc: "Preview and download your certificates",
+      //     isActive: false,
+      //     route: "",
+      //   ),
+      // ),
+      // MenuCard(
+      //   menuCard: MenuCardModel(
+      //     title: "Settings",
+      //     icon: Icons.settings,
+      //     desc: "View your settings",
+      //     isActive: false,
+      //     route: "",
+      //   ),
+      // ),
+    ];
+
+    menuCards.addAll(baseMenu);
+
+    if (programTypeId == "3") {
+      String programId = Provider.of<ProgramProvider>(context, listen: false)
+          .currentProgram!
+          .id!;
+
+      await PaperProgramDetailService().getById(programId).then((value) {
+        // get data from database
+        PaperProgramDetailModel paperProgramDetail = value;
+
+        List<MenuCard> paperMenu = [
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 2,
+              title: "Submission",
+              // paper plane icon
+              icon: FontAwesomeIcons.paperPlane,
+              desc: "Manage your abstract and paper submission",
+              isActive: false,
+              route: submissionPageRouteName,
+            ),
+          ),
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 4,
+              title: "Acceptance Letter",
+              icon: FontAwesomeIcons.fileLines,
+              desc: "View and download your acceptance letter",
+              isActive: false,
+              route: "",
+            ),
+          ),
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 7,
+              title: "Topics",
+              // open book icon
+              icon: FontAwesomeIcons.bookOpen,
+              desc: "Details of the topics to be discussed",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Topics",
+                content: paperProgramDetail.topics,
+                imgUrl: paperProgramDetail.topicImgUrl,
+              ),
+            ),
+          ),
+          // paper format
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 8,
+              title: "Paper Format",
+              icon: FontAwesomeIcons.fileZipper,
+              desc: "View the format for paper writing",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Paper Format",
+                content: paperProgramDetail.paperFormat,
+              ),
+            ),
+          ),
+          // committee
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 9,
+              title: "Committee",
+              icon: FontAwesomeIcons.users,
+              desc: "View the committee members",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Committee",
+                content: paperProgramDetail.committees,
+                imgUrl: paperProgramDetail.committeeImgUrl,
+              ),
+            ),
+          ),
+          // published books
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 10,
+              title: "Published Books",
+              icon: FontAwesomeIcons.book,
+              desc: "View the published books",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Published Books",
+                content: paperProgramDetail.books,
+              ),
+            ),
+          ),
+          // timeline
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 11,
+              title: "Timeline",
+              icon: FontAwesomeIcons.calendar,
+              desc: "View the timeline of the event",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Timeline",
+                content: paperProgramDetail.timeline,
+              ),
+            ),
+          ),
+          // keynote speakers
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 12,
+              title: "Keynote Speakers",
+              icon: FontAwesomeIcons.microphone,
+              desc: "View the keynote speakers",
+              isActive: false,
+              route: "",
+            ),
+          ),
+          // contact us
+          MenuCard(
+            menuCard: MenuCardModel(
+              orderNumber: 13,
+              title: "Contact Us",
+              icon: FontAwesomeIcons.phone,
+              desc: "Contact the event organizers",
+              isActive: true,
+              route: paperOtherPageTemplateRouteName,
+              extraItem: PaperOtherPageModel(
+                appBarTitle: "Contact Us",
+                content: paperProgramDetail.contactUs,
+              ),
+            ),
+          ),
+        ];
+
+        menuCards.addAll(paperMenu);
+      });
+    }
+
+    menuCards.sort(
+        (a, b) => a.menuCard.orderNumber.compareTo(b.menuCard.orderNumber));
+
+    setState(() {});
+  }
 
   getData() async {
     // get data from database
@@ -63,6 +292,8 @@ class _DashboardState extends State<Dashboard>
     super.initState();
 
     _controller = TabController(vsync: this, length: 3);
+
+    setMenu();
 
     getData();
     //checkFullScreen();
@@ -319,212 +550,172 @@ class _DashboardState extends State<Dashboard>
       paymentStatusText =
           "No payment made yet. Make registration payment first.";
     } else if (participantStatus.paymentStatus == "1") {
-      paymentStatusText =
-          "Registratioon payment successfull. Do the next step.";
+      paymentStatusText = "Registratioon payment successful. Do the next step.";
     } else {
       paymentStatusText = "";
     }
-    List<MenuCard> menuCards = [
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Registration Form",
-          icon: FontAwesomeIcons.userPen,
-          desc: "Fill out and submit your registration form",
-          isActive: true,
-          route: registFormRouteName,
-          statusText: formStatusText,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Transactions",
-          icon: FontAwesomeIcons.moneyBill,
-          desc: "Manage your program payments",
-          isActive: true,
-          route: transactionsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Documents",
-          icon: FontAwesomeIcons.fileLines,
-          desc: "View and download important documents",
-          isActive: true,
-          route: documentsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Announcements",
-          icon: FontAwesomeIcons.bullhorn,
-          desc: "Get the latest program announcements",
-          isActive: true,
-          route: userAnnouncementsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Help Desk",
-          icon: FontAwesomeIcons.ticketSimple,
-          desc: "Ask questions and get help from the help desk",
-          isActive: false,
-          route: helpDeskListRouteNmae,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Certificates",
-          icon: FontAwesomeIcons.certificate,
-          desc: "Preview and download your certificates",
-          isActive: false,
-          route: "",
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Settings",
-          icon: Icons.settings,
-          desc: "View your settings",
-          isActive: false,
-          route: "",
-        ),
-      ),
-    ];
+
+    for (var menuCard in menuCards) {
+      if (menuCard.menuCard.title.toLowerCase() == "registration form") {
+        setState(() {
+          menuCard.menuCard.statusText = formStatusText;
+        });
+      }
+    }
 
     // build a container with a grid view for menu cards
-    return Container(
-      padding: const EdgeInsets.only(right: 20),
-      width: MediaQuery.of(context).size.width * 0.7,
-      height: MediaQuery.of(context).size.height,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            GuidelineWidget(program: programProvider.currentProgram!),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.85,
+    return ScreenSizeHelper.responsiveValue(context,
+        desktop: Container(
+          padding: const EdgeInsets.only(right: 20),
+          width: MediaQuery.of(context).size.width * 0.7,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GuidelineWidget(program: programProvider.currentProgram!),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 6,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 0.85,
+                    ),
+                    itemCount: menuCards.length,
+                    itemBuilder: (context, index) {
+                      return menuCards[index];
+                    },
+                  ),
                 ),
-                itemCount: menuCards.length,
-                itemBuilder: (context, index) {
-                  return menuCards[index];
-                },
-              ),
+                SizedBox(
+                    height: menuCards.length < 6
+                        ? MediaQuery.sizeOf(context).height * 0.5
+                        : 20),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
-      ),
-    );
+        mobile: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 20,
+            mainAxisSpacing: 20,
+            childAspectRatio: 0.85,
+          ),
+          itemCount: menuCards.length,
+          itemBuilder: (context, index) {
+            return menuCards[index];
+          },
+        ));
   }
 
-  buildContentSectionForMobile(ProgramProvider programProvider,
-      ParticipantStatusModel participantStatus) {
-    String? formStatusText, paymentStatusText;
+  // buildContentSectionForMobile(ProgramProvider programProvider,
+  //     ParticipantStatusModel participantStatus) {
+  //   String? formStatusText, paymentStatusText;
 
-    if (participantStatus.formStatus == "0") {
-      formStatusText = "Registration form not started yet";
-    } else if (participantStatus.formStatus == "1") {
-      formStatusText = "Registration form on progress";
-    } else if (participantStatus.formStatus == "2") {
-      formStatusText = "Registration form submitted";
-    }
+  //   if (participantStatus.formStatus == "0") {
+  //     formStatusText = "Registration form not started yet";
+  //   } else if (participantStatus.formStatus == "1") {
+  //     formStatusText = "Registration form on progress";
+  //   } else if (participantStatus.formStatus == "2") {
+  //     formStatusText = "Registration form submitted";
+  //   }
 
-    if (participantStatus.paymentStatus == "0") {
-      paymentStatusText =
-          "No payment made yet. Make registration payment first.";
-    } else if (participantStatus.paymentStatus == "1") {
-      paymentStatusText = "Registration payment successfull. Do the next step.";
-    } else {
-      paymentStatusText = "";
-    }
-    List<MenuCard> menuCards = [
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Registration Form",
-          icon: FontAwesomeIcons.userPen,
-          desc: "Fill out and submit your registration form",
-          isActive: true,
-          route: registFormRouteName,
-          statusText: formStatusText,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Transactions",
-          icon: FontAwesomeIcons.moneyBill,
-          desc: "Manage your program payments",
-          isActive: true,
-          route: transactionsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Documents",
-          icon: FontAwesomeIcons.fileLines,
-          desc: "View and download important documents",
-          isActive: true,
-          route: documentsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Announcements",
-          icon: FontAwesomeIcons.bullhorn,
-          desc: "Get the latest program announcements",
-          isActive: true,
-          route: userAnnouncementsRouteName,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Help Desk",
-          icon: FontAwesomeIcons.ticketSimple,
-          desc: "Ask questions and get help from the help desk",
-          isActive: false,
-          route: helpDeskListRouteNmae,
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Certificates",
-          icon: FontAwesomeIcons.certificate,
-          desc: "Preview and download your certificates",
-          isActive: false,
-          route: "",
-        ),
-      ),
-      MenuCard(
-        menuCard: MenuCardModel(
-          title: "Settings",
-          icon: Icons.settings,
-          desc: "View your settings",
-          isActive: false,
-          route: "",
-        ),
-      ),
-    ];
+  //   if (participantStatus.paymentStatus == "0") {
+  //     paymentStatusText =
+  //         "No payment made yet. Make registration payment first.";
+  //   } else if (participantStatus.paymentStatus == "1") {
+  //     paymentStatusText = "Registration payment successfull. Do the next step.";
+  //   } else {
+  //     paymentStatusText = "";
+  //   }
+  //   List<MenuCard> menuCards = [
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Registration Form",
+  //         icon: FontAwesomeIcons.userPen,
+  //         desc: "Fill out and submit your registration form",
+  //         isActive: true,
+  //         route: registFormRouteName,
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Transactions",
+  //         icon: FontAwesomeIcons.moneyBill,
+  //         desc: "Manage your program payments",
+  //         isActive: true,
+  //         route: transactionsRouteName,
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Documents",
+  //         icon: FontAwesomeIcons.fileLines,
+  //         desc: "View and download important documents",
+  //         isActive: true,
+  //         route: documentsRouteName,
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Announcements",
+  //         icon: FontAwesomeIcons.bullhorn,
+  //         desc: "Get the latest program announcements",
+  //         isActive: true,
+  //         route: userAnnouncementsRouteName,
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Help Desk",
+  //         icon: FontAwesomeIcons.ticketSimple,
+  //         desc: "Ask questions and get help from the help desk",
+  //         isActive: false,
+  //         route: helpDeskListRouteNmae,
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Certificates",
+  //         icon: FontAwesomeIcons.certificate,
+  //         desc: "Preview and download your certificates",
+  //         isActive: false,
+  //         route: "",
+  //       ),
+  //     ),
+  //     MenuCard(
+  //       menuCard: MenuCardModel(
+  //         title: "Settings",
+  //         icon: Icons.settings,
+  //         desc: "View your settings",
+  //         isActive: false,
+  //         route: "",
+  //       ),
+  //     ),
+  //   ];
 
-    // build a container with a grid view for menu cards
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: 20, bottom: 20),
-      itemCount: menuCards.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: menuCards[index],
-        );
-      },
-    );
-  }
+  //   // build a container with a grid view for menu cards
+  //   return ListView.builder(
+  //     shrinkWrap: true,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     padding: const EdgeInsets.only(top: 20, bottom: 20),
+  //     itemCount: menuCards.length,
+  //     itemBuilder: (context, index) {
+  //       return Padding(
+  //         padding: const EdgeInsets.only(bottom: 10),
+  //         child: menuCards[index],
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -618,7 +809,7 @@ class _DashboardState extends State<Dashboard>
             buildProfileSectionForMobile(participantProvider.participant!,
                 authProvider.authUser!.email!),
             GuidelineWidget(program: programProvider.currentProgram!),
-            buildContentSectionForMobile(
+            buildContentSection(
                 programProvider, participantProvider.participantStatus!),
             const SizedBox(height: 20),
             // logout button

@@ -33,13 +33,24 @@ class _DetailSectionState extends State<DetailSection> {
       ProgramPhotoService()
           .getProgramPhotos(value.programCategoryId)
           .then((value) {
-        value.removeWhere((element) =>
-            element.programCategoryId !=
-            widget.programInfo!.programCategoryId!);
+        List<ProgramPhotoModel> tempPhotos = [];
 
-        setState(() {
-          programPhotos = value;
-        });
+        for (int i = 0; i < value.length; i++) {
+          if (value[i].programCategoryId ==
+              widget.programInfo!.programCategoryId) {
+            tempPhotos.add(value[i]);
+          }
+        }
+
+        if (tempPhotos.isEmpty) {
+          setState(() {
+            programPhotos = value;
+          });
+        } else {
+          setState(() {
+            programPhotos = tempPhotos;
+          });
+        }
       });
     });
   }

@@ -35,7 +35,7 @@ class _PaymentHistoryTileState extends State<PaymentHistoryTile> {
     return Chip(
       label: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
           fontSize: 15,
         ),
@@ -71,7 +71,7 @@ class _PaymentHistoryTileState extends State<PaymentHistoryTile> {
         paymentMethodName = paymentMethod.name!;
         break;
       } else {
-        paymentMethodName = "Unknown Payment Method";
+        paymentMethodName = "Automatic Payment";
       }
     }
 

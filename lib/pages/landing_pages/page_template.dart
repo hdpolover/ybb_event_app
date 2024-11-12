@@ -5,6 +5,7 @@ import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/pages/website_menu_bar.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/utils.dart';
+import 'package:web_smooth_scroll/web_smooth_scroll.dart';
 
 import '../../components/components.dart';
 
@@ -20,6 +21,17 @@ class PageTemplate extends StatefulWidget {
 }
 
 class _PageTemplateState extends State<PageTemplate> {
+  // Controllers
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    // initialize scroll controllers
+    _scrollController = ScrollController();
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,12 +143,26 @@ class _PageTemplateState extends State<PageTemplate> {
         ),
       ),
       body: ListView.builder(
+        controller: _scrollController,
         scrollDirection: Axis.vertical,
         itemCount: widget.contents!.length,
         itemBuilder: (context, index) {
           return widget.contents![index];
         },
       ),
+      // body: WebSmoothScroll(
+      //   controller: _scrollController,
+      //   scrollOffset: 100,
+      //   child: ListView.builder(
+      //     controller: _scrollController,
+      //     physics: const NeverScrollableScrollPhysics(),
+      //     scrollDirection: Axis.vertical,
+      //     itemCount: widget.contents!.length,
+      //     itemBuilder: (context, index) {
+      //       return widget.contents![index];
+      //     },
+      //   ),
+      // ),
     );
   }
 }

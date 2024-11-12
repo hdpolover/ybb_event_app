@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card_model.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
 
 class MenuCard extends StatelessWidget {
   final MenuCardModel menuCard;
@@ -18,7 +19,14 @@ class MenuCard extends StatelessWidget {
       child: GestureDetector(
         onTap: menuCard.isActive
             ? () {
-                context.pushNamed(menuCard.route);
+                if (menuCard.extraItem != null) {
+                  context.pushNamed(
+                    menuCard.route,
+                    extra: menuCard.extraItem as PaperOtherPageModel,
+                  );
+                } else {
+                  context.pushNamed(menuCard.route);
+                }
               }
             : null,
         child: Container(
@@ -48,7 +56,7 @@ class MenuCard extends StatelessWidget {
             children: [
               FaIcon(
                 menuCard.icon,
-                size: 50,
+                size: 40,
                 color: menuCard.isActive ? primary : Colors.grey,
               ),
               const SizedBox(height: 10),

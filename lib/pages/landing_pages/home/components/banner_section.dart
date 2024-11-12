@@ -25,54 +25,62 @@ class _BannerSectionState extends State<BannerSection> {
   }
 
   buildBannerItem(String imgUrl, String title, String desc, String date) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      // add background image to the container
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(imgUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 70,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: headlineTextStyle.copyWith(
-                  color: Colors.white, fontWeight: FontWeight.bold),
+      child: Stack(
+        children: [
+          // image
+          Image.network(
+            imgUrl,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: MediaQuery.sizeOf(context).height * 0.8,
+          ),
+          // add a black overlay to the container
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            color: Colors.black.withOpacity(0.5),
+          ),
+          Padding(
+            padding: blockPadding(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  style: headlineTextStyle.copyWith(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30),
+                Text(
+                  desc,
+                  style: smallHeadlineTextStyle.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                TimerCountdown(
+                  timeTextStyle: headlineTextStyle.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                  descriptionTextStyle: smallHeadlineTextStyle.copyWith(
+                    color: Colors.white,
+                  ),
+                  colonsTextStyle: smallHeadlineTextStyle.copyWith(
+                    color: Colors.white,
+                  ),
+                  format: CountDownTimerFormat.daysHoursMinutesSeconds,
+                  endTime: DateTime.now().add(getDuration(date)),
+                  onEnd: () {
+                    print("Timer finished");
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 30),
-            Text(
-              desc,
-              style: smallHeadlineTextStyle.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            const SizedBox(height: 30),
-            TimerCountdown(
-              timeTextStyle: headlineTextStyle.copyWith(
-                  fontWeight: FontWeight.bold, color: Colors.white),
-              descriptionTextStyle: smallHeadlineTextStyle.copyWith(
-                color: Colors.white,
-              ),
-              colonsTextStyle: smallHeadlineTextStyle.copyWith(
-                color: Colors.white,
-              ),
-              format: CountDownTimerFormat.daysHoursMinutesSeconds,
-              endTime: DateTime.now().add(getDuration(date)),
-              onEnd: () {
-                print("Timer finished");
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -82,6 +90,7 @@ class _BannerSectionState extends State<BannerSection> {
       imgUrl,
       fit: BoxFit.cover,
       width: double.infinity,
+      height: MediaQuery.sizeOf(context).height * 0.5,
     );
   }
 

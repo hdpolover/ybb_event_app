@@ -31,9 +31,9 @@ class ProgramDocumentService {
     }
   }
 
-  Future getInvitationLetter(String? id) async {
+  Future getInvitationLetter(String? pId, String? docId) async {
     var url = Uri.parse(
-        '${AppConstants.apiUrl}/document_invitation/generate_pdf?id=$id');
+        '${AppConstants.apiUrl}/document_invitation/generate_pdf?participant_id=$pId&document_id=$docId');
 
     print(url);
 

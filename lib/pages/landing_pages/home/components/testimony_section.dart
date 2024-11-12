@@ -102,9 +102,9 @@ class _TestimonySectionState extends State<TestimonySection> {
         color: primary,
         borderRadius: BorderRadius.circular(10),
       ),
-      width: MediaQuery.of(context).size.width * 0.7,
+      width: MediaQuery.sizeOf(context).width * 0.7,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
@@ -146,7 +146,8 @@ class _TestimonySectionState extends State<TestimonySection> {
               ],
             ),
           ),
-          Expanded(
+          SizedBox(
+            width: MediaQuery.sizeOf(context).width * 0.5,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -200,27 +201,24 @@ class _TestimonySectionState extends State<TestimonySection> {
       sliders.add(buildTestimonyItem(widget.testimonies![i]));
     }
 
-    return Center(
+    return SizedBox(
+      width: double.infinity,
+      height: ScreenSizeHelper.responsiveValue(context,
+          desktop: MediaQuery.of(context).size.height * 0.5,
+          mobile: MediaQuery.of(context).size.height * 0.7),
       child: Builder(
         builder: (context) {
-          final height = ScreenSizeHelper.responsiveValue(context,
-              desktop: MediaQuery.of(context).size.height * 0.5,
-              mobile: MediaQuery.of(context).size.height * 0.7);
-
-          return Padding(
-            padding: blockPadding(context),
-            child: FlutterCarousel(
-              options: FlutterCarouselOptions(
-                height: height,
-                viewportFraction: 1.0,
-                enlargeCenterPage: false,
-                autoPlay: true,
-                enableInfiniteScroll: true,
-                autoPlayInterval: const Duration(seconds: 10),
-                showIndicator: false,
-              ),
-              items: sliders,
+          return FlutterCarousel(
+            options: FlutterCarouselOptions(
+              // height: height,
+              viewportFraction: 1.0,
+              enlargeCenterPage: false,
+              autoPlay: true,
+              enableInfiniteScroll: true,
+              autoPlayInterval: const Duration(seconds: 10),
+              showIndicator: false,
             ),
+            items: sliders,
           );
         },
       ),

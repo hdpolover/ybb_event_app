@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:fancy_shimmer_image/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,7 +15,7 @@ import 'package:ybb_event_app/utils/screen_size_helper.dart';
 class EventAboutSection extends StatefulWidget {
   final ProgramInfoByUrlModel programInfo;
   final WebSettingHomeModel webSettingHome;
-  final ProgramPhotoModel programPhoto;
+  final String programPhoto;
 
   const EventAboutSection(
       {super.key,
@@ -40,11 +42,14 @@ class _EventAboutSectionState extends State<EventAboutSection> {
               maxHeight: MediaQuery.of(context).size.height * 0.7,
               minHeight: MediaQuery.of(context).size.height * 0.7,
             ),
-            child: FancyShimmerImage(
-              imageUrl: widget.programPhoto.imgUrl!,
+            child: CachedNetworkImage(
+              imageUrl: widget.programPhoto,
+              fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.7,
-              boxFit: BoxFit.cover,
+              placeholder: (context, url) =>
+                  FancyShimmerImage(imageUrl: widget.programInfo.logoUrl!),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
           ),
           buildAboutItem("What is ${widget.programInfo.name!}?",
@@ -73,11 +78,14 @@ class _EventAboutSectionState extends State<EventAboutSection> {
         children: [
           Row(
             children: [
-              FancyShimmerImage(
-                imageUrl: widget.programPhoto.imgUrl!,
+              CachedNetworkImage(
+                imageUrl: widget.programPhoto,
+                fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width * 0.4,
                 height: MediaQuery.of(context).size.height * 0.7,
-                boxFit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    CachedNetworkImage(imageUrl: widget.programInfo.logoUrl!),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               Expanded(
                 child: buildAboutItem("What is ${widget.programInfo.name!}?",

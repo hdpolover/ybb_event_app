@@ -91,10 +91,12 @@ class _DocumentItemState extends State<DocumentItem> {
                             });
                             await ProgramDocumentService()
                                 .getInvitationLetter(
-                                    Provider.of<ParticipantProvider>(context,
-                                            listen: false)
-                                        .participant!
-                                        .id!)
+                              Provider.of<ParticipantProvider>(context,
+                                      listen: false)
+                                  .participant!
+                                  .id!,
+                              widget.doc.id!,
+                            )
                                 .then((value) {
                               setState(() {
                                 isLoading = false;

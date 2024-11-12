@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -64,13 +65,14 @@ class _GallerySectionState extends State<GallerySection> {
 
     for (int i = 0; i < widget.programPhotos.length; i++) {
       if (widget.programPhotos[i].programCategoryId == id) {
-        gallery.add(
-          Image.network(
-            widget.programPhotos[i].imgUrl!,
-            fit: BoxFit.cover,
-            width: double.infinity,
-          ),
-        );
+        gallery.add(CachedNetworkImage(
+          imageUrl: widget.programPhotos[i].imgUrl!,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          placeholder: (context, url) =>
+              LoadingAnimationWidget.hexagonDots(color: primary, size: 20),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+        ));
       }
     }
 

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -9,43 +10,26 @@ import 'package:ybb_event_app/utils/common_methods.dart';
 
 class TimelineSection extends StatefulWidget {
   final String programId;
-  final ProgramPhotoModel? programPhoto;
+  final String? programPhoto;
+  final List<ProgramScheduleModel>? programSchedules;
+
   const TimelineSection(
-      {super.key, this.programPhoto, required this.programId});
+      {super.key,
+      this.programPhoto,
+      required this.programId,
+      required this.programSchedules});
 
   @override
   State<TimelineSection> createState() => _TimelineSectionState();
 }
 
 class _TimelineSectionState extends State<TimelineSection> {
-  List<ProgramScheduleModel>? programSchedules;
-
-  @override
-  void initState() {
-    super.initState();
-
-    getSchedules();
-  }
-
-  getSchedules() {
-    ScheduleService().getProgramSchedules().then((schedules) {
-      schedules.removeWhere((element) =>
-          element.programId != widget.programId); // remove other programs
-      // sort the schedules based on the order number
-      schedules.sort((a, b) => a.orderNumber!.compareTo(b.orderNumber!));
-
-      setState(() {
-        programSchedules = schedules;
-      });
-    });
-  }
-
   buildTimeline() {
     List<TimelineTile> timeline = [];
 
-    for (int i = 0; i < programSchedules!.length; i++) {
+    for (int i = 0; i < widget.programSchedules!.length; i++) {
       bool isFirst = i == 0;
-      bool isLast = i == programSchedules!.length - 1;
+      bool isLast = i == widget.programSchedules!.length - 1;
       bool isEven = i % 2 == 0;
 
       timeline.add(
@@ -53,9 +37,9 @@ class _TimelineSectionState extends State<TimelineSection> {
           isFirst,
           isLast,
           isEven,
-          programSchedules![i].name!,
-          programSchedules![i].startDate!,
-          programSchedules![i].endDate!,
+          widget.programSchedules![i].name!,
+          widget.programSchedules![i].startDate!,
+          widget.programSchedules![i].endDate!,
         ),
       );
     }
@@ -99,7 +83,7 @@ class _TimelineSectionState extends State<TimelineSection> {
 
   @override
   Widget build(BuildContext context) {
-    return programSchedules == null
+    return widget.programSchedules == null
         ? LoadingAnimationWidget.fourRotatingDots(color: primary, size: 20)
         : Container(
             // give a background image from network image and also a transparent color so that texts can be read
@@ -112,10 +96,12 @@ class _TimelineSectionState extends State<TimelineSection> {
                           isImageError = true;
                         });
                       },
-                      image: NetworkImage(widget.programPhoto!.imgUrl!),
+                      image: CachedNetworkImageProvider(
+                        widget.programPhoto!,
+                      ),
                       fit: BoxFit.cover,
                       colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.9), BlendMode.darken),
+                          Colors.black.withOpacity(0.7), BlendMode.darken),
                     ),
                   ),
             padding: commonPadding(context),

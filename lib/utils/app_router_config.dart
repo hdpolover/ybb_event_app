@@ -14,6 +14,8 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agree
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/document_pdf_viewer.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/documents.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/help_desk/help_desk_list.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/submission_page.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/regist_form.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/components/payment_history_detail.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/payment_detail_page.dart';
@@ -22,6 +24,7 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/pr
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/transactions.dart';
 import 'package:ybb_event_app/pages/landing_pages/about_us/about_us.dart';
 import 'package:ybb_event_app/pages/landing_pages/announcements/announcements.dart';
+import 'package:ybb_event_app/pages/landing_pages/announcements/news.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/ambassador_signin.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/forgot_password.dart';
@@ -81,6 +84,12 @@ String forgotPasswordRouteName = "forgot-password";
 String forgotPasswordPathName = "/forgot-password";
 String ambassadorDashboardRouteName = "ambassador-dashboard";
 String ambassadorDashboardPathName = "/ambassador-dashboard";
+String outsideNewsRouteName = "news";
+String outsideNewsPathName = "/news";
+String paperOtherPageTemplatePathName = "/paper-other-page-template";
+String paperOtherPageTemplateRouteName = "paper-other-page-template";
+String submissionPagePathName = "/submission";
+String submissionPageRouteName = "submission";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
@@ -88,6 +97,14 @@ class AppRouterConfig {
     debugLogDiagnostics: true,
     initialLocation: homePathName,
     routes: [
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: outsideNewsRouteName,
+        path: outsideNewsPathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: News(),
+        ),
+      ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         name: forgotPasswordRouteName,
@@ -284,6 +301,24 @@ class AppRouterConfig {
         path: helpCenterPathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: HelpCenter(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: paperOtherPageTemplateRouteName,
+        path: paperOtherPageTemplatePathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: PaperOtherPageTemplate(
+            item: state.extra as PaperOtherPageModel,
+          ),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: submissionPageRouteName,
+        path: submissionPagePathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: SubmissionPage(),
         ),
       ),
     ],

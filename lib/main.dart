@@ -16,8 +16,8 @@ void main() {
 
   print(url);
 
-  if (url == "http://localhost:51719/") {
-    mainUrl = "https://istanbulyouthsummit.com/";
+  if (url.contains("localhost")) {
+    mainUrl = "https://youthacademicforum.com/";
   } else {
     mainUrl = url;
   }

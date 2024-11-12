@@ -21,6 +21,7 @@ class PaymentCard extends StatefulWidget {
 
 class _PaymentCardState extends State<PaymentCard> {
   PaymentModel? currentPayment;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,12 @@ class _PaymentCardState extends State<PaymentCard> {
 
     print(paymentProvider.payments!.length);
 
+    if (paymentProvider.payments!.isEmpty) {
+      currentPayment = null;
+
+      return;
+    }
+
     for (var a in paymentProvider.payments!) {
       if (a.programPaymentId == widget.payment.id) {
         print("Payment ${widget.payment.id} is paid");
@@ -43,7 +50,7 @@ class _PaymentCardState extends State<PaymentCard> {
     }
   }
 
-  buildStatusChip() {
+  buildStatus() {
     var paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
 
     Color color = Colors.green;
@@ -66,19 +73,25 @@ class _PaymentCardState extends State<PaymentCard> {
       }
     }
 
+    // make a container with the status text and color
     return Align(
       alignment: Alignment.centerLeft,
-      child: Chip(
-        label: AutoSizeText(
-          statusText,
-          style: bodyTextStyle.copyWith(
-            color: Colors.white,
-            fontSize: 10,
-          ),
-        ),
-        backgroundColor: color,
-        shape: RoundedRectangleBorder(
+      child: Container(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
+          color: color,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Column(
+          children: [
+            AutoSizeText(
+              statusText,
+              style: bodyTextStyle.copyWith(
+                color: Colors.white,
+                fontSize: 10,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -127,13 +140,19 @@ class _PaymentCardState extends State<PaymentCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      surfaceTintColor: Colors.white,
-      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
         child: Column(
@@ -141,7 +160,7 @@ class _PaymentCardState extends State<PaymentCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            buildStatusChip(),
+            buildStatus(),
             const SizedBox(height: 30),
             Text(
               widget.payment.name!,

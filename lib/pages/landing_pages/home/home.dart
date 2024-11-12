@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:ybb_event_app/main.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
 import 'package:ybb_event_app/models/program_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
+import 'package:ybb_event_app/models/program_schedule_model.dart';
 import 'package:ybb_event_app/models/testimony_model.dart';
 import 'package:ybb_event_app/models/web_setting_home_model.dart';
 import 'package:ybb_event_app/pages/footer.dart';
@@ -24,6 +26,7 @@ import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
 import 'package:ybb_event_app/services/program_service.dart';
+import 'package:ybb_event_app/services/schedule_service.dart';
 import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class Home extends StatefulWidget {
@@ -39,12 +42,13 @@ class _HomeState extends State<Home> {
   List<ProgramPhotoModel>? programPhotos = [];
   List<TestimonyModel>? testimonies = [];
   ProgramModel? currentProgram;
+  List<ProgramScheduleModel>? programSchedules = [];
 
   @override
-  void initState() {
+  initState() {
     super.initState();
 
-    LandingPageService().getProgramInfo(mainUrl).then((value) {
+    LandingPageService().getProgramInfo(mainUrl).then((value) async {
       //set program info to provider
       Provider.of<ProgramProvider>(context, listen: false)
           .setProgramInfo(value);
@@ -53,7 +57,7 @@ class _HomeState extends State<Home> {
         programInfo = value;
       });
 
-      ProgramService().getProgramById(programInfo!.id!).then((value) {
+      ProgramService().getProgramById(programInfo!.id!).then((value) async {
         //set current program to provider
         Provider.of<ProgramProvider>(context, listen: false)
             .setCurrentProgram(value);
@@ -62,21 +66,38 @@ class _HomeState extends State<Home> {
           currentProgram = value;
         });
 
-        LandingPageService().getHomeSetting(programInfo!.id!).then((value) {
+        LandingPageService()
+            .getHomeSetting(programInfo!.id!)
+            .then((value) async {
           setState(() {
             homeSetting = value;
           });
 
           ProgramPhotoService()
               .getProgramPhotos(programInfo!.programCategoryId)
-              .then((value) {
+              .then((value) async {
             setState(() {
               programPhotos = value;
             });
 
-            LandingPageService().getTestimonies(programInfo!.id!).then((value) {
+            LandingPageService()
+                .getTestimonies(programInfo!.id!)
+                .then((value) async {
               setState(() {
                 testimonies = value;
+              });
+
+              ScheduleService().getProgramSchedules().then((schedules) {
+                schedules.removeWhere((element) =>
+                    element.programId !=
+                    programInfo!.id); // remove other programs
+                // sort the schedules based on the order number
+                schedules
+                    .sort((a, b) => a.orderNumber!.compareTo(b.orderNumber!));
+
+                setState(() {
+                  programSchedules = schedules;
+                });
               });
             });
           });
@@ -125,13 +146,18 @@ class _HomeState extends State<Home> {
           .where((element) =>
               element.programCategoryId == programInfo!.programCategoryId!)
           .toList();
+
+      if (currentProgramPhotos.isEmpty) {
+        currentProgramPhotos = programPhotos!;
+      }
     }
 
     return programInfo == null ||
             homeSetting == null ||
             programPhotos == null ||
             testimonies == null ||
-            currentProgram == null
+            currentProgram == null ||
+            programSchedules == null
         ? const LoadingPage()
         : PageTemplate(
             programInfo: programInfo!,
@@ -159,17 +185,22 @@ class _HomeState extends State<Home> {
                 programInfo: programInfo!,
                 webSettingHome: homeSetting!,
                 // get a random photo from programPhotos list
-                programPhoto: currentProgramPhotos.isNotEmpty
-                    ? currentProgramPhotos.elementAt(
-                        Random().nextInt(currentProgramPhotos.length))
-                    : ProgramPhotoModel(imgUrl: ""),
+                programPhoto: currentProgramPhotos.isEmpty
+                    ? programInfo!.logoUrl!
+                    : currentProgramPhotos
+                        .elementAt(
+                            Random().nextInt(currentProgramPhotos.length))
+                        .imgUrl!,
               ),
               TimelineSection(
                 programId: programInfo!.id!,
-                programPhoto: currentProgramPhotos.isNotEmpty
-                    ? currentProgramPhotos.elementAt(
-                        Random().nextInt(currentProgramPhotos.length))
-                    : ProgramPhotoModel(imgUrl: ""),
+                programPhoto: currentProgramPhotos.isEmpty
+                    ? programInfo!.logoUrl!
+                    : currentProgramPhotos
+                        .elementAt(
+                            Random().nextInt(currentProgramPhotos.length))
+                        .imgUrl!,
+                programSchedules: programSchedules,
               ),
               GallerySection(
                 programPhotos: programPhotos!,

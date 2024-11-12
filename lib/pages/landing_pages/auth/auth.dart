@@ -452,14 +452,20 @@ class _AuthState extends State<Auth> {
         }
       }
 
-      setState(() {
-        programPhoto =
-            tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
-      });
+      if (tempPhotos.isEmpty) {
+        setState(() {
+          programPhoto = value.elementAt(Random().nextInt(value.length));
+        });
+      } else {
+        setState(() {
+          programPhoto =
+              tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
+        });
+      }
     });
   }
 
-  signin(Map<String, dynamic>? value) {
+  signin(Map<String, dynamic>? value) async {
     Map<String, dynamic> data = {
       "email": value!['email'],
       "password": value['password'],
@@ -470,18 +476,18 @@ class _AuthState extends State<Auth> {
     };
 
     // sign in the user
-    AuthService().participantSignIn(data).then((p) async {
+    await AuthService().participantSignIn(data).then((p) async {
       // check if the program needs verification
       if (Provider.of<ProgramProvider>(context, listen: false)
               .programInfo!
               .verificationRequired! ==
           "1") {
-// check if verified
+        // check if verified
         if (p.isVerified == "0") {
           DialogManager.showVerifyAlert(context,
               "Your account is not verified yet. Please check your email inbox to continue.",
-              () {
-            AuthService().sendVerifEmail(p.userId!).then((value) {
+              () async {
+            await AuthService().sendVerifEmail(p.userId!).then((value) {
               Navigator.of(context).pop();
             });
           }, () {

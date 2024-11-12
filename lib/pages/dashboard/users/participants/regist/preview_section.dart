@@ -218,7 +218,7 @@ class _PreviewSectionState extends State<PreviewSection> {
               const SizedBox(height: 30),
               FancyShimmerImage(
                 imageUrl: programProvider.currentProgram!.logoUrl!,
-                width: MediaQuery.of(context).size.width * 0.1,
+                boxFit: BoxFit.contain,
                 height: MediaQuery.of(context).size.width * 0.1,
               ),
               const SizedBox(height: 30),

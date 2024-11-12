@@ -73,10 +73,16 @@ class _SignUpState extends State<SignUp> {
           }
         }
 
-        setState(() {
-          programPhoto =
-              tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
-        });
+        if (tempPhotos.isEmpty) {
+          setState(() {
+            programPhoto = value.elementAt(Random().nextInt(value.length));
+          });
+        } else {
+          setState(() {
+            programPhoto =
+                tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
+          });
+        }
 
         setChildren();
       });
@@ -100,18 +106,36 @@ class _SignUpState extends State<SignUp> {
       // if the sign up is failed, show an error message
       AuthService().participantSignUp(user).then((value) {
         if (value != null) {
-          AuthService().sendVerifEmail(value.id!).then((value) {
+          String verifRequired =
+              Provider.of<ProgramProvider>(context, listen: false)
+                  .programInfo!
+                  .verificationRequired!;
+
+          if (verifRequired == "0") {
             setState(() {
               isLoading = false;
             });
 
             // show dialog to verify email
             DialogManager.showAlertDialog(context,
-                "Please verify your email to continue. Check your inbox or spam folder.",
-                pressed: () {
+                "Account registered successfully. Please sign in to continue.",
+                isGreen: true, pressed: () {
               context.goNamed(authRouteName);
             });
-          });
+          } else {
+            AuthService().sendVerifEmail(value.id!).then((value) {
+              setState(() {
+                isLoading = false;
+              });
+
+              // show dialog to verify email
+              DialogManager.showAlertDialog(context,
+                  "Please verify your email to continue. Check your inbox or spam folder.",
+                  pressed: () {
+                context.goNamed(authRouteName);
+              });
+            });
+          }
         } else {
           // show dialog to verify email
           DialogManager.showAlertDialog(
@@ -119,69 +143,6 @@ class _SignUpState extends State<SignUp> {
             "Something went wrong. Please try again.",
           );
         }
-
-        // Map<String, dynamic> data = {
-        //   "email": user.email!,
-        //   "password": user.password,
-        //   "program_category_id": user.programCategoryId,
-        // };
-
-        // // sign in the user
-        // AuthService().participantSignIn(data).then((participants) async {
-        //   if (participants.isNotEmpty) {
-        //     // save the user data to shared preferences
-        //     AuthUserModel currentUser = AuthUserModel(
-        //       id: participants[0].userId!,
-        //       fullName: participants[0].fullName!,
-        //       email: user.email,
-        //     );
-
-        //     Provider.of<AuthProvider>(context, listen: false)
-        //         .setAuthUser(currentUser);
-
-        //     Provider.of<ParticipantProvider>(context, listen: false)
-        //         .setParticipants(participants);
-
-        //     List<ParticipantModel>? tempList =
-        //         Provider.of<ParticipantProvider>(context, listen: false)
-        //             .participants;
-
-        //     for (var i in tempList!) {
-        //       if (i.programId ==
-        //           Provider.of<ProgramProvider>(context, listen: false)
-        //               .programInfo!
-        //               .id) {
-        //         Provider.of<ParticipantProvider>(context, listen: false)
-        //             .setParticipant(i);
-
-        //         await ParticipantStatusService()
-        //             .getByParticipantId(i.id)
-        //             .then((value) {
-        //           setState(() {
-        //             isLoading = false;
-        //           });
-
-        //           Provider.of<ParticipantProvider>(context, listen: false)
-        //               .setParticipantStatus(value);
-
-        //           // navigate to home page
-        //           context.pushNamed(dashboardRouteName, extra: "participant");
-        //         }).onError((error, stackTrace) {
-        //           DialogManager.showAlertDialog(context, error.toString());
-
-        //           setState(() {
-        //             isLoading = false;
-        //           });
-        //         });
-        //       }
-        //     }
-        //   } else {
-        //     DialogManager.showAlertDialog(context,
-        //         "There is no participant with this email and password. Please try again.");
-        //   }
-        // }).onError((error, stackTrace) {
-        //   DialogManager.showAlertDialog(context, error.toString());
-        // });
       }).catchError((e) {
         setState(() {
           isLoading = false;

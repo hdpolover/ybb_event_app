@@ -59,10 +59,16 @@ class _AmbassadorSigninState extends State<AmbassadorSignin> {
         }
       }
 
-      setState(() {
-        programPhoto =
-            tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
-      });
+      if (tempPhotos.isEmpty) {
+        setState(() {
+          programPhoto = value.elementAt(Random().nextInt(value.length));
+        });
+      } else {
+        setState(() {
+          programPhoto =
+              tempPhotos.elementAt(Random().nextInt(tempPhotos.length));
+        });
+      }
     });
   }
 
