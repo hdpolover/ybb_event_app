@@ -135,7 +135,7 @@ class _DashboardState extends State<Dashboard>
               // paper plane icon
               icon: FontAwesomeIcons.paperPlane,
               desc: "Manage your abstract and paper submission",
-              isActive: false,
+              isActive: true,
               route: submissionPageRouteName,
             ),
           ),
@@ -536,29 +536,63 @@ class _DashboardState extends State<Dashboard>
 
   buildContentSection(ProgramProvider programProvider,
       ParticipantStatusModel participantStatus) {
-    String? formStatusText, paymentStatusText;
+    String? formStatusText, paymentStatusText, submissionStatusText;
+    Color formStatusColor = Colors.red;
+    Color transactionStatusColor = Colors.red;
+    Color submissionStatusColor = Colors.red;
+    bool isSubmissionActive = false;
 
     if (participantStatus.formStatus == "0") {
       formStatusText = "Registration form not started yet";
+      formStatusColor = Colors.red;
     } else if (participantStatus.formStatus == "1") {
       formStatusText = "Registration form on progress";
+      formStatusColor = Colors.orange;
     } else if (participantStatus.formStatus == "2") {
       formStatusText = "Registration form submitted";
+      formStatusColor = Colors.green;
     }
 
-    if (participantStatus.paymentStatus == "0") {
-      paymentStatusText =
-          "No payment made yet. Make registration payment first.";
-    } else if (participantStatus.paymentStatus == "1") {
-      paymentStatusText = "Registratioon payment successful. Do the next step.";
-    } else {
-      paymentStatusText = "";
+    // if (participantStatus.paymentStatus == "0") {
+    //   paymentStatusText =
+    //       "No payment made yet. Make registration payment first.";
+    //   transactionStatusColor = Colors.red;
+    // } else if (participantStatus.paymentStatus == "1") {
+    //   paymentStatusText = "Registration payment successful. Do the next step.";
+    //   transactionStatusColor = Colors.green;
+    // } else {
+    //   paymentStatusText = "";
+    // }
+
+    if (participantStatus.formStatus == "0" ||
+        participantStatus.formStatus == "1") {
+      submissionStatusText = "Fill out and submit your registration form first";
+      submissionStatusColor = Colors.red;
+    } else if (participantStatus.formStatus == "2") {
+      submissionStatusText = "";
+      isSubmissionActive = true;
     }
 
     for (var menuCard in menuCards) {
       if (menuCard.menuCard.title.toLowerCase() == "registration form") {
         setState(() {
           menuCard.menuCard.statusText = formStatusText;
+          menuCard.menuCard.statusColor = formStatusColor;
+        });
+      }
+
+      // if (menuCard.menuCard.title.toLowerCase() == "transactions") {
+      //   setState(() {
+      //     menuCard.menuCard.statusText = paymentStatusText;
+      //     menuCard.menuCard.statusColor = transactionStatusColor;
+      //   });
+      // }
+
+      if (menuCard.menuCard.title.toLowerCase() == "submission") {
+        setState(() {
+          menuCard.menuCard.statusText = submissionStatusText;
+          menuCard.menuCard.isActive = isSubmissionActive;
+          menuCard.menuCard.statusColor = submissionStatusColor;
         });
       }
     }
@@ -570,6 +604,7 @@ class _DashboardState extends State<Dashboard>
           width: MediaQuery.of(context).size.width * 0.7,
           child: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -584,7 +619,7 @@ class _DashboardState extends State<Dashboard>
                       crossAxisCount: 6,
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
-                      childAspectRatio: 0.85,
+                      childAspectRatio: 0.6,
                     ),
                     itemCount: menuCards.length,
                     itemBuilder: (context, index) {

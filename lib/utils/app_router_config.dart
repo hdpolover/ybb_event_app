@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ybb_event_app/models/agreement_letter_model.dart';
 import 'package:ybb_event_app/models/ambassador_model.dart';
+import 'package:ybb_event_app/models/paper_abstract_model.dart';
+import 'package:ybb_event_app/models/paper_author_model.dart';
 import 'package:ybb_event_app/models/payment_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/pages/dashboard/dashboard.dart';
@@ -15,6 +17,8 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/documents/docum
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/documents.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/help_desk/help_desk_list.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/add_edit_abstract.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/author/add_edit_author.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/submission_page.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/regist_form.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/components/payment_history_detail.dart';
@@ -223,7 +227,7 @@ class AppRouterConfig {
         path: paymentWebviewPathName,
         pageBuilder: (context, state) => NoTransitionPage(
           child: PaymentWebview(
-            url: state.extra as String,
+            model: state.extra as PaymentWebViewModel,
           ),
         ),
       ),
@@ -319,6 +323,29 @@ class AppRouterConfig {
         path: submissionPagePathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: SubmissionPage(),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: AddEditAuthor.routeName,
+        path: AddEditAuthor.pathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: state.extra == null
+              ? const AddEditAuthor()
+              : AddEditAuthor(
+                  author: state.extra as PaperAuthorModel,
+                ),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: AddEditAbstract.routeName,
+        path: AddEditAbstract.pathName,
+        pageBuilder: (context, state) => NoTransitionPage(
+          child: state.extra == null
+              ? const AddEditAbstract()
+              : AddEditAbstract(
+                  paperAbstract: state.extra as PaperAbstractModel),
         ),
       ),
     ],

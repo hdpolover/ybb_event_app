@@ -74,7 +74,7 @@ class _BannerSectionState extends State<BannerSection> {
                   format: CountDownTimerFormat.daysHoursMinutesSeconds,
                   endTime: DateTime.now().add(getDuration(date)),
                   onEnd: () {
-                    print("Timer finished");
+                    debugPrint("Timer finished");
                   },
                 ),
               ],

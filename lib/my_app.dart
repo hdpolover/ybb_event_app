@@ -5,6 +5,7 @@ import 'package:ybb_event_app/models/program_announcement_model.dart';
 import 'package:ybb_event_app/providers/announcement_provider.dart';
 import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
+import 'package:ybb_event_app/providers/paper_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
             create: (_) => PaymentProvider()),
         ChangeNotifierProvider<AnnouncementProvider>(
             create: (_) => AnnouncementProvider()),
+        // paper provider
+        ChangeNotifierProvider<PaperProvider>(create: (_) => PaperProvider()),
       ],
       child: MaterialApp.router(
         title: 'YBB Event App',

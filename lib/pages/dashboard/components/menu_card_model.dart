@@ -6,8 +6,9 @@ class MenuCardModel {
   final String title;
   final String desc;
   final IconData icon;
-  final bool isActive;
+  bool? isActive = true;
   String? statusText;
+  Color? statusColor = Colors.blue;
   final String route;
   PaperOtherPageModel? extraItem;
 

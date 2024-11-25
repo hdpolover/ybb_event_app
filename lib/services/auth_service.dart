@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ybb_event_app/models/ambassador_model.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
@@ -31,7 +32,7 @@ class AuthService {
   Future<String> sendVerifEmail(String userId) async {
     var url = Uri.parse('${AppConstants.apiUrl}/users/email_verif');
 
-    print(url);
+    // debugPrint(url as String?);
 
     try {
       var response = await http.post(
@@ -48,7 +49,6 @@ class AuthService {
         throw jsonDecode(response.body)['message'];
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -56,7 +56,7 @@ class AuthService {
   Future<ParticipantModel> participantSignIn(Map<String, dynamic> data) async {
     var url = Uri.parse('${AppConstants.apiUrl}/participants/signin');
 
-    print(url);
+    // debugPrint(url as String?);
 
     try {
       var response = await http.post(
@@ -76,7 +76,7 @@ class AuthService {
         throw jsonDecode(response.body)['message'];
       }
     } catch (e) {
-      print(e);
+      // debugPrint(e as String?);
       rethrow;
     }
   }
@@ -84,7 +84,7 @@ class AuthService {
   Future<AmbassadorModel> ambassadorSignIn(Map<String, dynamic> data) async {
     var url = Uri.parse('${AppConstants.apiUrl}/ambassadors/login');
 
-    print(url);
+    // debugPrint(url as String?);
 
     try {
       var response = await http.post(
@@ -110,7 +110,7 @@ class AuthService {
   Future<String> resetPassword(String id) async {
     var url = Uri.parse('${AppConstants.apiUrl}/users/email_reset_password');
 
-    print(url);
+    // debugPrint(url as String?);
 
     try {
       var response = await http.post(
@@ -136,7 +136,7 @@ class AuthService {
     var url =
         Uri.parse('${AppConstants.apiUrl}/users/check_email?email=$email');
 
-    print(url);
+    // debugPrint(url as String?);
 
     try {
       var response = await http.get(

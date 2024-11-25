@@ -161,7 +161,8 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email": "hendrapolover@gmail.com",
+                                        //   "email":
+                                        //       "qoriahindahsusilowati204@gmail.com",
                                         //   "password": "12344321",
                                         // };
 

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
+import 'package:ybb_event_app/utils/dialog_manager.dart';
 
 class CommonMethods {
   buildCustomButton(
@@ -44,7 +45,11 @@ class CommonMethods {
 
   buildTextField(Key key, String name, String hintText,
       List<FormFieldValidator> validators,
-      {String? desc, dynamic initial, int? lines}) {
+      {String? desc,
+      dynamic initial,
+      int? lines,
+      bool enabled = true,
+      bool readOnly = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
       child: Column(
@@ -75,6 +80,8 @@ class CommonMethods {
             key: key,
             name: name,
             initialValue: initial,
+            enabled: enabled,
+            readOnly: readOnly,
             decoration: InputDecoration(
               hintText: hintText,
               border: const OutlineInputBorder(
@@ -127,13 +134,22 @@ class CommonMethods {
     );
   }
 
-  buildCommonAppBar(BuildContext context, String title) {
+  buildCommonAppBar(BuildContext context, String title,
+      {bool? isBack, String? message, Function? onPressed}) {
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         onPressed: () {
-          // pop the current page
-          Navigator.of(context).pop();
+          if (isBack == null || isBack) {
+            Navigator.of(context).pop();
+          } else {
+            // show a dialog to confirm if the user wants to go back
+            DialogManager.showConfirmationDialog(
+              context,
+              message!,
+              onPressed!,
+            );
+          }
         },
       ),
       automaticallyImplyLeading: true,
@@ -223,4 +239,42 @@ class CommonMethods {
 
   void showAlertDialog(BuildContext context, String s, String t, String u,
       String v, Null Function() param5) {}
+
+  buildItemDetail(String title, String value) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: bodyTextStyle.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          value,
+          style: bodyTextStyle.copyWith(
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  bool isEmail(value) {
+    String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+    RegExp regExp = RegExp(pattern);
+
+    return regExp.hasMatch(value);
+  }
+
+  String formatDate(DateTime? updatedAt) {
+    // format date like this: August 10, 2021 12:00 AM. include the time
+    String formattedDate = DateFormat('MMMM d, y h:mm a').format(updatedAt!);
+
+    return formattedDate;
+  }
 }

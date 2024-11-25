@@ -191,4 +191,32 @@ class ParticipantService {
       }
     });
   }
+
+  Future<ParticipantModel?> checkParticipantByEmailAndProgramId(
+      String? email, String? programId) async {
+    var url = Uri.parse(
+        '${AppConstants.apiUrl}/participants/check?email=$email&program_id=$programId');
+
+    print(url);
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        List<ParticipantModel> participants = [];
+
+        for (var part in data) {
+          participants.add(ParticipantModel.fromJson(part));
+        }
+
+        return participants.isNotEmpty ? participants[0] : null;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

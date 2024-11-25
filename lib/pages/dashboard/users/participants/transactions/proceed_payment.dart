@@ -14,6 +14,7 @@ import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/payment_webview.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
@@ -48,6 +49,91 @@ class _ProceedPaymentState extends State<ProceedPayment> {
   List<String> paymentTypes = ["Manual", "Automatic"];
   String? _selectedPaymentType;
   String? _selectedAmount;
+
+  midtransPayment(
+    ProgramPaymentModel payment,
+  ) {
+    List<PaymentMethodModel> paymentMethods =
+        Provider.of<PaymentProvider>(context, listen: false).paymentMethods!;
+
+    // get gateway payment method
+    PaymentMethodModel? gatewayMethod =
+        paymentMethods.firstWhere((element) => element.type == "gateway");
+
+    Map<String, dynamic> midtransPaymentData = {
+      // generate new unique id
+      'id': DateTime.now().millisecondsSinceEpoch.toString(),
+      'price': payment.idrAmount,
+      'name': payment.name,
+      'description': payment.description,
+      'participant_id': Provider.of<ParticipantProvider>(context, listen: false)
+          .participant!
+          .id,
+      'program_id': payment.programId,
+      'program_payment_id': payment.id,
+      'payment_method_id': gatewayMethod.id,
+    };
+
+    print(midtransPaymentData);
+
+    PaymentWebViewModel midtransPaymentModel = PaymentWebViewModel(
+      url: "https://master-api.ybbfoundation.com/payments/pay_midtrans",
+      body: midtransPaymentData,
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    context.pushNamed(
+      paymentWebviewRouteName,
+      extra: midtransPaymentModel,
+    );
+
+    // Map<String, dynamic> data = {
+    //   'participant_id': Provider.of<ParticipantProvider>(context, listen: false)
+    //       .participant!
+    //       .id,
+    //   'program_payment_id': payment.id,
+    //   'amount': payment.idrAmount,
+    //   'payment_method_id': gatewayMethod.id,
+    //   'payer_email':
+    //       Provider.of<AuthProvider>(context, listen: false).authUser!.email!,
+    //   'account_name': Provider.of<ParticipantProvider>(context, listen: false)
+    //       .participant!
+    //       .fullName!,
+    //   'program_id': payment.programId,
+    //   'description': payment.name,
+    // };
+
+    // print(data);
+
+    // await PaymentService()
+    //     .xenditPay(data)
+    //     .then((value) {
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+
+    //   String xenditUrl = value!;
+
+    //   // get payments based on participant id
+    //   PaymentService()
+    //       .getAll(Provider.of<ParticipantProvider>(
+    //               context,
+    //               listen: false)
+    //           .participant!
+    //           .id)
+    //       .then((value) {
+    //     Provider.of<PaymentProvider>(context,
+    //             listen: false)
+    //         .setPayments(value);
+
+    //     context.pushNamed(paymentWebviewRouteName,
+    //         extra: xenditUrl);
+    //   });
+    // });
+  }
 
   buildPaymentDetailItem(String title, String desc) {
     return Row(
@@ -313,73 +399,24 @@ class _ProceedPaymentState extends State<ProceedPayment> {
                             child: LoadingAnimationWidget.fourRotatingDots(
                                 color: primary, size: 50),
                           )
-                        : const Center(
-                            child: Text(
-                                "This payment is currently unavailable. Please use the other type of payment."))
-            // Align(
-            //     alignment: Alignment.center,
-            //     child: CommonMethods().buildCustomButton(
-            //       width: MediaQuery.of(context).size.width * 0.5,
-            //       color: primary,
-            //       text: "Proceed Payment",
-            //       onPressed: () async {
-            //         setState(() {
-            //           isLoading = true;
-            //         });
+                        // : const Center(
+                        //     child: Text(
+                        //         "This payment is currently unavailable. Please use the other type of payment."))
+                        : Align(
+                            alignment: Alignment.center,
+                            child: CommonMethods().buildCustomButton(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              color: primary,
+                              text: "Proceed Payment",
+                              onPressed: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
 
-            //         Map<String, dynamic> data = {
-            //           'participant_id':
-            //               Provider.of<ParticipantProvider>(context,
-            //                       listen: false)
-            //                   .participant!
-            //                   .id,
-            //           'program_payment_id': payment.id,
-            //           'amount': payment.idrAmount,
-            //           'payment_method_id': "12",
-            //           'payer_email': Provider.of<AuthProvider>(
-            //                   context,
-            //                   listen: false)
-            //               .authUser!
-            //               .email!,
-            //           'account_name':
-            //               Provider.of<ParticipantProvider>(context,
-            //                       listen: false)
-            //                   .participant!
-            //                   .fullName!,
-            //           'program_id': payment.programId,
-            //           'description': payment.name,
-            //         };
-
-            //         print(data);
-
-            //         await PaymentService()
-            //             .xenditPay(data)
-            //             .then((value) {
-            //           setState(() {
-            //             isLoading = false;
-            //           });
-
-            //           String xenditUrl = value!;
-
-            //           // get payments based on participant id
-            //           PaymentService()
-            //               .getAll(Provider.of<ParticipantProvider>(
-            //                       context,
-            //                       listen: false)
-            //                   .participant!
-            //                   .id)
-            //               .then((value) {
-            //             Provider.of<PaymentProvider>(context,
-            //                     listen: false)
-            //                 .setPayments(value);
-
-            //             context.pushNamed(paymentWebviewRouteName,
-            //                 extra: xenditUrl);
-            //           });
-            //         });
-            //       },
-            //     ),
-            //   ),
+                                midtransPayment(payment);
+                              },
+                            ),
+                          ),
           ],
         ),
       ),
@@ -605,13 +642,16 @@ class _ProceedPaymentState extends State<ProceedPayment> {
     paymentMethods.removeWhere((element) => element.type == "gateway");
 
     // make payment method named "Alternative Payment" to be the first
-    paymentMethods.sort((a, b) {
-      if (a.name!.toLowerCase().contains("alternative")) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
+    // paymentMethods.sort((a, b) {
+    //   if (a.name!.toLowerCase().contains("alternative")) {
+    //     return -1;
+    //   } else {
+    //     return 1;
+    //   }
+    // });
+
+    // sort payments based on name
+    paymentMethods.sort((a, b) => a.name!.compareTo(b.name!));
 
     PaymentMethodModel? selectedMethod = paymentProvider.selectedPaymentMethod;
 

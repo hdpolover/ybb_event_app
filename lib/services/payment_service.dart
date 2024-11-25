@@ -96,4 +96,34 @@ class PaymentService {
       rethrow;
     }
   }
+
+  Future<String?> midtransPay(Map<String, dynamic> data) async {
+    var url = Uri.parse('${AppConstants.apiUrl}/payments/pay_midtrans');
+
+    try {
+      var response = await http.post(
+        url,
+        body: {
+          //add these: description, payer_email, amount, participant_id, program_payment_id, payment_method_id, account_name, program_id
+          "description": data['description'],
+          "price": data['price'],
+          "participant_id": data['participant_id'],
+          "program_payment_id": data['program_payment_id'],
+          "payment_method_id": data['payment_method_id'],
+          "name": data['name'],
+          "program_id": data['program_id'],
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        return data;
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

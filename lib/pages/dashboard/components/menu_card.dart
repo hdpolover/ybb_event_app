@@ -17,7 +17,7 @@ class MenuCard extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: menuCard.isActive
+        onTap: menuCard.isActive!
             ? () {
                 if (menuCard.extraItem != null) {
                   context.pushNamed(
@@ -32,7 +32,7 @@ class MenuCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: menuCard.isActive ? Colors.white : Colors.grey[200],
+            color: menuCard.isActive! ? Colors.white : Colors.grey[200],
             borderRadius: BorderRadius.circular(20),
             // give a shadow effect to the card
             boxShadow: [
@@ -45,7 +45,7 @@ class MenuCard extends StatelessWidget {
             ],
             // add a border to the card
             border: Border.all(
-              color: menuCard.isActive ? primary : Colors.grey,
+              color: menuCard.isActive! ? primary : Colors.grey,
               width: 1,
             ),
           ),
@@ -57,7 +57,7 @@ class MenuCard extends StatelessWidget {
               FaIcon(
                 menuCard.icon,
                 size: 40,
-                color: menuCard.isActive ? primary : Colors.grey,
+                color: menuCard.isActive! ? primary : Colors.grey,
               ),
               const SizedBox(height: 10),
               AutoSizeText(
@@ -68,15 +68,15 @@ class MenuCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              AutoSizeText(
-                menuCard.desc,
-                softWrap: true,
-                textAlign: TextAlign.center,
-                style: bodyTextStyle.copyWith(
-                  color: Colors.grey,
-                  fontSize: 10,
-                ),
-              ),
+              // AutoSizeText(
+              //   menuCard.desc,
+              //   softWrap: true,
+              //   textAlign: TextAlign.center,
+              //   style: bodyTextStyle.copyWith(
+              //     color: Colors.grey,
+              //     fontSize: 10,
+              //   ),
+              // ),
               Visibility(
                 visible: menuCard.statusText != null,
                 child: Column(
@@ -87,7 +87,7 @@ class MenuCard extends StatelessWidget {
                     AutoSizeText(menuCard.statusText ?? "",
                         textAlign: TextAlign.center,
                         style: bodyTextStyle.copyWith(
-                          color: primary,
+                          color: menuCard.statusColor,
                           fontSize: 10,
                           fontStyle: FontStyle.italic,
                         ))
@@ -95,7 +95,7 @@ class MenuCard extends StatelessWidget {
                 ),
               ),
               Visibility(
-                visible: !menuCard.isActive,
+                visible: !menuCard.isActive!,
                 child: const Column(
                   children: [
                     SizedBox(height: 20),

@@ -14,7 +14,7 @@ void main() {
 
   var url = web.window.location.href;
 
-  print(url);
+  debugPrint(url);
 
   if (url.contains("localhost")) {
     mainUrl = "https://youthacademicforum.com/";
