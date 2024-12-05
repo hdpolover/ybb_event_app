@@ -83,6 +83,11 @@ class _TransactionsState extends State<Transactions> {
     List<ProgramPaymentModel> batch1 = [];
     List<ProgramPaymentModel> batch2 = [];
 
+    // loop registration, batch 1, and batch 2 payments
+    for (var a in payments!) {
+      print(a.category);
+    }
+
     List<ProgramPaymentModel> tempShownPayments = [];
 
     for (var a in payments!) {
@@ -99,7 +104,7 @@ class _TransactionsState extends State<Transactions> {
       }
     }
 
-    bool showRegist = false;
+    bool showRegist = true;
     bool isRegistPaid = false;
 
     // get regist card
@@ -112,8 +117,6 @@ class _TransactionsState extends State<Transactions> {
         if (participantPayments!.any((element) =>
             element.programPaymentId == a.id && element.status == "2")) {
           isRegistPaid = true;
-        } else {
-          isRegistPaid = false;
         }
 
         break;

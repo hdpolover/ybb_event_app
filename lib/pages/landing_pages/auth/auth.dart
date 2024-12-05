@@ -161,8 +161,7 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email":
-                                        //       "qoriahindahsusilowati204@gmail.com",
+                                        //   "email": "safiyanurm09@gmail.com",
                                         //   "password": "12344321",
                                         // };
 
@@ -569,7 +568,8 @@ class _AuthState extends State<Auth> {
         isLoading = false;
       });
 
-      DialogManager.showAlertDialog(context, error.toString());
+      DialogManager.showAlertDialog(context,
+          "This email is not registered for this program. Please sign up first.");
     });
   }
 

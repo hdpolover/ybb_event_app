@@ -230,7 +230,12 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
                               updateData();
                             } else {
                               // save the data
-                              saveData();
+                              DialogManager.showConfirmationDialog(context,
+                                  'Are you sure you want to save this abstract? You cannot edit it later unless you have some revisions.',
+                                  () {
+                                Navigator.of(context).pop();
+                                saveData();
+                              });
                             }
                           }
                         },

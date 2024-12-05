@@ -60,38 +60,43 @@ class _SubmissionPageState extends State<SubmissionPage> {
         Provider.of<PaperProvider>(context, listen: false)
             .setCurrentAuthor(currentAuthor!);
 
-        String paperDetailId =
+        String? paperDetailId =
             Provider.of<PaperProvider>(context, listen: false)
                 .currentAuthor!
                 .paperDetailId;
 
-        await PaperAuthorService()
-            .getAllByPaperDetailId(paperDetailId)
-            .then((value) async {
-          Provider.of<PaperProvider>(context, listen: false).setAuthors(value);
-
-          // get paper details
-          await PaperDetailService().getById(paperDetailId).then((value) async {
+        if (paperDetailId != null) {
+          await PaperAuthorService()
+              .getAllByPaperDetailId(paperDetailId)
+              .then((value) async {
             Provider.of<PaperProvider>(context, listen: false)
-                .setCurrentPaperDetail(value);
+                .setAuthors(value);
 
-            if (value.paperAbstractId != null) {
-              // get abstract details
-              await PaperAbstractService()
-                  .getById(value.paperAbstractId)
-                  .then((value) {
-                if (value != null) {
-                  Provider.of<PaperProvider>(context, listen: false)
-                      .setCurrentPaperAbstract(value);
-                }
+            // get paper details
+            await PaperDetailService()
+                .getById(paperDetailId)
+                .then((value) async {
+              Provider.of<PaperProvider>(context, listen: false)
+                  .setCurrentPaperDetail(value);
+
+              if (value.paperAbstractId != null) {
+                // get abstract details
+                await PaperAbstractService()
+                    .getById(value.paperAbstractId)
+                    .then((value) {
+                  if (value != null) {
+                    Provider.of<PaperProvider>(context, listen: false)
+                        .setCurrentPaperAbstract(value);
+                  }
+                });
+              }
+              // show abstract add button
+              setState(() {
+                showAddAbstract = true;
               });
-            }
-            // show abstract add button
-            setState(() {
-              showAddAbstract = true;
             });
           });
-        });
+        }
       } else {
         setState(() {
           showAddAbstract = false;
@@ -266,8 +271,6 @@ class _SubmissionPageState extends State<SubmissionPage> {
         Provider.of<PaperProvider>(context).currentPaperAbstract;
 
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTitleItem(
           "Abstract",
@@ -298,8 +301,13 @@ class _SubmissionPageState extends State<SubmissionPage> {
         currentAbstract == null
             ? Padding(
                 padding: blockPadding(context),
-                child: const Text(
-                    "You will need to add at least 1 author to start adding/editing your abstract."),
+                child: Text(
+                  "You will need to add at least 1 author to start adding/editing your abstract.",
+                  style: bodyTextStyle.copyWith(
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               )
             : AbstractDetail(abstract: currentAbstract),
       ],
@@ -314,8 +322,13 @@ class _SubmissionPageState extends State<SubmissionPage> {
         // build the revision section
         Padding(
           padding: blockPadding(context),
-          child: const Text(
-              "You will see revisions made by the reviewers about your abstract here once available."),
+          child: Text(
+            "You will see revisions made by the reviewers about your abstract here once available.",
+            style: bodyTextStyle.copyWith(
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ),
       ],
     );
@@ -329,8 +342,13 @@ class _SubmissionPageState extends State<SubmissionPage> {
         // build the paper section
         Padding(
           padding: blockPadding(context),
-          child: const Text(
-              "You can start adding/editing your paper once your abstract has been approved."),
+          child: Text(
+            "You can start adding/editing your paper once your abstract has been approved.",
+            style: bodyTextStyle.copyWith(
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ),
       ],
     );

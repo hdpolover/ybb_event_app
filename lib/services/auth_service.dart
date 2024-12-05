@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -56,27 +57,41 @@ class AuthService {
   Future<ParticipantModel> participantSignIn(Map<String, dynamic> data) async {
     var url = Uri.parse('${AppConstants.apiUrl}/participants/signin');
 
+    print(url);
+
     // debugPrint(url as String?);
 
     try {
-      var response = await http.post(
-        url,
-        body: {
-          "email": data["email"],
-          "password": data["password"],
-          "program_category_id": data["program_category_id"],
-        },
-      );
+      var jsonBody = json.encode({
+        "email": data["email"],
+        "password": data["password"],
+        "program_category_id": data["program_category_id"],
+      });
+
+      var response = await http
+          .post(
+            url,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: jsonBody,
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () => throw TimeoutException('Request timed out'),
+          );
+
+      print('POST response status: ${response.statusCode}');
+      print('POST response headers: ${response.headers}');
+      print('POST response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body)['data'];
-
-        return ParticipantModel.fromJson(data);
+        return ParticipantModel.fromJson(jsonDecode(response.body)['data']);
       } else {
-        throw jsonDecode(response.body)['message'];
+        throw Exception('Failed to sign in: ${response.statusCode}');
       }
     } catch (e) {
-      // debugPrint(e as String?);
       rethrow;
     }
   }
