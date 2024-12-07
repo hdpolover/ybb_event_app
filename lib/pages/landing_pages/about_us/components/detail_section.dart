@@ -166,12 +166,15 @@ class _DetailSectionState extends State<DetailSection> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        "About ${widget.programInfo!.name}",
-                        style: headlineSecondaryTextStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 40,
+                      Padding(
+                        padding: blockPadding(context),
+                        child: Text(
+                          "About ${widget.programInfo!.name}",
+                          style: headlineSecondaryTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 40,
+                          ),
                         ),
                       ),
                       Padding(
@@ -186,131 +189,51 @@ class _DetailSectionState extends State<DetailSection> {
                   ),
                 ),
               ),
-              programPhotos == null
-                  ? LoadingAnimationWidget.fourRotatingDots(
-                      color: primary, size: 20)
-                  : Container(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width,
-                        maxHeight: MediaQuery.of(context).size.height * 0.6,
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.4,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3,
-                            ),
-                            child: Image.network(
-                              programPhotos![2].imgUrl!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.4,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3,
-                            ),
-                            child: Image.network(
-                              programPhotos![3].imgUrl!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
             ],
           ),
-          desktop: Row(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.6,
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.6,
-                  minHeight: MediaQuery.of(context).size.height * 0.6,
-                ),
-                // give the container an image background that blends with the color
-                decoration: BoxDecoration(
-                  color: primary,
-                  image: DecorationImage(
-                    image: const AssetImage("assets/images/pattern_1.png"),
-                    fit: BoxFit.cover,
-                    // blend image with color
-                    colorFilter: ColorFilter.mode(
-                      primary.withOpacity(0.5),
-                      BlendMode.dstATop,
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: blockPadding(context),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "About ${widget.programInfo!.name}",
-                        style: headlineSecondaryTextStyle.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 40,
-                        ),
-                      ),
-                      Padding(
-                        padding: blockPadding(context),
-                        child: HtmlWidget(
-                          widget.aboutSetting!.aboutProgram!,
-                          textStyle:
-                              bodyTextStyle.copyWith(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
+          desktop: Container(
+            width: double.infinity,
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height * 0.6,
+            ),
+            // give the container an image background that blends with the color
+            decoration: BoxDecoration(
+              color: primary,
+              image: DecorationImage(
+                image: const AssetImage("assets/images/pattern_1.png"),
+                fit: BoxFit.cover,
+                // blend image with color
+                colorFilter: ColorFilter.mode(
+                  primary.withOpacity(0.5),
+                  BlendMode.dstATop,
                 ),
               ),
-              programPhotos == null
-                  ? LoadingAnimationWidget.fourRotatingDots(
-                      color: primary, size: 20)
-                  : Container(
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.4,
-                        minHeight: MediaQuery.of(context).size.height * 0.6,
-                      ),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.4,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.5,
-                            ),
-                            child: Image.network(
-                              programPhotos![2].imgUrl!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.4,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.5,
-                            ),
-                            child: Image.network(
-                              programPhotos![3].imgUrl!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-            ],
+            ),
+            child: Padding(
+              padding: blockPadding(context),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "About ${widget.programInfo!.name}",
+                    style: headlineSecondaryTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 40,
+                    ),
+                  ),
+                  Padding(
+                    padding: blockPadding(context),
+                    child: HtmlWidget(
+                      widget.aboutSetting!.aboutProgram!,
+                      textStyle: bodyTextStyle.copyWith(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
         Padding(

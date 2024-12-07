@@ -146,8 +146,7 @@ class _TestimonySectionState extends State<TestimonySection> {
               ],
             ),
           ),
-          SizedBox(
-            width: MediaQuery.sizeOf(context).width * 0.5,
+          Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -204,7 +203,7 @@ class _TestimonySectionState extends State<TestimonySection> {
     return SizedBox(
       width: double.infinity,
       height: ScreenSizeHelper.responsiveValue(context,
-          desktop: MediaQuery.of(context).size.height * 0.5,
+          desktop: MediaQuery.of(context).size.height * 0.7,
           mobile: MediaQuery.of(context).size.height * 0.7),
       child: Builder(
         builder: (context) {
