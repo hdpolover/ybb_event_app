@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/web_setting_home_model.dart';
+import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/utils/screen_size_helper.dart';
 
 class BannerSection extends StatefulWidget {
@@ -25,6 +27,8 @@ class _BannerSectionState extends State<BannerSection> {
   }
 
   buildBannerItem(String imgUrl, String title, String desc, String date) {
+    var programProvider = Provider.of<ProgramProvider>(context);
+
     return SizedBox(
       width: double.infinity,
       child: Stack(
@@ -62,21 +66,30 @@ class _BannerSectionState extends State<BannerSection> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                TimerCountdown(
-                  timeTextStyle: headlineTextStyle.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.white),
-                  descriptionTextStyle: smallHeadlineTextStyle.copyWith(
-                    color: Colors.white,
-                  ),
-                  colonsTextStyle: smallHeadlineTextStyle.copyWith(
-                    color: Colors.white,
-                  ),
-                  format: CountDownTimerFormat.daysHoursMinutesSeconds,
-                  endTime: DateTime.now().add(getDuration(date)),
-                  onEnd: () {
-                    debugPrint("Timer finished");
-                  },
-                ),
+                (programProvider.programInfo!.isActive == "0")
+                    ? Text(
+                        "Event has ended",
+                        style: bodyTextStyle.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    : TimerCountdown(
+                        timeTextStyle: headlineTextStyle.copyWith(
+                            fontWeight: FontWeight.bold, color: Colors.white),
+                        descriptionTextStyle: smallHeadlineTextStyle.copyWith(
+                          color: Colors.white,
+                        ),
+                        colonsTextStyle: smallHeadlineTextStyle.copyWith(
+                          color: Colors.white,
+                        ),
+                        format: CountDownTimerFormat.daysHoursMinutesSeconds,
+                        endTime: DateTime.now().add(getDuration(date)),
+                        onEnd: () {
+                          debugPrint("Timer finished");
+                        },
+                      ),
               ],
             ),
           ),

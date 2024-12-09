@@ -22,6 +22,7 @@ class LandingPageService {
 
         return ProgramInfoByUrlModel.fromJson(data);
       } else {
+        print(response.body);
         throw Exception('Failed');
       }
     } catch (e) {

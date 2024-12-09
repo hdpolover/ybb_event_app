@@ -48,6 +48,24 @@ class _AuthState extends State<Auth> {
     super.initState();
 
     getData();
+
+    // add 3 seconds delay to show the program is inactive
+    Future.delayed(const Duration(seconds: 3), () {
+      showProgramInactive();
+    });
+  }
+
+  showProgramInactive() {
+    bool isProgramInactive =
+        Provider.of<ProgramProvider>(context, listen: false)
+                .programInfo!
+                .isActive ==
+            "0";
+
+    if (isProgramInactive) {
+      DialogManager.showAlertDialog(context,
+          "This program has already ended. You will not be able to sign up. But you can still sign in if you participated in this program before.");
+    }
   }
 
   setChildren() {
@@ -189,25 +207,32 @@ class _AuthState extends State<Auth> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AutoSizeText("Don't have an account? ",
-                              style: smallHeadlineTextStyle.copyWith(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 17,
-                              )),
-                          InkWell(
-                            onTap: () {
-                              context.pushNamed(signUpRouteName);
-                            },
-                            child: AutoSizeText("Sign up",
-                                style: smallHeadlineTextStyle.copyWith(
-                                    color: primary, fontSize: 17)),
-                          ),
-                        ],
+                      Visibility(
+                        visible: programProvider.programInfo!.isActive == "1",
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AutoSizeText("Don't have an account? ",
+                                    style: smallHeadlineTextStyle.copyWith(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 17,
+                                    )),
+                                InkWell(
+                                  onTap: () {
+                                    context.pushNamed(signUpRouteName);
+                                  },
+                                  child: AutoSizeText("Sign up",
+                                      style: smallHeadlineTextStyle.copyWith(
+                                          color: primary, fontSize: 17)),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -389,25 +414,32 @@ class _AuthState extends State<Auth> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AutoSizeText("Don't have an account? ",
-                            style: smallHeadlineTextStyle.copyWith(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 17,
-                            )),
-                        InkWell(
-                          onTap: () {
-                            context.pushNamed(signUpRouteName);
-                          },
-                          child: AutoSizeText("Sign up",
-                              style: smallHeadlineTextStyle.copyWith(
-                                  color: primary, fontSize: 17)),
-                        ),
-                      ],
+                    Visibility(
+                      visible: programProvider.programInfo!.isActive == "1",
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AutoSizeText("Don't have an account? ",
+                                  style: smallHeadlineTextStyle.copyWith(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 17,
+                                  )),
+                              InkWell(
+                                onTap: () {
+                                  context.pushNamed(signUpRouteName);
+                                },
+                                child: AutoSizeText("Sign up",
+                                    style: smallHeadlineTextStyle.copyWith(
+                                        color: primary, fontSize: 17)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
