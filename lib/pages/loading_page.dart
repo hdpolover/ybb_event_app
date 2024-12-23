@@ -12,7 +12,7 @@ class LoadingPage extends StatelessWidget {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               LoadingAnimationWidget.staggeredDotsWave(
                 color: Colors.white,

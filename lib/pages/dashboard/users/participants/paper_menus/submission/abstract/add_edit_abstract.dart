@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:package_rename/package_rename.dart';
 import 'package:provider/provider.dart';
+import 'package:ybb_event_app/components/typography.dart';
 import 'package:ybb_event_app/models/paper_abstract_model.dart';
 import 'package:ybb_event_app/pages/landing_pages/widgets/loading_widget.dart';
 import 'package:ybb_event_app/providers/paper_provider.dart';
+import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/paper_abstract_service.dart';
 import 'package:ybb_event_app/services/paper_detail_service.dart';
+import 'package:ybb_event_app/services/paper_topic_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
 
@@ -22,11 +26,11 @@ class AddEditAbstract extends StatefulWidget {
 }
 
 class _AddEditAbstractState extends State<AddEditAbstract> {
-  var _formKey = GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormBuilderState>();
 
-  var _titleKey = GlobalKey<FormBuilderFieldState>();
-  var _contentKey = GlobalKey<FormBuilderFieldState>();
-  var _keywordKey = GlobalKey<FormBuilderFieldState>();
+  final _titleKey = GlobalKey<FormBuilderFieldState>();
+  final _contentKey = GlobalKey<FormBuilderFieldState>();
+  final _keywordKey = GlobalKey<FormBuilderFieldState>();
 
   bool isLoading = false;
 
@@ -39,6 +43,67 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
     super.initState();
 
     setData();
+    getTopicData();
+  }
+
+  getTopicData() async {
+    String programId = Provider.of<ProgramProvider>(context, listen: false)
+        .currentProgram!
+        .id!;
+    // get the data
+    await PaperTopicService().getAll(programId).then((value) {
+      if (value != null || value!.isNotEmpty) {
+        value.removeWhere((element) => element.topicName == "all");
+      }
+
+      Provider.of<PaperProvider>(context, listen: false).setPaperTopics(value);
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  buildTopicDropdown() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Topic",
+          style: bodyTextStyle.copyWith(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          ("Select a topic for your abstract and paper"),
+          style: bodyTextStyle.copyWith(color: Colors.red),
+        ),
+        const SizedBox(height: 15),
+        Consumer<PaperProvider>(
+          builder: (context, paperProv, child) {
+            return FormBuilderDropdown(
+              name: 'topic',
+              hint: Text('Select Topic'),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              items: paperProv.paperTopics!
+                  .map((topic) => DropdownMenuItem(
+                        value: topic.id,
+                        child: Text(topic.topicName!),
+                      ))
+                  .toList(),
+              validator: FormBuilderValidators.required(),
+              initialValue: Provider.of<PaperProvider>(context, listen: false)
+                  .currentPaperDetail!
+                  .paperTopicId,
+            );
+          },
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
   }
 
   setData() {
@@ -77,7 +142,9 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
       DialogManager.showAlertDialog(
           context, "Abstract has been updated successfully", pressed: () {
         Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(
+            // return isLoading = false
+            false);
       }, isGreen: true);
     }).catchError((e) {
       setState(() {
@@ -107,27 +174,33 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
     };
 
     await PaperAbstractService().save(data).then((value) async {
-      setState(() {
-        isLoading = false;
-      });
-
       Provider.of<PaperProvider>(context, listen: false)
           .setCurrentPaperAbstract(value);
 
       String paperDetailId = Provider.of<PaperProvider>(context, listen: false)
           .currentPaperDetail!
           .id!;
+
+      print(paperDetailId);
+
       String programId = Provider.of<PaperProvider>(context, listen: false)
           .currentPaperDetail!
           .programId!;
 
       Map<String, dynamic> paperData = {
         'paper_abstract_id': value.id,
+        'paper_topic_id': _formKey.currentState!.value['topic'],
         'program_id': programId,
       };
 
+      print(paperData);
+
       // update paper detail
       await PaperDetailService().update(paperData, paperDetailId).then((paper) {
+        setState(() {
+          isLoading = false;
+        });
+
         Provider.of<PaperProvider>(context, listen: false)
             .setCurrentPaperDetail(paper);
 
@@ -137,8 +210,21 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
           Navigator.of(context).pop();
           Navigator.of(context).pop();
         }, isGreen: true);
+      }).onError((error, stackTrace) {
+        setState(() {
+          isLoading = false;
+        });
+
+        // show error dialog
+        DialogManager.showAlertDialog(context, 'Failed to save the abstract',
+            pressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
       });
     }).catchError((e) {
+      print(e);
+
       setState(() {
         isLoading = false;
       });
@@ -165,6 +251,7 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                buildTopicDropdown(),
                 CommonMethods().buildTextField(
                     _titleKey,
                     'title',
@@ -233,7 +320,6 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
                               DialogManager.showConfirmationDialog(context,
                                   'Are you sure you want to save this abstract? You cannot edit it later unless you have some revisions.',
                                   () {
-                                Navigator.of(context).pop();
                                 saveData();
                               });
                             }

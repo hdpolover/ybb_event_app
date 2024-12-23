@@ -45,7 +45,7 @@ class AbstractDetail extends StatelessWidget {
         const SizedBox(height: 10),
         // updated at
         Text(
-          'Updated at: $formattedDate',
+          'Updated: $formattedDate',
           style: bodyTextStyle.copyWith(
             color: Colors.grey,
             fontSize: 12,

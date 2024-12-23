@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/paper_abstract_model.dart';
 import 'package:ybb_event_app/models/paper_author_model.dart';
+import 'package:ybb_event_app/models/paper_detail_model.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/abstract_detail.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/add_edit_abstract.dart';
@@ -80,6 +81,11 @@ class _SubmissionPageState extends State<SubmissionPage> {
                   .setCurrentPaperDetail(value);
 
               if (value.paperAbstractId != null) {
+                // show abstract add button
+                setState(() {
+                  showAddAbstract = false;
+                });
+
                 // get abstract details
                 await PaperAbstractService()
                     .getById(value.paperAbstractId)
@@ -89,11 +95,12 @@ class _SubmissionPageState extends State<SubmissionPage> {
                         .setCurrentPaperAbstract(value);
                   }
                 });
+              } else {
+                // show abstract add button
+                setState(() {
+                  showAddAbstract = true;
+                });
               }
-              // show abstract add button
-              setState(() {
-                showAddAbstract = true;
-              });
             });
           });
         }
@@ -288,6 +295,10 @@ class _SubmissionPageState extends State<SubmissionPage> {
                         extra: currentAbstract,
                       );
                     } else {
+                      setState(() {
+                        showAddAbstract = false;
+                      });
+
                       context.pushNamed(
                         AddEditAbstract.routeName,
                       );

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:ybb_event_app/models/paper_abstract_model.dart';
 import 'package:ybb_event_app/models/paper_author_model.dart';
 import 'package:ybb_event_app/models/paper_detail_model.dart';
+import 'package:ybb_event_app/models/paper_topic_model.dart';
 
 class PaperProvider extends ChangeNotifier {
   List<PaperAuthorModel>? _authors = [];
+  List<PaperTopicModel>? _paperTopics = [];
   PaperAuthorModel? _currentAuthor;
   PaperDetailModel? _currentPaperDetail;
   PaperAbstractModel? _currentPaperAbstract;
@@ -75,6 +77,18 @@ class PaperProvider extends ChangeNotifier {
   void removeAuthor(String authorId) {
     _authors!.removeWhere((element) => element.id == authorId);
 
+    notifyListeners();
+  }
+
+  List<PaperTopicModel>? get paperTopics => _paperTopics;
+
+  void setPaperTopics(List<PaperTopicModel> topics) {
+    _paperTopics = topics;
+    notifyListeners();
+  }
+
+  void clearPaperTopics() {
+    _paperTopics = [];
     notifyListeners();
   }
 }

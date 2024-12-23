@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ybb_event_app/my_app.dart';
@@ -17,7 +15,7 @@ void main() {
   debugPrint(url);
 
   if (url.contains("localhost")) {
-    mainUrl = "https://worldyouthfest.com/";
+    mainUrl = "https://youthacademicforum.com/";
   } else {
     mainUrl = url;
   }

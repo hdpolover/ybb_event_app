@@ -10,7 +10,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
-import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth_image_section.dart';
 import 'package:ybb_event_app/pages/loading_page.dart';
@@ -179,7 +178,7 @@ class _AuthState extends State<Auth> {
                                               BorderRadius.circular(10)),
                                       onPressed: () {
                                         // Map<String, dynamic> data = {
-                                        //   "email": "rizwaneshal16@gmail.com",
+                                        //   "email": "hendrapolover@gmail.com",
                                         //   "password": "12344321",
                                         // };
 

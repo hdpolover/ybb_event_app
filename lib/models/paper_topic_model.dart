@@ -1,45 +1,39 @@
 // To parse this JSON data, do
 //
-//     final paperDetailModel = paperDetailModelFromJson(jsonString);
+//     final paperTopicModel = paperTopicModelFromJson(jsonString);
 
 import 'dart:convert';
 
-PaperDetailModel paperDetailModelFromJson(String str) =>
-    PaperDetailModel.fromJson(json.decode(str));
+PaperTopicModel paperTopicModelFromJson(String str) =>
+    PaperTopicModel.fromJson(json.decode(str));
 
-String paperDetailModelToJson(PaperDetailModel data) =>
+String paperTopicModelToJson(PaperTopicModel data) =>
     json.encode(data.toJson());
 
-class PaperDetailModel {
+class PaperTopicModel {
   String? id;
   String? programId;
-  dynamic paperAbstractId;
-  dynamic paperTopicId;
-  dynamic paperId;
+  String? topicName;
   String? isActive;
   String? isDeleted;
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  PaperDetailModel({
+  PaperTopicModel({
     this.id,
     this.programId,
-    this.paperAbstractId,
-    this.paperTopicId,
-    this.paperId,
+    this.topicName,
     this.isActive,
     this.isDeleted,
     this.createdAt,
     this.updatedAt,
   });
 
-  factory PaperDetailModel.fromJson(Map<String, dynamic> json) =>
-      PaperDetailModel(
+  factory PaperTopicModel.fromJson(Map<String, dynamic> json) =>
+      PaperTopicModel(
         id: json["id"],
         programId: json["program_id"],
-        paperAbstractId: json["paper_abstract_id"],
-        paperTopicId: json["paper_topic_id"],
-        paperId: json["paper_id"],
+        topicName: json["topic_name"],
         isActive: json["is_active"],
         isDeleted: json["is_deleted"],
         createdAt: json["created_at"] == null
@@ -53,9 +47,7 @@ class PaperDetailModel {
   Map<String, dynamic> toJson() => {
         "id": id,
         "program_id": programId,
-        "paper_abstract_id": paperAbstractId,
-        "paper_topic_id": paperTopicId,
-        "paper_id": paperId,
+        "topic_name": topicName,
         "is_active": isActive,
         "is_deleted": isDeleted,
         "created_at": createdAt?.toIso8601String(),

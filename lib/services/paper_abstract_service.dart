@@ -28,41 +28,48 @@ class PaperAbstractService {
   }
 
   // save
-  Future<PaperAbstractModel> save(Map<String, dynamic> data) {
+  Future<PaperAbstractModel> save(Map<String, dynamic> data) async {
     var url = Uri.parse('${AppConstants.apiUrl}/paper_abstracts/save');
 
     print(url);
 
     try {
-      return http.post(url, body: data).then((response) {
-        if (response.statusCode == 200) {
-          var data = jsonDecode(response.body)['data'];
+      var response = await http.post(url, body: data);
 
-          return PaperAbstractModel.fromJson(data);
-        } else {
-          throw jsonDecode(response.body)['message'];
-        }
-      });
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        PaperAbstractModel paper = PaperAbstractModel.fromJson(data);
+
+        return paper;
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<PaperAbstractModel> update(Map<String, dynamic> data, String id) {
+  Future<PaperAbstractModel> update(
+      Map<String, dynamic> data, String id) async {
     var url = Uri.parse('${AppConstants.apiUrl}/paper_abstracts/update/$id');
 
     print(url);
 
     try {
-      return http.post(url, body: data).then((response) {
-        if (response.statusCode == 200) {
-          var data = jsonDecode(response.body)['data'];
+      var response = await http.get(url);
 
-          return PaperAbstractModel.fromJson(data);
-        } else {
-          throw jsonDecode(response.body)['message'];
-        }
-      });
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)['data'];
+
+        PaperAbstractModel paper = PaperAbstractModel.fromJson(data);
+
+        return paper;
+      } else {
+        throw jsonDecode(response.body)['message'];
+      }
     } catch (e) {
       rethrow;
     }
