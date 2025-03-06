@@ -120,7 +120,10 @@ class _DocumentItemState extends State<DocumentItem> {
                             openUrl(link);
                           }
                         },
-                        icon: const Icon(Icons.download),
+                        icon: const Icon(
+                          Icons.download,
+                          color: Colors.white,
+                        ),
                         label: const Text("Download"),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primary,
@@ -154,9 +157,12 @@ class _DocumentItemState extends State<DocumentItem> {
                             );
                           }
                         },
-                        icon: Icon(agreementLetter == null
-                            ? Icons.upload
-                            : Icons.visibility),
+                        icon: Icon(
+                          agreementLetter == null
+                              ? Icons.upload
+                              : Icons.visibility,
+                          color: Colors.white,
+                        ),
                         label:
                             Text(agreementLetter == null ? "Upload" : "View"),
                         style: ElevatedButton.styleFrom(

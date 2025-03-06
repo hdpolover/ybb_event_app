@@ -10,6 +10,9 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:ybb_event_app/components/colors.dart';
 import 'package:ybb_event_app/components/typography.dart';
+import 'package:ybb_event_app/main.dart';
+import 'package:ybb_event_app/models/program_info_by_url_model.dart';
+import 'package:ybb_event_app/models/program_model.dart';
 import 'package:ybb_event_app/models/program_photo_model.dart';
 import 'package:ybb_event_app/pages/landing_pages/auth/auth_image_section.dart';
 import 'package:ybb_event_app/pages/loading_page.dart';
@@ -17,8 +20,10 @@ import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/auth_service.dart';
+import 'package:ybb_event_app/services/landing_page_service.dart';
 import 'package:ybb_event_app/services/participant_status_service.dart';
 import 'package:ybb_event_app/services/progam_photo_service.dart';
+import 'package:ybb_event_app/services/program_service.dart';
 import 'package:ybb_event_app/utils/app_router_config.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
 import 'package:ybb_event_app/utils/screen_size_helper.dart';
@@ -42,11 +47,34 @@ class _AuthState extends State<Auth> {
 
   List<Widget> children = [];
 
+  ProgramInfoByUrlModel? programInfo;
+  ProgramModel? currentProgram;
+
   @override
   void initState() {
     super.initState();
 
-    getData();
+    LandingPageService().getProgramInfo(mainUrl).then((value) async {
+      //set program info to provider
+      Provider.of<ProgramProvider>(context, listen: false)
+          .setProgramInfo(value);
+
+      setState(() {
+        programInfo = value;
+      });
+
+      ProgramService().getProgramById(programInfo!.id!).then((value) async {
+        //set current program to provider
+        Provider.of<ProgramProvider>(context, listen: false)
+            .setCurrentProgram(value);
+
+        setState(() {
+          currentProgram = value;
+        });
+
+        getData();
+      });
+    });
 
     // add 3 seconds delay to show the program is inactive
     Future.delayed(const Duration(seconds: 3), () {
@@ -386,8 +414,8 @@ class _AuthState extends State<Auth> {
                                             BorderRadius.circular(10)),
                                     onPressed: () {
                                       // Map<String, dynamic> data = {
-                                      //   "email": "subaktialdi88@gmail.com",
-                                      //   "password": "aldi2014",
+                                      //   "email": "hendrapolover@gmail.com",
+                                      //   "password": "Hendra123@",
                                       // };
 
                                       // signin(data);
@@ -553,7 +581,7 @@ class _AuthState extends State<Auth> {
                 .setParticipantStatus(value);
 
             // navigate to home page
-            context.pushNamed(dashboardRouteName, extra: "participant");
+            context.goNamed(dashboardRouteName, extra: "participant");
           }).onError((error, stackTrace) {
             DialogManager.showAlertDialog(context, error.toString());
 

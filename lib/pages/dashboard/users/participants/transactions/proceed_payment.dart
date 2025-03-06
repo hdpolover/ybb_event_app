@@ -15,7 +15,6 @@ import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/models/payment_method_model.dart';
 import 'package:ybb_event_app/models/program_payment_model.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/transactions/payment_webview.dart';
-import 'package:ybb_event_app/providers/auth_provider.dart';
 import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/payment_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
@@ -57,8 +56,8 @@ class _ProceedPaymentState extends State<ProceedPayment> {
         Provider.of<PaymentProvider>(context, listen: false).paymentMethods!;
 
     // get gateway payment method
-    PaymentMethodModel? gatewayMethod =
-        paymentMethods.firstWhere((element) => element.type == "gateway");
+    PaymentMethodModel? gatewayMethod = paymentMethods
+        .firstWhere((element) => element.name!.toLowerCase() == "midtrans");
 
     Map<String, dynamic> midtransPaymentData = {
       // generate new unique id

@@ -103,21 +103,7 @@ class MenuCard extends StatelessWidget {
                         style: TextStyle(color: Colors.red, fontSize: 12))
                   ],
                 ),
-              )
-              // const SizedBox(height: 10),
-              // // build a chip to show status
-              // Chip(
-              //   // remove chip border color
-              //   shadowColor: Colors.transparent,
-              //   label: Text(
-              //     menuCard.isActive ? "Active" : "Inactive",
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 12,
-              //     ),
-              //   ),
-              //   backgroundColor: menuCard.isActive ? Colors.green : Colors.red,
-              // ),
+              ),
             ],
           ),
         ),

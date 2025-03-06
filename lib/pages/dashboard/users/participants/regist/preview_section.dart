@@ -1,4 +1,3 @@
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -216,9 +215,9 @@ class _PreviewSectionState extends State<PreviewSection> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 30),
-              FancyShimmerImage(
-                imageUrl: programProvider.currentProgram!.logoUrl!,
-                boxFit: BoxFit.contain,
+              Image.network(
+                programProvider.currentProgram!.logoUrl!,
+                fit: BoxFit.contain,
                 height: MediaQuery.of(context).size.width * 0.1,
               ),
               const SizedBox(height: 30),

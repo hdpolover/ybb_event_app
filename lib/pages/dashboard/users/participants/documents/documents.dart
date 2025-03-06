@@ -39,6 +39,9 @@ class _DocumentsState extends State<Documents> {
               .participant!
               .programId);
 
+      // if doc is generated, remove it
+      value.removeWhere((element) => element.isGenerated == "1");
+
       // sort by name
       value.sort((a, b) => a.name!.compareTo(b.name!));
 

@@ -1,4 +1,3 @@
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,11 +28,11 @@ class _TestimonySectionState extends State<TestimonySection> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipOval(
-            child: FancyShimmerImage(
-              imageUrl: test.imgUrl!,
+            child: Image.network(
+              test.imgUrl!,
               width: 150,
               height: 150,
-              boxFit: BoxFit.cover,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 20),
@@ -116,11 +115,11 @@ class _TestimonySectionState extends State<TestimonySection> {
               children: [
                 // make the image a circle
                 ClipOval(
-                  child: FancyShimmerImage(
-                    imageUrl: test.imgUrl!,
+                  child: Image.network(
+                    test.imgUrl!,
                     width: 200,
                     height: 200,
-                    boxFit: BoxFit.cover,
+                    fit: BoxFit.cover,
                   ),
                 ),
                 const SizedBox(height: 20),

@@ -59,7 +59,7 @@ class PaperAbstractService {
     print(url);
 
     try {
-      var response = await http.get(url);
+      var response = await http.post(url, body: data);
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)['data'];

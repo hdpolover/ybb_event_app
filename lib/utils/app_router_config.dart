@@ -16,6 +16,7 @@ import 'package:ybb_event_app/pages/dashboard/users/participants/documents/agree
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/document_pdf_viewer.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/documents/documents.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/help_desk/help_desk_list.dart';
+import 'package:ybb_event_app/pages/dashboard/users/participants/loa/loa_page.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/add_edit_abstract.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/author/add_edit_author.dart';
@@ -94,6 +95,8 @@ String paperOtherPageTemplatePathName = "/paper-other-page-template";
 String paperOtherPageTemplateRouteName = "paper-other-page-template";
 String submissionPagePathName = "/submission";
 String submissionPageRouteName = "submission";
+String loaPageRouteName = "loa";
+String loaPagePathName = "/loa";
 
 class AppRouterConfig {
   final GoRouter routeConfig = GoRouter(
@@ -119,8 +122,8 @@ class AppRouterConfig {
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
-        name: authRouteName,
-        path: authPathName,
+        name: homeRouteName,
+        path: homePathName,
         pageBuilder: (context, state) => const NoTransitionPage(
           child: Auth(),
         ),
@@ -259,14 +262,14 @@ class AppRouterConfig {
           child: RegistForm(),
         ),
       ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        name: homeRouteName,
-        path: homePathName,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: Home(),
-        ),
-      ),
+      // GoRoute(
+      //   parentNavigatorKey: _rootNavigatorKey,
+      //   name: homeRouteName,
+      //   path: homePathName,
+      //   pageBuilder: (context, state) => const NoTransitionPage(
+      //     child: Home(),
+      //   ),
+      // ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         name: aboutUsRouteName,
@@ -346,6 +349,14 @@ class AppRouterConfig {
               ? const AddEditAbstract()
               : AddEditAbstract(
                   paperAbstract: state.extra as PaperAbstractModel),
+        ),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: loaPageRouteName,
+        path: loaPagePathName,
+        pageBuilder: (context, state) => const NoTransitionPage(
+          child: LoaPage(),
         ),
       ),
     ],

@@ -1,4 +1,3 @@
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,6 @@ import 'package:ybb_event_app/models/participant_status_model.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card.dart';
 import 'package:ybb_event_app/pages/dashboard/components/menu_card_model.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/other_pages/paper_other_page_template.dart';
-import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/submission_page.dart';
 import 'package:ybb_event_app/pages/landing_pages/widgets/guideline_widget.dart';
 import 'package:ybb_event_app/providers/app_provider.dart';
 import 'package:ybb_event_app/providers/auth_provider.dart';
@@ -65,6 +63,16 @@ class _DashboardState extends State<Dashboard>
           desc: "Manage your program payments",
           isActive: true,
           route: transactionsRouteName,
+        ),
+      ),
+      MenuCard(
+        menuCard: MenuCardModel(
+          orderNumber: 4,
+          title: "Acceptance Letter",
+          icon: FontAwesomeIcons.fileLines,
+          desc: "View and download your acceptance letter",
+          isActive: true,
+          route: loaPageRouteName,
         ),
       ),
       MenuCard(
@@ -139,16 +147,7 @@ class _DashboardState extends State<Dashboard>
               route: submissionPageRouteName,
             ),
           ),
-          MenuCard(
-            menuCard: MenuCardModel(
-              orderNumber: 4,
-              title: "Acceptance Letter",
-              icon: FontAwesomeIcons.fileLines,
-              desc: "View and download your acceptance letter",
-              isActive: false,
-              route: "",
-            ),
-          ),
+
           MenuCard(
             menuCard: MenuCardModel(
               orderNumber: 7,
@@ -394,12 +393,12 @@ class _DashboardState extends State<Dashboard>
                   width: MediaQuery.of(context).size.width * 0.1,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100),
-                    child: FancyShimmerImage(
-                      imageUrl: participantModel.pictureUrl ??
+                    child: Image.network(
+                      participantModel.pictureUrl ??
                           Provider.of<ProgramProvider>(context, listen: false)
                               .programInfo!
                               .logoUrl!,
-                      boxFit: BoxFit.cover,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -492,12 +491,12 @@ class _DashboardState extends State<Dashboard>
               width: MediaQuery.of(context).size.width * 0.3,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: FancyShimmerImage(
-                  imageUrl: participantModel.pictureUrl ??
+                child: Image.network(
+                  participantModel.pictureUrl ??
                       Provider.of<ProgramProvider>(context, listen: false)
                           .programInfo!
                           .logoUrl!,
-                  boxFit: BoxFit.cover,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

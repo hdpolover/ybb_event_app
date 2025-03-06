@@ -5,6 +5,7 @@ import 'package:ybb_event_app/components/components.dart';
 import 'package:ybb_event_app/models/paper_abstract_model.dart';
 import 'package:ybb_event_app/models/paper_author_model.dart';
 import 'package:ybb_event_app/models/paper_detail_model.dart';
+import 'package:ybb_event_app/models/paper_revision_model.dart';
 import 'package:ybb_event_app/models/participant_model.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/abstract_detail.dart';
 import 'package:ybb_event_app/pages/dashboard/users/participants/paper_menus/submission/abstract/add_edit_abstract.dart';
@@ -16,6 +17,7 @@ import 'package:ybb_event_app/providers/participant_provider.dart';
 import 'package:ybb_event_app/providers/program_provider.dart';
 import 'package:ybb_event_app/services/paper_abstract_service.dart';
 import 'package:ybb_event_app/services/paper_detail_service.dart';
+import 'package:ybb_event_app/services/paper_revision_service.dart';
 import 'package:ybb_event_app/services/payment_service.dart';
 import 'package:ybb_event_app/utils/common_methods.dart';
 import 'package:ybb_event_app/utils/dialog_manager.dart';
@@ -31,9 +33,10 @@ class SubmissionPage extends StatefulWidget {
 
 class _SubmissionPageState extends State<SubmissionPage> {
   PaperAuthorModel? currentAuthor;
-  List<String> revisions = [];
+  List<PaperRevisionModel> revisions = [];
 
-  bool showAddAbstract = false;
+  bool showAbstractButton = false;
+  bool hasRevisions = false;
 
   bool isLoading = false;
 
@@ -43,6 +46,22 @@ class _SubmissionPageState extends State<SubmissionPage> {
 
     checkPayment();
     getAuthorById();
+  }
+
+  getRevisions(String paperDetailId) async {
+    // get the user's revisions
+    await PaperRevisionService().getRevisions(paperDetailId).then((value) {
+      setState(() {
+        revisions = value;
+      });
+
+      if (revisions.isNotEmpty) {
+        setState(() {
+          showAbstractButton = true;
+          hasRevisions = true;
+        });
+      }
+    });
   }
 
   // get author
@@ -83,7 +102,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
               if (value.paperAbstractId != null) {
                 // show abstract add button
                 setState(() {
-                  showAddAbstract = false;
+                  showAbstractButton = false;
                 });
 
                 // get abstract details
@@ -93,12 +112,14 @@ class _SubmissionPageState extends State<SubmissionPage> {
                   if (value != null) {
                     Provider.of<PaperProvider>(context, listen: false)
                         .setCurrentPaperAbstract(value);
+
+                    getRevisions(paperDetailId);
                   }
                 });
               } else {
                 // show abstract add button
                 setState(() {
-                  showAddAbstract = true;
+                  showAbstractButton = true;
                 });
               }
             });
@@ -106,7 +127,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
         }
       } else {
         setState(() {
-          showAddAbstract = false;
+          showAbstractButton = false;
         });
       }
     });
@@ -178,7 +199,7 @@ class _SubmissionPageState extends State<SubmissionPage> {
           setState(() {
             isLoading = false;
 
-            showAddAbstract = true;
+            showAbstractButton = true;
           });
 
           Navigator.pop(context);
@@ -281,22 +302,20 @@ class _SubmissionPageState extends State<SubmissionPage> {
       children: [
         _buildTitleItem(
           "Abstract",
-          showAddAbstract
+          showAbstractButton
               ? CommonMethods().buildCustomButton(
                   width: 200,
-                  color: currentAbstract != null ? Colors.orange : Colors.green,
-                  text: currentAbstract != null
-                      ? "Edit Abstract"
-                      : "Add Abstract",
+                  color: hasRevisions ? Colors.orange : Colors.green,
+                  text: hasRevisions ? "Edit Abstract" : "Add Abstract",
                   onPressed: () {
-                    if (currentAbstract != null) {
+                    if (hasRevisions) {
                       context.pushNamed(
                         AddEditAbstract.routeName,
                         extra: currentAbstract,
                       );
                     } else {
                       setState(() {
-                        showAddAbstract = false;
+                        showAbstractButton = false;
                       });
 
                       context.pushNamed(
@@ -331,16 +350,52 @@ class _SubmissionPageState extends State<SubmissionPage> {
         _buildTitleItem("Revisions", null),
         const SizedBox(height: 10),
         // build the revision section
-        Padding(
-          padding: blockPadding(context),
-          child: Text(
-            "You will see revisions made by the reviewers about your abstract here once available.",
-            style: bodyTextStyle.copyWith(
-              fontSize: 16,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-        ),
+        revisions.isEmpty
+            ? Padding(
+                padding: blockPadding(context),
+                child: Text(
+                  "You will see revisions made by the reviewers about your abstract here once available.",
+                  style: bodyTextStyle.copyWith(
+                    fontSize: 16,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: revisions.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              revisions[index].comment!,
+                              style: bodyTextStyle.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Comment by ${revisions[index].name} on ${CommonMethods().formatDate(revisions[index].createdAt)}",
+                              style: bodyTextStyle.copyWith(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ));
+                }),
       ],
     );
   }

@@ -28,6 +28,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CommonMethods().buildCommonAppBar(context, "Reset Password"),
       body: SingleChildScrollView(
         child: FormBuilder(
@@ -88,11 +89,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   .checkEmail(emailController.text)
                                   .then(
                                 (value) async {
-                                  // send email to reset password
-                                  // call the resetPassword function from the AuthService
-                                  // if the email is sent successfully, show a snackbar with a message
-                                  // if the email is not sent successfully, show a snackbar with an error message
-                                  // if the email is not sent successfully, set isLoading to false
                                   await AuthService()
                                       .resetPassword(value.id!)
                                       .then((value) {

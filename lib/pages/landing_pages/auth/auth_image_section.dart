@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ybb_event_app/models/program_info_by_url_model.dart';
@@ -32,8 +31,8 @@ class AuthImageSection extends StatelessWidget {
             ),
           ),
           // position the image to center
-          CachedNetworkImage(
-            imageUrl: programInfo!.logoUrl!,
+          Image.network(
+            programInfo!.logoUrl!,
             width: 200,
             height: 200,
             fit: BoxFit.contain,

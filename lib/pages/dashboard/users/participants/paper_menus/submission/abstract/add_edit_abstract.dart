@@ -126,6 +126,7 @@ class _AddEditAbstractState extends State<AddEditAbstract> {
       'title': _titleKey.currentState!.value,
       'content': _contentKey.currentState!.value,
       'keywords': _keywordKey.currentState!.value,
+      'status': widget.paperAbstract!.status,
     };
 
     PaperAbstractService()

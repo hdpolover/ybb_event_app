@@ -90,7 +90,7 @@ class LandingPageService {
 
   Future<List<TestimonyModel>> getTestimonies(String id) async {
     var url =
-        Uri.parse('${AppConstants.apiUrl}/program_testimonies/program?id=$id');
+        Uri.parse('${AppConstants.apiUrl}/program_testimonies/program_id=$id');
 
     print(url);
 
